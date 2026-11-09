@@ -1,0 +1,82 @@
+table 'fact_demand_forecast'
+	lineageTag: fa060bc6-61e8-405e-9c72-5e6774a4d50c
+
+	column 'forecast_id'
+		dataType: int64
+		isHidden
+		summarizeBy: none
+		sourceColumn: forecast_id
+		lineageTag: 0f328e0d-a66d-4e3b-9685-d6a9587857a5
+
+	column 'month_id'
+		dataType: int64
+		isHidden
+		summarizeBy: none
+		sourceColumn: month_id
+		lineageTag: b3f2e5f2-5f16-40f1-841a-9123353c6ed6
+
+	column 'month_start'
+		dataType: dateTime
+		formatString: yyyy-mm-dd
+		summarizeBy: none
+		sourceColumn: month_start
+		lineageTag: b70c497e-c04b-4a0a-b4e1-552a59c43fc3
+
+	column 'level'
+		dataType: string
+		summarizeBy: none
+		sourceColumn: level
+		lineageTag: 1e77363f-acfe-4daf-93e8-ab6eb16efdde
+
+	column 'member'
+		dataType: string
+		summarizeBy: none
+		sourceColumn: member
+		lineageTag: fde4ba99-f1f8-4ab7-b832-72a3efc69d19
+
+	column 'model_name'
+		dataType: string
+		summarizeBy: none
+		sourceColumn: model_name
+		lineageTag: be094cb3-5453-4398-b39d-39e74a8ed883
+
+	column 'forecast_units'
+		dataType: double
+		summarizeBy: sum
+		sourceColumn: forecast_units
+		lineageTag: e000e2a9-f225-496a-b205-a13ad1c87b3d
+
+	column 'lower_80'
+		dataType: double
+		summarizeBy: sum
+		sourceColumn: lower_80
+		lineageTag: 4777dcbc-81f5-4beb-991e-350f5ce88f72
+
+	column 'upper_80'
+		dataType: double
+		summarizeBy: sum
+		sourceColumn: upper_80
+		lineageTag: a4e6b056-0e90-4db7-837e-08765cf4bda5
+
+	column 'actual_units'
+		dataType: double
+		summarizeBy: sum
+		sourceColumn: actual_units
+		lineageTag: d7d23d13-57f7-4329-85c7-984555c8c068
+
+	column 'is_backtest'
+		dataType: boolean
+		summarizeBy: none
+		sourceColumn: is_backtest
+		lineageTag: 4fbff94e-c7b7-42f5-b5d4-60b82f1afb44
+
+	partition 'fact_demand_forecast' = m
+		mode: import
+		source =
+				let
+				    Source = PostgreSQL.Database(PgServer, PgDatabase),
+				    Data = Source{[Schema = PgSchema, Item = "fact_demand_forecast"]}[Data],
+				    Selected = Table.SelectColumns(Data, {"forecast_id", "month_id", "month_start", "level", "member", "model_name", "forecast_units", "lower_80", "upper_80", "actual_units", "is_backtest"}),
+				    Typed = Table.TransformColumnTypes(Selected, {{"forecast_id", Int64.Type}, {"month_id", Int64.Type}, {"month_start", type datetime}, {"level", type text}, {"member", type text}, {"model_name", type text}, {"forecast_units", type number}, {"lower_80", type number}, {"upper_80", type number}, {"actual_units", type number}, {"is_backtest", type logical}})
+				in
+				    Typed

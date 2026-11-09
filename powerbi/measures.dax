@@ -1,0 +1,154 @@
+// Power BI measures for the car-sales demand-forecasting DSS.
+// Setup: import dim_date, dim_customer, dim_car, dim_dealer, fact_car_sales and
+// fact_demand_forecast (Import mode), create the Calendar and What-if tables below,
+// mark Calendar as the date table, and keep all measures in an empty table `_Measures`.
+// Relationships: each dim 1-* fact_car_sales; Calendar[DateId] -> fact_car_sales[date_id];
+// Calendar[Date] -> fact_demand_forecast[month_start].
+// Hierarchies: Date (Year > Quarter > Month > Date), Product (company > model),
+// Geography (dealer_region > dealer_name).
+
+// ===== Calculated tables =====
+Calendar =
+ADDCOLUMNS (
+    CALENDAR ( DATE ( 2022, 1, 1 ), DATE ( 2024, 12, 31 ) ),
+    "Year", YEAR ( [Date] ),
+    "Quarter", "Q" & QUARTER ( [Date] ),
+    "MonthNo", MONTH ( [Date] ),
+    "Month", FORMAT ( [Date], "MMM" ),
+    "YearMonth", YEAR ( [Date] ) * 100 + MONTH ( [Date] ),
+    "DateId", YEAR ( [Date] ) * 10000 + MONTH ( [Date] ) * 100 + DAY ( [Date] )
+)
+
+Demand Change = GENERATESERIES ( -0.30, 0.30, 0.05 )   // What-if: demand change
+Safety Factor = GENERATESERIES ( 0, 2, 0.1 )           // What-if: buffer factor k
+
+// ===== Group 2: historical demand =====
+Units Sold    = SUM ( fact_car_sales[quantity] )                                   // D1
+Revenue       = SUM ( fact_car_sales[price] )                                      // D2
+ASP           = DIVIDE ( [Revenue], [Units Sold] )                                 // D3
+Units PM      = CALCULATE ( [Units Sold], DATEADD ( Calendar[Date], -1, MONTH ) )
+Units PY      = CALCULATE ( [Units Sold], SAMEPERIODLASTYEAR ( Calendar[Date] ) )
+Units MoM %   = DIVIDE ( [Units Sold] - [Units PM], [Units PM] )                   // D4
+Units YoY %   = DIVIDE ( [Units Sold] - [Units PY], [Units PY] )                   // D4
+Revenue PM    = CALCULATE ( [Revenue], DATEADD ( Calendar[Date], -1, MONTH ) )
+Revenue PY    = CALCULATE ( [Revenue], SAMEPERIODLASTYEAR ( Calendar[Date] ) )
+Revenue MoM % = DIVIDE ( [Revenue] - [Revenue PM], [Revenue PM] )                  // D4
+Revenue YoY % = DIVIDE ( [Revenue] - [Revenue PY], [Revenue PY] )                  // D4
+Units PQ      = CALCULATE ( [Units Sold], DATEADD ( Calendar[Date], -1, QUARTER ) )
+Units QoQ %   = DIVIDE ( [Units Sold] - [Units PQ], [Units PQ] )                   // D4
+Units YTD     = TOTALYTD ( [Units Sold], Calendar[Date] )
+Revenue YTD   = TOTALYTD ( [Revenue], Calendar[Date] )
+Revenue YTD YoY % =
+    DIVIDE (
+        [Revenue YTD] - CALCULATE ( [Revenue YTD], SAMEPERIODLASTYEAR ( Calendar[Date] ) ),
+        CALCULATE ( [Revenue YTD], SAMEPERIODLASTYEAR ( Calendar[Date] ) )
+    )                                                                              // D4
+Units YoY Delta = [Units Sold] - [Units PY]                                        // D13
+Auto Share %  = DIVIDE ( CALCULATE ( [Units Sold], dim_car[transmission] = "Auto" ), [Units Sold] )  // D14
+Auto Share Change pp =
+    [Auto Share %] - CALCULATE ( [Auto Share %], SAMEPERIODLASTYEAR ( Calendar[Date] ) )             // D14
+Dealer Rank   = RANKX ( ALLSELECTED ( dim_dealer[dealer_name] ), [Units Sold] )    // D16
+Dealers Growing % =
+    DIVIDE (
+        COUNTROWS ( FILTER ( VALUES ( dim_dealer[dealer_name] ), [Units YoY %] > 0 ) ),
+        COUNTROWS ( VALUES ( dim_dealer[dealer_name] ) )
+    )                                                                              // D16
+Units Share % = DIVIDE ( [Units Sold], CALCULATE ( [Units Sold], ALLSELECTED ( dim_car ) ) )     // D5
+Region Share %= DIVIDE ( [Units Sold], CALCULATE ( [Units Sold], ALLSELECTED ( dim_dealer ) ) )  // D6
+Seasonality Index =
+    DIVIDE (
+        [Units Sold],
+        AVERAGEX ( ALLSELECTED ( Calendar[MonthNo], Calendar[Month] ), [Units Sold] )
+    )                                                                              // D7
+Demand CV =
+    VAR t = ADDCOLUMNS ( VALUES ( Calendar[YearMonth] ), "u", [Units Sold] )
+    RETURN
+        DIVIDE (
+            STDEVX.P ( FILTER ( t, [u] > 0 ), [u] ),
+            AVERAGEX ( FILTER ( t, [u] > 0 ), [u] )
+        )                                                                          // D9
+Top10 Model Share % =
+    DIVIDE (
+        SUMX ( TOPN ( 10, ALLSELECTED ( dim_car[model] ), [Units Sold] ), [Units Sold] ),
+        CALCULATE ( [Units Sold], ALLSELECTED ( dim_car[model] ) )
+    )                                                                              // D10
+Price to Income =
+    AVERAGEX (
+        fact_car_sales,
+        DIVIDE ( fact_car_sales[price], RELATED ( dim_customer[annual_income] ) )
+    )                                                                              // D11
+
+// ===== Group 3: forecast and accuracy (filter model_name via slicer, level per visual) =====
+Forecast Units = SUM ( fact_demand_forecast[forecast_units] )                      // F1
+Forecast Lower = SUM ( fact_demand_forecast[lower_80] )
+Forecast Upper = SUM ( fact_demand_forecast[upper_80] )
+
+WAPE % =
+    VAR bt = FILTER ( fact_demand_forecast, fact_demand_forecast[is_backtest] = TRUE () )
+    RETURN
+        DIVIDE (
+            SUMX ( bt, ABS ( fact_demand_forecast[actual_units] - fact_demand_forecast[forecast_units] ) ),
+            SUMX ( bt, fact_demand_forecast[actual_units] )
+        )                                                                          // F3
+Forecast Accuracy % = 1 - [WAPE %]                                                 // F3
+MAPE % =
+    AVERAGEX (
+        FILTER ( fact_demand_forecast, fact_demand_forecast[is_backtest] = TRUE () ),
+        DIVIDE (
+            ABS ( fact_demand_forecast[actual_units] - fact_demand_forecast[forecast_units] ),
+            fact_demand_forecast[actual_units]
+        )
+    )                                                                              // F2
+Bias % =
+    VAR bt = FILTER ( fact_demand_forecast, fact_demand_forecast[is_backtest] = TRUE () )
+    RETURN
+        DIVIDE (
+            SUMX ( bt, fact_demand_forecast[forecast_units] - fact_demand_forecast[actual_units] ),
+            SUMX ( bt, fact_demand_forecast[actual_units] )
+        )                                                                          // F5
+Tracking Signal =
+    VAR bt = FILTER ( fact_demand_forecast, fact_demand_forecast[is_backtest] = TRUE () )
+    RETURN
+        DIVIDE (
+            SUMX ( bt, fact_demand_forecast[actual_units] - fact_demand_forecast[forecast_units] ),
+            AVERAGEX ( bt, ABS ( fact_demand_forecast[actual_units] - fact_demand_forecast[forecast_units] ) )
+        )                                                                          // F6
+FVA =
+    CALCULATE ( [WAPE %], fact_demand_forecast[model_name] = "seasonal_naive" ) - [WAPE %]  // F7
+Interval Coverage % =
+    VAR bt = FILTER ( fact_demand_forecast, fact_demand_forecast[is_backtest] = TRUE () )
+    RETURN
+        DIVIDE (
+            COUNTROWS (
+                FILTER (
+                    bt,
+                    fact_demand_forecast[actual_units] >= fact_demand_forecast[lower_80]
+                        && fact_demand_forecast[actual_units] <= fact_demand_forecast[upper_80]
+                )
+            ),
+            COUNTROWS ( bt )
+        )                                                                          // F8
+
+// ===== Group 4: decision support =====
+Forecast Growth % = DIVIDE ( [Forecast Units] - [Units PY], [Units PY] )           // S1
+Region Share 6M % =
+    VAR lastDay = CALCULATE ( MAX ( fact_car_sales[date_id] ), ALL ( fact_car_sales ) )
+    VAR lastDate = DATE ( INT ( lastDay / 10000 ), MOD ( INT ( lastDay / 100 ), 100 ), MOD ( lastDay, 100 ) )
+    VAR win = DATESINPERIOD ( Calendar[Date], lastDate, -6, MONTH )
+    RETURN
+        DIVIDE (
+            CALCULATE ( [Units Sold], win, REMOVEFILTERS ( Calendar ) ),
+            CALCULATE ( [Units Sold], win, REMOVEFILTERS ( Calendar ), ALL ( dim_dealer ) )
+        )
+Allocated Units =
+    CALCULATE ( [Forecast Units], fact_demand_forecast[level] = "total", fact_demand_forecast[model_name] = "sarima" ) * [Region Share 6M %]  // S2 (SARIMA)
+Recommended Order =
+    [Forecast Units]
+        * ( 1 + SELECTEDVALUE ( 'Demand Change'[Value], 0 ) )
+        * ( 1 + SELECTEDVALUE ( 'Safety Factor'[Value], 1 ) * [Demand CV] )        // S3, S6
+Projected Revenue =
+    [Forecast Units] * ( 1 + SELECTEDVALUE ( 'Demand Change'[Value], 0 ) ) * [ASP]  // S4, S6
+
+// S5 (priority score) is built on Forecast Growth %, Units Share %, Demand CV and
+// Forecast Accuracy %. For forecast months, take ASP and Demand CV from history by
+// wrapping them in CALCULATE(..., DATESINPERIOD(...)) as in Region Share 6M %.

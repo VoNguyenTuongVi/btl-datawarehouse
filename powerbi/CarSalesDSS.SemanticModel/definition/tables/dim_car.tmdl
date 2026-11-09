@@ -1,0 +1,65 @@
+table 'dim_car'
+	lineageTag: 31058efb-0d99-40b8-be0e-efb2093f8454
+
+	column 'car_key'
+		dataType: int64
+		isHidden
+		summarizeBy: none
+		sourceColumn: car_key
+		lineageTag: 316cf6e7-c70b-423d-9af1-baa9645efc4a
+
+	column 'company'
+		dataType: string
+		summarizeBy: none
+		sourceColumn: company
+		lineageTag: 4bc5907c-97d0-44e4-8696-8759ee43d585
+
+	column 'model'
+		dataType: string
+		summarizeBy: none
+		sourceColumn: model
+		lineageTag: d613e7d4-f4e4-46d3-b3ce-f7f58d0a3d05
+
+	column 'engine'
+		dataType: string
+		summarizeBy: none
+		sourceColumn: engine
+		lineageTag: bd592186-4488-4748-80e8-371ead3a5fb4
+
+	column 'transmission'
+		dataType: string
+		summarizeBy: none
+		sourceColumn: transmission
+		lineageTag: 7dde6113-015f-4f91-aea0-eff61d73add6
+
+	column 'color'
+		dataType: string
+		summarizeBy: none
+		sourceColumn: color
+		lineageTag: dee037db-128b-45ff-810d-b6f8571945d1
+
+	column 'body_style'
+		dataType: string
+		summarizeBy: none
+		sourceColumn: body_style
+		lineageTag: 1e0e36ae-4b03-4a02-b5a8-55c96c667d96
+
+	hierarchy 'Product'
+		lineageTag: a3bfe37b-c3d1-46db-b36d-0c634cf1ef19
+		level 'company'
+			column: 'company'
+			lineageTag: 57cf60a5-de1a-4546-80cd-999891be7a08
+		level 'model'
+			column: 'model'
+			lineageTag: c8334a8e-1058-42af-a6ad-1874383ca4cb
+
+	partition 'dim_car' = m
+		mode: import
+		source =
+				let
+				    Source = PostgreSQL.Database(PgServer, PgDatabase),
+				    Data = Source{[Schema = PgSchema, Item = "dim_car"]}[Data],
+				    Selected = Table.SelectColumns(Data, {"car_key", "company", "model", "engine", "transmission", "color", "body_style"}),
+				    Typed = Table.TransformColumnTypes(Selected, {{"car_key", Int64.Type}, {"company", type text}, {"model", type text}, {"engine", type text}, {"transmission", type text}, {"color", type text}, {"body_style", type text}})
+				in
+				    Typed

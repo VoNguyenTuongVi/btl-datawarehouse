@@ -1,0 +1,59 @@
+table 'fact_car_sales'
+	lineageTag: 406dfc15-a8db-4483-ade0-0f08b3883e93
+
+	column 'car_id'
+		dataType: string
+		summarizeBy: none
+		sourceColumn: car_id
+		lineageTag: 2f226ed9-9485-4cb0-80ab-33740abca3d0
+
+	column 'date_id'
+		dataType: int64
+		isHidden
+		summarizeBy: none
+		sourceColumn: date_id
+		lineageTag: bb58feef-8c27-4fac-843f-490f1a4e8d50
+
+	column 'customer_id'
+		dataType: int64
+		isHidden
+		summarizeBy: none
+		sourceColumn: customer_id
+		lineageTag: dfab7385-9a12-4d79-8880-324327711fff
+
+	column 'car_key'
+		dataType: int64
+		isHidden
+		summarizeBy: none
+		sourceColumn: car_key
+		lineageTag: 97902878-91c6-426e-83ff-bc319525f3ce
+
+	column 'dealer_id'
+		dataType: int64
+		isHidden
+		summarizeBy: none
+		sourceColumn: dealer_id
+		lineageTag: 730ba82d-3620-4f8b-83a7-e4f8f08c2f45
+
+	column 'price'
+		dataType: int64
+		summarizeBy: sum
+		sourceColumn: price
+		lineageTag: 0baf99e3-d0d0-4915-b10e-5a11cb5b094e
+
+	column 'quantity'
+		dataType: int64
+		summarizeBy: sum
+		sourceColumn: quantity
+		lineageTag: 126d75cb-dc85-4a0d-9fec-52923579d382
+
+	partition 'fact_car_sales' = m
+		mode: import
+		source =
+				let
+				    Source = PostgreSQL.Database(PgServer, PgDatabase),
+				    Data = Source{[Schema = PgSchema, Item = "fact_car_sales"]}[Data],
+				    Selected = Table.SelectColumns(Data, {"car_id", "date_id", "customer_id", "car_key", "dealer_id", "price", "quantity"}),
+				    Typed = Table.TransformColumnTypes(Selected, {{"car_id", type text}, {"date_id", Int64.Type}, {"customer_id", Int64.Type}, {"car_key", Int64.Type}, {"dealer_id", Int64.Type}, {"price", Int64.Type}, {"quantity", Int64.Type}})
+				in
+				    Typed

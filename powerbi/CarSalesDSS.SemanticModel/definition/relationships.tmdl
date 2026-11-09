@@ -1,0 +1,19 @@
+relationship 33d0fac7-9f68-420e-81a9-1e6e9078b424
+	fromColumn: 'fact_car_sales'.'date_id'
+	toColumn: 'Calendar'.'DateId'
+
+relationship dabb8697-7fad-45e2-8a67-f199159dd484
+	fromColumn: 'fact_car_sales'.'customer_id'
+	toColumn: 'dim_customer'.'customer_id'
+
+relationship a42afbaf-2def-4f12-af39-f0718d902bbe
+	fromColumn: 'fact_car_sales'.'car_key'
+	toColumn: 'dim_car'.'car_key'
+
+relationship ede353b3-4973-429e-8605-872806c063c8
+	fromColumn: 'fact_car_sales'.'dealer_id'
+	toColumn: 'dim_dealer'.'dealer_id'
+
+relationship 365aba9c-355b-4318-bd3f-f3e4f34aed69
+	fromColumn: 'fact_demand_forecast'.'month_start'
+	toColumn: 'Calendar'.'Date'

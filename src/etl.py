@@ -1,17 +1,34 @@
-import os
 import pandas as pd
-from sqlalchemy import create_engine
+from sqlalchemy import text
 
-# Tạo đường dẫn động lưu file database car_sales_dw.db ngay tại thư mục dự án
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-DB_PATH = os.path.join(BASE_DIR, '../car_sales_dw.db')
+from database import PROJECT_ROOT, create_database_engine
 
-# Dùng SQLite: không cần cài phần mềm, không cần mật khẩu, tự động tạo file
-engine = create_engine(f'sqlite:///{DB_PATH}')
+DATA_PATH = PROJECT_ROOT / 'data' / 'car_sales_cleaned.csv'
+engine = create_database_engine()
 
 print("--- BẮT ĐẦU QUY TRÌNH ETL ---")
-df = pd.read_csv('data/car_sales_cleaned.csv')
+df = pd.read_csv(DATA_PATH)
 df['date'] = pd.to_datetime(df['date'])
+
+# Make repeated loads idempotent while retaining the existing SQLite workflow.
+with engine.begin() as connection:
+    if engine.dialect.name == 'postgresql':
+        connection.execute(
+            text(
+                'TRUNCATE fact_car_sales, dim_customer, dim_car, dim_dealer, dim_date '
+                'RESTART IDENTITY CASCADE'
+            )
+        )
+    else:
+        for table_name in (
+            'fact_car_sales',
+            'dim_customer',
+            'dim_car',
+            'dim_dealer',
+            'dim_date',
+        ):
+            if engine.dialect.has_table(connection, table_name):
+                connection.execute(text(f'DELETE FROM {table_name}'))
 
 # -------------------------------------------------------------
 # 2. XỬ LÝ & NẠP DIM_DATE
@@ -73,3 +90,20 @@ fact_sales['quantity'] = 1
 fact_sales.to_sql('fact_car_sales', engine, if_exists='append', index=False)
 print("-> Đã nạp fact_car_sales thành công!")
 print(f"Tổng số bản ghi fact đã nạp: {len(fact_sales)}")
+
+if engine.dialect.name == 'postgresql':
+    with engine.begin() as connection:
+        for table_name, id_column in (
+            ('dim_customer', 'customer_id'),
+            ('dim_car', 'car_key'),
+            ('dim_dealer', 'dealer_id'),
+        ):
+            connection.execute(
+                text(
+                    "SELECT setval(pg_get_serial_sequence(:table_name, :id_column), "
+                    f"(SELECT MAX({id_column}) FROM {table_name}), TRUE)"
+                ),
+                {'table_name': table_name, 'id_column': id_column},
+            )
+
+engine.dispose()

@@ -1,0 +1,105 @@
+table Calendar
+	dataCategory: Time
+	lineageTag: e89ab5e0-eadb-4c9b-85c5-9b17b83172a9
+
+	column 'Date'
+		dataType: dateTime
+		formatString: yyyy-mm-dd
+		summarizeBy: none
+		isKey
+		isNameInferred
+		sourceColumn: [Date]
+		lineageTag: 7c632e71-cc18-46f5-920f-73a746edf166
+
+	column 'Year'
+		dataType: int64
+		formatString: 0
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Year]
+		lineageTag: 162b0374-634b-4440-9f86-fbbbbfaa45e3
+
+	column 'Quarter'
+		dataType: string
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Quarter]
+		lineageTag: b0252ace-cd79-4198-9693-cf7c423fd703
+
+	column 'MonthNo'
+		dataType: int64
+		isHidden
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [MonthNo]
+		lineageTag: 569de294-bd5d-4c8a-93b6-1a488a8c05b8
+
+	column 'Month'
+		dataType: string
+		summarizeBy: none
+		sortByColumn: MonthNo
+		isNameInferred
+		sourceColumn: [Month]
+		lineageTag: 85b8a611-adfe-46f9-b487-7fb302693b26
+
+	column 'YearMonth'
+		dataType: int64
+		formatString: 0
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [YearMonth]
+		lineageTag: f2e7e240-d985-4496-af8a-7058a0a9c914
+
+	column 'DateId'
+		dataType: int64
+		isHidden
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [DateId]
+		lineageTag: 88961de0-d158-4b0b-b5ac-84231964dee0
+
+	column 'DayOfWeekNo'
+		dataType: int64
+		isHidden
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [DayOfWeekNo]
+		lineageTag: 6131e2e6-a4f0-45dd-a60a-61bc280641d1
+
+	column 'DayOfWeek'
+		dataType: string
+		summarizeBy: none
+		sortByColumn: DayOfWeekNo
+		isNameInferred
+		sourceColumn: [DayOfWeek]
+		lineageTag: cacc284b-98f6-4659-829c-2c73cd9e76c5
+
+	hierarchy 'Date Hierarchy'
+		lineageTag: 0e351e96-5b0d-4259-ae02-273921e1f5c3
+		level Year
+			column: Year
+			lineageTag: 63753b39-d165-4c98-b852-aa0f69e61ea2
+		level Quarter
+			column: Quarter
+			lineageTag: 91c1ceb5-6650-443b-8d57-3a5096bfd4be
+		level Month
+			column: Month
+			lineageTag: 84a1ef86-3f78-4a5e-b398-a6cd23ca1309
+		level Date
+			column: Date
+			lineageTag: 9b5a52d8-5f44-4be5-aea0-b42b9880dd56
+
+	partition Calendar = calculated
+		mode: import
+		source =
+				ADDCOLUMNS (
+				    CALENDAR ( DATE ( 2022, 1, 1 ), DATE ( 2024, 12, 31 ) ),
+				    "Year", YEAR ( [Date] ),
+				    "Quarter", "Q" & QUARTER ( [Date] ),
+				    "MonthNo", MONTH ( [Date] ),
+				    "Month", FORMAT ( [Date], "MMM" ),
+				    "YearMonth", YEAR ( [Date] ) * 100 + MONTH ( [Date] ),
+				    "DateId", YEAR ( [Date] ) * 10000 + MONTH ( [Date] ) * 100 + DAY ( [Date] ),
+				    "DayOfWeek", FORMAT ( [Date], "ddd" ),
+				    "DayOfWeekNo", WEEKDAY ( [Date], 2 )
+				)

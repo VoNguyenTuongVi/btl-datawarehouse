@@ -52,3 +52,114 @@ CREATE TABLE IF NOT EXISTS fact_car_sales (
     FOREIGN KEY (car_key) REFERENCES dim_car(car_key),
     FOREIGN KEY (dealer_id) REFERENCES dim_dealer(dealer_id)
 );
+
+-- Nhu cầu tổng hợp theo tháng, hãng và vùng.
+CREATE OR REPLACE VIEW v_monthly_demand AS
+SELECT d.year * 100 + d.month AS month_id,
+       d.year,
+       d.month,
+       make_date(d.year, d.month, 1) AS month_start,
+       c.company,
+       de.dealer_region,
+       SUM(f.quantity) AS units,
+       SUM(f.price) AS revenue
+FROM fact_car_sales AS f
+JOIN dim_date AS d ON f.date_id = d.date_id
+JOIN dim_car AS c ON f.car_key = c.car_key
+JOIN dim_dealer AS de ON f.dealer_id = de.dealer_id
+GROUP BY d.year, d.month, c.company, de.dealer_region;
+
+CREATE OR REPLACE VIEW v_monthly_calendar AS
+WITH date_bounds AS (
+    SELECT MIN(month_start) AS first_month,
+           MAX(month_start) AS last_month
+    FROM v_monthly_demand
+)
+SELECT generate_series(
+    date_bounds.first_month,
+    date_bounds.last_month,
+    INTERVAL '1 month'
+)::date AS month_start
+FROM date_bounds;
+
+-- Monthly sales by each slicer dimension used by KPIs D5-D6 and D12-D17.
+CREATE OR REPLACE VIEW v_monthly_dimension_demand AS
+WITH monthly_sales AS (
+    SELECT make_date(d.year, d.month, 1) AS month_start,
+           c.company,
+           c.model,
+           c.transmission,
+           c.engine,
+           c.body_style,
+           c.color,
+           de.dealer_region,
+           de.dealer_name,
+           cu.gender,
+           SUM(f.quantity)::numeric AS units,
+           SUM(f.price)::numeric AS revenue
+    FROM fact_car_sales AS f
+    JOIN dim_date AS d ON f.date_id = d.date_id
+    JOIN dim_car AS c ON f.car_key = c.car_key
+    JOIN dim_dealer AS de ON f.dealer_id = de.dealer_id
+    JOIN dim_customer AS cu ON f.customer_id = cu.customer_id
+    GROUP BY d.year, d.month,
+             c.company, c.model, c.transmission, c.engine, c.body_style, c.color,
+             de.dealer_region, de.dealer_name, cu.gender
+)
+SELECT month_start, 'company'::text AS dimension_name,
+       COALESCE(company, 'Unknown')::text AS dimension_value, units, revenue
+FROM monthly_sales
+UNION ALL
+SELECT month_start, 'model', COALESCE(model, 'Unknown')::text, units, revenue
+FROM monthly_sales
+UNION ALL
+SELECT month_start, 'transmission', COALESCE(transmission, 'Unknown')::text, units, revenue
+FROM monthly_sales
+UNION ALL
+SELECT month_start, 'engine', COALESCE(engine, 'Unknown')::text, units, revenue
+FROM monthly_sales
+UNION ALL
+SELECT month_start, 'body_style', COALESCE(body_style, 'Unknown')::text, units, revenue
+FROM monthly_sales
+UNION ALL
+SELECT month_start, 'color', COALESCE(color, 'Unknown')::text, units, revenue
+FROM monthly_sales
+UNION ALL
+SELECT month_start, 'dealer_region', COALESCE(dealer_region, 'Unknown')::text, units, revenue
+FROM monthly_sales
+UNION ALL
+SELECT month_start, 'dealer_name', COALESCE(dealer_name, 'Unknown')::text, units, revenue
+FROM monthly_sales
+UNION ALL
+SELECT month_start, 'gender', COALESCE(gender, 'Unknown')::text, units, revenue
+FROM monthly_sales;
+
+-- Kết quả backtest và dự báo tương lai ở cấp tổng, hãng hoặc vùng.
+CREATE TABLE IF NOT EXISTS fact_demand_forecast (
+    forecast_id SERIAL PRIMARY KEY,
+    month_id INT NOT NULL,
+    month_start DATE NOT NULL,
+    level VARCHAR(20) NOT NULL
+        CHECK (level IN ('total', 'company', 'region')),
+    member VARCHAR(100) NOT NULL,
+    model_name VARCHAR(50) NOT NULL
+        CHECK (model_name IN ('holt_winters', 'sarima', 'seasonal_naive')),
+    forecast_units NUMERIC(12, 2) NOT NULL,
+    lower_80 NUMERIC(12, 2),
+    upper_80 NUMERIC(12, 2),
+    actual_units NUMERIC(12, 2),
+    is_backtest BOOLEAN NOT NULL DEFAULT FALSE,
+    UNIQUE (month_id, level, member, model_name),
+    CHECK (
+        (is_backtest AND actual_units IS NOT NULL)
+        OR (NOT is_backtest AND actual_units IS NULL)
+    ),
+    CHECK (lower_80 IS NULL OR lower_80 <= upper_80)
+);
+
+ALTER TABLE fact_demand_forecast
+    DROP CONSTRAINT IF EXISTS fact_demand_forecast_model_name_check;
+
+ALTER TABLE fact_demand_forecast
+    ADD CONSTRAINT fact_demand_forecast_model_name_check
+    CHECK (model_name IN ('holt_winters', 'sarima', 'seasonal_naive'));

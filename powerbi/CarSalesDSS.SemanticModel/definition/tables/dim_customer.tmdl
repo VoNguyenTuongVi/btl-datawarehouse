@@ -1,0 +1,45 @@
+table 'dim_customer'
+	lineageTag: b473a0f7-aa08-4be4-9509-4425e958ae36
+
+	column 'customer_id'
+		dataType: int64
+		isHidden
+		summarizeBy: none
+		sourceColumn: customer_id
+		lineageTag: f8005ebf-ebdc-430c-ae85-a4d94ab9a47f
+
+	column 'customer_name'
+		dataType: string
+		summarizeBy: none
+		sourceColumn: customer_name
+		lineageTag: 46eb4b5e-eb33-4ffc-ad8f-6563dc947acb
+
+	column 'gender'
+		dataType: string
+		summarizeBy: none
+		sourceColumn: gender
+		lineageTag: 8b924ecd-f615-4987-bc87-4ccf967a5a5f
+
+	column 'annual_income'
+		dataType: int64
+		summarizeBy: none
+		sourceColumn: annual_income
+		lineageTag: ffebf847-f904-4f07-a84c-2bc7323569c3
+
+	column 'phone'
+		dataType: string
+		isHidden
+		summarizeBy: none
+		sourceColumn: phone
+		lineageTag: dc40f408-3c4b-4232-b2b2-286004d3e0f7
+
+	partition 'dim_customer' = m
+		mode: import
+		source =
+				let
+				    Source = PostgreSQL.Database(PgServer, PgDatabase),
+				    Data = Source{[Schema = PgSchema, Item = "dim_customer"]}[Data],
+				    Selected = Table.SelectColumns(Data, {"customer_id", "customer_name", "gender", "annual_income", "phone"}),
+				    Typed = Table.TransformColumnTypes(Selected, {{"customer_id", Int64.Type}, {"customer_name", type text}, {"gender", type text}, {"annual_income", Int64.Type}, {"phone", type text}})
+				in
+				    Typed
