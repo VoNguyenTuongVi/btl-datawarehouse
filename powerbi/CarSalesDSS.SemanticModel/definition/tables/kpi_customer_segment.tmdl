@@ -1,0 +1,119 @@
+table 'kpi_customer_segment'
+	lineageTag: 940dc273-e153-4685-8e47-8435ec54c51e
+
+	column 'period'
+		dataType: string
+		summarizeBy: none
+		sourceColumn: period
+		lineageTag: 77502668-7ddf-405d-94e3-09fc99831d07
+
+	column 'year'
+		dataType: int64
+		formatString: 0
+		isHidden
+		summarizeBy: none
+		sourceColumn: year
+		lineageTag: 966b79dc-0271-48e5-bb49-7b5eb0040c0f
+
+	column 'income_quartile'
+		dataType: int64
+		formatString: 0
+		summarizeBy: none
+		sourceColumn: income_quartile
+		lineageTag: 67b9bb23-dfae-44ef-aa2b-e665b0d94e7d
+
+	column 'income_band'
+		dataType: string
+		summarizeBy: none
+		sortByColumn: 'income_quartile'
+		sourceColumn: income_band
+		lineageTag: ea783157-62c9-4286-badf-b491145a66df
+
+	column 'income_min'
+		dataType: int64
+		formatString: $#,0
+		summarizeBy: none
+		sourceColumn: income_min
+		lineageTag: 0961c8bd-18b2-4fe9-b92a-bf080a467b1b
+
+	column 'income_max'
+		dataType: int64
+		formatString: $#,0
+		summarizeBy: none
+		sourceColumn: income_max
+		lineageTag: 198c418e-37bb-4e12-a39f-9c0065d35d62
+
+	column 'gender'
+		dataType: string
+		summarizeBy: none
+		sourceColumn: gender
+		lineageTag: b1fe27ce-277a-40a9-a9da-5c28b9c5abeb
+
+	column 'units'
+		dataType: double
+		formatString: #,0
+		summarizeBy: sum
+		sourceColumn: units
+		lineageTag: a93b6bd3-3109-45ee-b5a9-e6f779782dbc
+
+	column 'revenue'
+		dataType: double
+		formatString: $#,0
+		summarizeBy: sum
+		sourceColumn: revenue
+		lineageTag: 89da7805-6882-4afb-a806-ce04e6fdd713
+
+	column 'asp'
+		dataType: double
+		formatString: $#,0
+		summarizeBy: none
+		sourceColumn: asp
+		lineageTag: 618cc571-7c52-4147-be82-5f3d80e2b87e
+
+	column 'avg_income'
+		dataType: double
+		formatString: $#,0
+		summarizeBy: none
+		sourceColumn: avg_income
+		lineageTag: 0d749211-61b7-49d3-82d1-94442e761baf
+
+	column 'sum_income'
+		dataType: double
+		formatString: #,0
+		isHidden
+		summarizeBy: sum
+		sourceColumn: sum_income
+		lineageTag: b2532f32-ed27-4845-a0aa-b22f8be3b1a6
+
+	column 'sum_price_to_income'
+		dataType: double
+		formatString: #,0
+		isHidden
+		summarizeBy: sum
+		sourceColumn: sum_price_to_income
+		lineageTag: d0984ece-eb0c-4bea-a62b-c14c41742374
+
+	column 'price_to_income'
+		dataType: double
+		formatString: 0.000
+		summarizeBy: none
+		sourceColumn: price_to_income
+		lineageTag: a9953ae6-ba4c-42a4-8995-b30b7fe01bd4
+
+	column 'units_share_pct'
+		dataType: double
+		formatString: 0.0%
+		summarizeBy: none
+		sourceColumn: units_share_pct
+		lineageTag: 5b0cad26-bdcd-46f3-a560-f1cde9cb6fba
+
+	partition 'kpi_customer_segment' = m
+		mode: import
+		source =
+				let
+				    Source = PostgreSQL.Database(PgServer, PgDatabase),
+				    Data = Source{[Schema = PgSchema, Item = "kpi_customer_segment"]}[Data],
+				    Selected = Table.SelectColumns(Data, {"period", "year", "income_quartile", "income_band", "income_min", "income_max", "gender", "units", "revenue", "asp", "avg_income", "sum_income", "sum_price_to_income", "price_to_income", "units_share_pct"}),
+				    Typed = Table.TransformColumnTypes(Selected, {{"period", type text}, {"year", Int64.Type}, {"income_quartile", Int64.Type}, {"income_band", type text}, {"income_min", Int64.Type}, {"income_max", Int64.Type}, {"gender", type text}, {"units", type number}, {"revenue", type number}, {"asp", type number}, {"avg_income", type number}, {"sum_income", type number}, {"sum_price_to_income", type number}, {"price_to_income", type number}, {"units_share_pct", type number}})
+				in
+				    Typed

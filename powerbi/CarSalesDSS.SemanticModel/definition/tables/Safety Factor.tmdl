@@ -1,10 +1,10 @@
 table 'Safety Factor'
-	lineageTag: e695fd15-ef3d-4863-af9b-bad5140fa244
+	lineageTag: 436c0f60-d971-4ee6-ba27-9eb18f632974
 
 	/// Tham số What-if (S6)
 	measure 'Safety Factor Value' = SELECTEDVALUE ( 'Safety Factor'[Value], 1 )
 		formatString: 0.0
-		lineageTag: 72a2f7bf-157e-4c21-85da-fd42bc1fcfac
+		lineageTag: c58f25d4-be92-4f2d-9a91-d041b3fb049e
 
 	column 'Value'
 		dataType: double
@@ -12,7 +12,7 @@ table 'Safety Factor'
 		summarizeBy: none
 		isNameInferred
 		sourceColumn: [Value]
-		lineageTag: 043b3414-2e61-4cb0-99da-42118b0d17d5
+		lineageTag: 7ac3b408-c575-4e83-8eab-8cf5796195f0
 
 	partition 'Safety Factor' = calculated
 		mode: import

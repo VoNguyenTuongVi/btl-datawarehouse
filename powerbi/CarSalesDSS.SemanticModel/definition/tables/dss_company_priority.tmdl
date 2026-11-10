@@ -1,0 +1,151 @@
+table 'dss_company_priority'
+	lineageTag: 1cee98b8-a6d6-47ac-acdd-db8dabf3930d
+
+	column 'company'
+		dataType: string
+		summarizeBy: none
+		sourceColumn: company
+		lineageTag: 3aa23b02-3216-448e-abe7-e6af64382643
+
+	column 'series_key'
+		dataType: string
+		isHidden
+		summarizeBy: none
+		sourceColumn: series_key
+		lineageTag: 88886de8-75f7-4955-ae18-3d6788413701
+
+	column 'forecast_next_6m'
+		dataType: double
+		formatString: #,0
+		summarizeBy: sum
+		sourceColumn: forecast_next_6m
+		lineageTag: 60dd1bd0-7664-46ab-9d70-fc6aa10a2ded
+
+	column 'units_same_6m_py'
+		dataType: double
+		formatString: #,0
+		summarizeBy: sum
+		sourceColumn: units_same_6m_py
+		lineageTag: e6dbb7b9-0ee8-4b86-aae7-59a8a81da9d7
+
+	column 'forecast_growth_pct'
+		dataType: double
+		formatString: 0.0%
+		summarizeBy: none
+		sourceColumn: forecast_growth_pct
+		lineageTag: e5ed8f9c-66e3-4685-ae86-251a871f0119
+
+	column 'demand_cv'
+		dataType: double
+		formatString: 0.000
+		summarizeBy: none
+		sourceColumn: demand_cv
+		lineageTag: 9e46fcc1-8e8c-4c27-8ba0-de175ce22456
+
+	column 'forecast_accuracy_pct'
+		dataType: double
+		formatString: 0.0%
+		summarizeBy: none
+		sourceColumn: forecast_accuracy_pct
+		lineageTag: ac10708f-1d13-47b5-8ba2-2772f0722213
+
+	column 'projected_revenue_6m'
+		dataType: double
+		formatString: $#,0
+		summarizeBy: sum
+		sourceColumn: projected_revenue_6m
+		lineageTag: e33ff6bb-2e65-419e-9153-0eb5c136577f
+
+	column 'units_share_pct'
+		dataType: double
+		formatString: 0.0%
+		summarizeBy: none
+		sourceColumn: units_share_pct
+		lineageTag: b0a667a5-9dd5-4384-84b2-b16bba3ece4d
+
+	column 'score_growth'
+		dataType: double
+		formatString: 0.0%
+		summarizeBy: none
+		sourceColumn: score_growth
+		lineageTag: 2110dc7e-f0be-4d5b-8783-884400616398
+
+	column 'score_share'
+		dataType: double
+		formatString: 0.0%
+		summarizeBy: none
+		sourceColumn: score_share
+		lineageTag: 585a337e-448d-4eff-9606-4dc0543e831f
+
+	column 'score_stability'
+		dataType: double
+		formatString: 0.0%
+		summarizeBy: none
+		sourceColumn: score_stability
+		lineageTag: b923366e-1291-4e28-8333-d5535b9a14aa
+
+	column 'score_accuracy'
+		dataType: double
+		formatString: 0.0%
+		summarizeBy: none
+		sourceColumn: score_accuracy
+		lineageTag: fca16651-69ee-4f79-89e8-10d8d049f859
+
+	column 'w_growth'
+		dataType: double
+		formatString: 0.0%
+		summarizeBy: none
+		sourceColumn: w_growth
+		lineageTag: dafc1113-cc69-4ca7-b61a-78e4e6949461
+
+	column 'w_share'
+		dataType: double
+		formatString: 0.0%
+		summarizeBy: none
+		sourceColumn: w_share
+		lineageTag: 60c95587-e4ac-4dc9-8f82-8b32a6bfeaa4
+
+	column 'w_stability'
+		dataType: double
+		formatString: 0.0%
+		summarizeBy: none
+		sourceColumn: w_stability
+		lineageTag: 0524e40c-933a-4f67-a1f5-f389ee0b64ed
+
+	column 'w_accuracy'
+		dataType: double
+		formatString: 0.0%
+		summarizeBy: none
+		sourceColumn: w_accuracy
+		lineageTag: d5cf49ed-209f-4c4e-a4ab-8b64426d5b07
+
+	column 'priority_score'
+		dataType: double
+		formatString: 0.000
+		summarizeBy: none
+		sourceColumn: priority_score
+		lineageTag: ba6398c2-a4cc-40b9-bccc-9d0cec747d0a
+
+	column 'priority_rank'
+		dataType: int64
+		formatString: 0
+		summarizeBy: none
+		sourceColumn: priority_rank
+		lineageTag: 925bd9cb-a68b-4e90-a1c0-9a703928a642
+
+	column 'priority_tier'
+		dataType: string
+		summarizeBy: none
+		sourceColumn: priority_tier
+		lineageTag: 32f2de33-990f-4e8c-9711-6f5567daea32
+
+	partition 'dss_company_priority' = m
+		mode: import
+		source =
+				let
+				    Source = PostgreSQL.Database(PgServer, PgDatabase),
+				    Data = Source{[Schema = PgSchema, Item = "dss_company_priority"]}[Data],
+				    Selected = Table.SelectColumns(Data, {"company", "series_key", "forecast_next_6m", "units_same_6m_py", "forecast_growth_pct", "demand_cv", "forecast_accuracy_pct", "projected_revenue_6m", "units_share_pct", "score_growth", "score_share", "score_stability", "score_accuracy", "w_growth", "w_share", "w_stability", "w_accuracy", "priority_score", "priority_rank", "priority_tier"}),
+				    Typed = Table.TransformColumnTypes(Selected, {{"company", type text}, {"series_key", type text}, {"forecast_next_6m", type number}, {"units_same_6m_py", type number}, {"forecast_growth_pct", type number}, {"demand_cv", type number}, {"forecast_accuracy_pct", type number}, {"projected_revenue_6m", type number}, {"units_share_pct", type number}, {"score_growth", type number}, {"score_share", type number}, {"score_stability", type number}, {"score_accuracy", type number}, {"w_growth", type number}, {"w_share", type number}, {"w_stability", type number}, {"w_accuracy", type number}, {"priority_score", type number}, {"priority_rank", Int64.Type}, {"priority_tier", type text}})
+				in
+				    Typed

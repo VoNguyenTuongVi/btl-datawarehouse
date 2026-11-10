@@ -1,0 +1,65 @@
+table 'dim_member'
+	lineageTag: 13db6c11-c849-4310-abdb-cb24e417e0d3
+
+	column 'member_key'
+		dataType: string
+		isHidden
+		summarizeBy: none
+		isKey
+		sourceColumn: member_key
+		lineageTag: 355bc1e4-172f-4e5e-8d0b-0cf0e7fefcff
+
+	column 'dimension_name'
+		dataType: string
+		summarizeBy: none
+		sourceColumn: dimension_name
+		lineageTag: ce826f65-e4a8-4fdc-b898-3cad38afb81d
+
+	column 'dimension_label'
+		dataType: string
+		summarizeBy: none
+		sortByColumn: 'dimension_order'
+		sourceColumn: dimension_label
+		lineageTag: e85a1fdc-eb21-4daa-9e76-1a863425e0d7
+
+	column 'dimension_value'
+		dataType: string
+		summarizeBy: none
+		sourceColumn: dimension_value
+		lineageTag: 0efff4b2-85b8-4b08-b879-cd24c300830e
+
+	column 'parent_value'
+		dataType: string
+		summarizeBy: none
+		sourceColumn: parent_value
+		lineageTag: e7e2146a-1212-41bd-90e1-3f92bb356102
+
+	column 'dimension_order'
+		dataType: int64
+		formatString: 0
+		isHidden
+		summarizeBy: none
+		sourceColumn: dimension_order
+		lineageTag: bef1d2ad-e881-4be4-9b7b-74f1fba70978
+
+	hierarchy 'Phân tích'
+		lineageTag: aa6b1d60-040c-48c8-a1cc-6fd416342216
+
+		level 'dimension_label'
+			column: 'dimension_label'
+			lineageTag: 2e0de760-c556-4785-96df-a82d64e099bb
+
+		level 'dimension_value'
+			column: 'dimension_value'
+			lineageTag: f082a0b5-1ab0-4588-adcc-02158fb4b8b7
+
+	partition 'dim_member' = m
+		mode: import
+		source =
+				let
+				    Source = PostgreSQL.Database(PgServer, PgDatabase),
+				    Data = Source{[Schema = PgSchema, Item = "dim_member"]}[Data],
+				    Selected = Table.SelectColumns(Data, {"member_key", "dimension_name", "dimension_label", "dimension_value", "parent_value", "dimension_order"}),
+				    Typed = Table.TransformColumnTypes(Selected, {{"member_key", type text}, {"dimension_name", type text}, {"dimension_label", type text}, {"dimension_value", type text}, {"parent_value", type text}, {"dimension_order", Int64.Type}})
+				in
+				    Typed

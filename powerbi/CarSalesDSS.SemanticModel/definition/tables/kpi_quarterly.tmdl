@@ -1,0 +1,119 @@
+table 'kpi_quarterly'
+	lineageTag: 07929692-6c6a-4a2d-88d2-1324236b0067
+
+	column 'quarter_start'
+		dataType: dateTime
+		formatString: mmm yyyy
+		isHidden
+		summarizeBy: none
+		sourceColumn: quarter_start
+		lineageTag: dc3fbc61-4fac-414a-a391-54a168979f19
+
+	column 'year'
+		dataType: int64
+		formatString: 0
+		isHidden
+		summarizeBy: none
+		sourceColumn: year
+		lineageTag: e7a1e4ef-52a9-4a25-8627-3cde1587e4d9
+
+	column 'quarter_no'
+		dataType: int64
+		formatString: 0
+		summarizeBy: none
+		sourceColumn: quarter_no
+		lineageTag: 48bfc973-a232-40c3-98e1-ed6550a2ae75
+
+	column 'year_quarter'
+		dataType: string
+		summarizeBy: none
+		sourceColumn: year_quarter
+		lineageTag: e9d2bc8d-dedb-4607-9791-4f5ff16bb208
+
+	column 'units'
+		dataType: double
+		formatString: #,0
+		summarizeBy: sum
+		sourceColumn: units
+		lineageTag: 0e7c20f9-6d54-44d8-a983-aa0c92b5e1fa
+
+	column 'revenue'
+		dataType: double
+		formatString: $#,0
+		summarizeBy: sum
+		sourceColumn: revenue
+		lineageTag: 52d25d70-edf8-4b39-ac43-1f3279bf8eef
+
+	column 'asp'
+		dataType: double
+		formatString: $#,0
+		summarizeBy: none
+		sourceColumn: asp
+		lineageTag: 6e745264-b190-4234-9589-1830b9d992c2
+
+	column 'units_pq'
+		dataType: double
+		formatString: #,0
+		summarizeBy: sum
+		sourceColumn: units_pq
+		lineageTag: 5c4e0bb8-ec83-4b02-afff-f058a6b2eaf1
+
+	column 'revenue_pq'
+		dataType: double
+		formatString: $#,0
+		summarizeBy: sum
+		sourceColumn: revenue_pq
+		lineageTag: ec959d06-61a4-446e-9a27-2baf5362c466
+
+	column 'units_py'
+		dataType: double
+		formatString: #,0
+		summarizeBy: sum
+		sourceColumn: units_py
+		lineageTag: 4f6093d4-37bb-499f-a73a-8f7ed81665cb
+
+	column 'revenue_py'
+		dataType: double
+		formatString: $#,0
+		summarizeBy: sum
+		sourceColumn: revenue_py
+		lineageTag: ea289276-8740-46fb-bb2f-5c300387e6e4
+
+	column 'units_qoq_pct'
+		dataType: double
+		formatString: 0.0%
+		summarizeBy: none
+		sourceColumn: units_qoq_pct
+		lineageTag: 599b4731-31e9-4042-bd59-37fcea05a298
+
+	column 'revenue_qoq_pct'
+		dataType: double
+		formatString: 0.0%
+		summarizeBy: none
+		sourceColumn: revenue_qoq_pct
+		lineageTag: c268d3d7-8c6a-4dfc-9259-c72e3d501dc4
+
+	column 'units_yoy_pct'
+		dataType: double
+		formatString: 0.0%
+		summarizeBy: none
+		sourceColumn: units_yoy_pct
+		lineageTag: 19f3b7e7-103f-43c2-b191-4e0efed49b1b
+
+	column 'revenue_yoy_pct'
+		dataType: double
+		formatString: 0.0%
+		summarizeBy: none
+		sourceColumn: revenue_yoy_pct
+		lineageTag: c96e1f3d-8c43-4f1e-9f86-0f0442e411ca
+
+	partition 'kpi_quarterly' = m
+		mode: import
+		source =
+				let
+				    Source = PostgreSQL.Database(PgServer, PgDatabase),
+				    Data = Source{[Schema = PgSchema, Item = "kpi_quarterly"]}[Data],
+				    Selected = Table.SelectColumns(Data, {"quarter_start", "year", "quarter_no", "year_quarter", "units", "revenue", "asp", "units_pq", "revenue_pq", "units_py", "revenue_py", "units_qoq_pct", "revenue_qoq_pct", "units_yoy_pct", "revenue_yoy_pct"}),
+				    Typed = Table.TransformColumnTypes(Selected, {{"quarter_start", type date}, {"year", Int64.Type}, {"quarter_no", Int64.Type}, {"year_quarter", type text}, {"units", type number}, {"revenue", type number}, {"asp", type number}, {"units_pq", type number}, {"revenue_pq", type number}, {"units_py", type number}, {"revenue_py", type number}, {"units_qoq_pct", type number}, {"revenue_qoq_pct", type number}, {"units_yoy_pct", type number}, {"revenue_yoy_pct", type number}})
+				in
+				    Typed

@@ -1,0 +1,57 @@
+table 'dq_checks'
+	lineageTag: 6f74224c-e8cb-4bae-a34f-7eda26072e3e
+
+	column 'check_code'
+		dataType: string
+		summarizeBy: none
+		sourceColumn: check_code
+		lineageTag: 6f88a742-a633-4b45-8800-d057dacf8f1e
+
+	column 'check_name'
+		dataType: string
+		summarizeBy: none
+		sourceColumn: check_name
+		lineageTag: 73d7e8f0-d67e-44a1-b14e-0b8c4a727ce3
+
+	column 'metric_value'
+		dataType: double
+		formatString: 0.0%
+		summarizeBy: none
+		sourceColumn: metric_value
+		lineageTag: 236c80d7-9f8c-40fb-9b6d-92f4fd5ee428
+
+	column 'threshold'
+		dataType: string
+		summarizeBy: none
+		sourceColumn: threshold
+		lineageTag: 7e762778-5599-461e-a509-ccc73777c036
+
+	column 'passed'
+		dataType: boolean
+		summarizeBy: none
+		sourceColumn: passed
+		lineageTag: 93964f03-6a0f-4ef7-93c5-2c7e5966346d
+
+	column 'detail'
+		dataType: string
+		summarizeBy: none
+		sourceColumn: detail
+		lineageTag: 6c11e8ed-6be7-4a37-ba1f-7ebf44fbbf4e
+
+	column 'checked_at'
+		dataType: dateTime
+		formatString: yyyy-mm-dd hh:nn
+		summarizeBy: none
+		sourceColumn: checked_at
+		lineageTag: 06748219-2410-43da-9fd2-ca5c10b33f2f
+
+	partition 'dq_checks' = m
+		mode: import
+		source =
+				let
+				    Source = PostgreSQL.Database(PgServer, PgDatabase),
+				    Data = Source{[Schema = PgSchema, Item = "dq_checks"]}[Data],
+				    Selected = Table.SelectColumns(Data, {"check_code", "check_name", "metric_value", "threshold", "passed", "detail", "checked_at"}),
+				    Typed = Table.TransformColumnTypes(Selected, {{"check_code", type text}, {"check_name", type text}, {"metric_value", type number}, {"threshold", type text}, {"passed", type logical}, {"detail", type text}, {"checked_at", type datetime}})
+				in
+				    Typed

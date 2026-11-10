@@ -1,612 +1,550 @@
 table _Measures
-	lineageTag: 54999c59-4f22-48f6-a519-3c36227d3221
+	lineageTag: 355ed847-9ceb-4583-90cb-aa75461dfcb4
 
 	/// D1 – Sản lượng bán
-	measure 'Units Sold' = SUM ( fact_car_sales[quantity] )
+	measure 'Units' = SUM ( kpi_monthly_overview[units] )
 		formatString: #,0
-		displayFolder: 2. Nhu cầu lịch sử
-		lineageTag: ce7f6b6d-7d95-40ef-9bb8-888a253755ac
+		displayFolder: 1. Tổng quan
+		lineageTag: c89ab25a-501f-4f65-891b-0d7e4be3b06a
 
 	/// D2 – Doanh thu
-	measure 'Revenue' = SUM ( fact_car_sales[price] )
+	measure 'Revenue' = SUM ( kpi_monthly_overview[revenue] )
 		formatString: $#,0
-		displayFolder: 2. Nhu cầu lịch sử
-		lineageTag: 0579b3f1-d7b4-4d82-abf7-04f2a326753b
+		displayFolder: 1. Tổng quan
+		lineageTag: 65a40d27-2efe-4213-ab79-70054bed4324
 
 	/// D3 – Giá bán bình quân
-	measure 'ASP' = DIVIDE ( [Revenue], [Units Sold] )
+	measure 'ASP' = DIVIDE ( [Revenue], [Units] )
 		formatString: $#,0
-		displayFolder: 2. Nhu cầu lịch sử
-		lineageTag: 38a74b8e-b3ef-4e55-acc2-4db75855a26f
+		displayFolder: 1. Tổng quan
+		lineageTag: 6328b204-51f7-4119-b1b2-c16961f335ca
 
-	measure 'Units PM' = CALCULATE ( [Units Sold], DATEADD ( Calendar[Date], -1, MONTH ) )
+	/// Sản lượng cùng kỳ năm trước
+	measure 'Units PY' = SUM ( kpi_monthly_overview[units_py] )
 		formatString: #,0
-		displayFolder: 2. Nhu cầu lịch sử
-		lineageTag: 6dd0386e-d553-496a-b1b1-bfb7c5c91ba8
+		displayFolder: 1. Tổng quan
+		lineageTag: a0bd2376-a548-46b1-bfc2-e0f3eb42d993
 
-	measure 'Units PQ' = CALCULATE ( [Units Sold], DATEADD ( Calendar[Date], -1, QUARTER ) )
-		formatString: #,0
-		displayFolder: 2. Nhu cầu lịch sử
-		lineageTag: 1404c431-7b6a-4e0d-8535-06a884f3be78
-
-	measure 'Units PY' = CALCULATE ( [Units Sold], SAMEPERIODLASTYEAR ( Calendar[Date] ) )
-		formatString: #,0
-		displayFolder: 2. Nhu cầu lịch sử
-		lineageTag: 4c72d8d1-6ef2-4a0c-9ca6-30075dc0bab2
-
-	measure 'Revenue PM' = CALCULATE ( [Revenue], DATEADD ( Calendar[Date], -1, MONTH ) )
+	measure 'Revenue PY' = SUM ( kpi_monthly_overview[revenue_py] )
 		formatString: $#,0
-		displayFolder: 2. Nhu cầu lịch sử
-		lineageTag: 650b41e6-71be-4b77-bc6a-4c1b73bc4acd
+		displayFolder: 1. Tổng quan
+		lineageTag: fb27ac6d-991a-4632-a8de-4106413c85af
 
-	measure 'Revenue PY' = CALCULATE ( [Revenue], SAMEPERIODLASTYEAR ( Calendar[Date] ) )
-		formatString: $#,0
-		displayFolder: 2. Nhu cầu lịch sử
-		lineageTag: e9249e7f-382a-4efd-b308-27034c42cf9a
-
-	/// D4
-	measure 'Units MoM %' = DIVIDE ( [Units Sold] - [Units PM], [Units PM] )
+	/// D4 – so cùng kỳ
+	measure 'Units YoY %' =
+			VAR _t = FILTER ( kpi_monthly_overview, NOT ISBLANK ( kpi_monthly_overview[units_py] ) )
+			VAR _cur = SUMX ( _t, kpi_monthly_overview[units] )
+			VAR _base = SUMX ( _t, kpi_monthly_overview[units_py] )
+			RETURN DIVIDE ( _cur - _base, _base )
 		formatString: 0.0%
-		displayFolder: 2. Nhu cầu lịch sử
-		lineageTag: e5e3b21e-d0a5-4f7f-b982-6725c387c1bd
+		displayFolder: 1. Tổng quan
+		lineageTag: 5728ac15-45de-4853-b465-c59b08f6db99
 
-	/// D4
-	measure 'Units QoQ %' = DIVIDE ( [Units Sold] - [Units PQ], [Units PQ] )
+	/// D4 – so cùng kỳ
+	measure 'Revenue YoY %' =
+			VAR _t = FILTER ( kpi_monthly_overview, NOT ISBLANK ( kpi_monthly_overview[revenue_py] ) )
+			VAR _cur = SUMX ( _t, kpi_monthly_overview[revenue] )
+			VAR _base = SUMX ( _t, kpi_monthly_overview[revenue_py] )
+			RETURN DIVIDE ( _cur - _base, _base )
 		formatString: 0.0%
-		displayFolder: 2. Nhu cầu lịch sử
-		lineageTag: 9b1814d0-1d37-490f-858c-6c527d9a70f5
+		displayFolder: 1. Tổng quan
+		lineageTag: a92e16e1-86c4-47af-816c-48259fc18208
 
-	/// D4
-	measure 'Units YoY %' = DIVIDE ( [Units Sold] - [Units PY], [Units PY] )
+	/// D4 – so tháng trước
+	measure 'Units MoM %' =
+			VAR _t = FILTER ( kpi_monthly_overview, NOT ISBLANK ( kpi_monthly_overview[units_pm] ) )
+			VAR _cur = SUMX ( _t, kpi_monthly_overview[units] )
+			VAR _base = SUMX ( _t, kpi_monthly_overview[units_pm] )
+			RETURN DIVIDE ( _cur - _base, _base )
 		formatString: 0.0%
-		displayFolder: 2. Nhu cầu lịch sử
-		lineageTag: ab1c836f-2ba2-4512-95e5-a2de0ba54ebd
+		displayFolder: 1. Tổng quan
+		lineageTag: f49f2958-215c-47e4-81ba-e41aa36a7991
 
 	/// D4
-	measure 'Revenue MoM %' = DIVIDE ( [Revenue] - [Revenue PM], [Revenue PM] )
+	measure 'Revenue MoM %' =
+			VAR _t = FILTER ( kpi_monthly_overview, NOT ISBLANK ( kpi_monthly_overview[revenue_pm] ) )
+			VAR _cur = SUMX ( _t, kpi_monthly_overview[revenue] )
+			VAR _base = SUMX ( _t, kpi_monthly_overview[revenue_pm] )
+			RETURN DIVIDE ( _cur - _base, _base )
 		formatString: 0.0%
-		displayFolder: 2. Nhu cầu lịch sử
-		lineageTag: 80a4169c-5e26-4b5b-8a0d-a78cb46e33d0
+		displayFolder: 1. Tổng quan
+		lineageTag: efe3e918-23fe-4ab7-a619-070ca6968474
 
-	/// D4
-	measure 'Revenue YoY %' = DIVIDE ( [Revenue] - [Revenue PY], [Revenue PY] )
-		formatString: 0.0%
-		displayFolder: 2. Nhu cầu lịch sử
-		lineageTag: 41626fa3-cfeb-42fa-b5b0-1c9f6a8630eb
-
-	/// D4
-	measure 'Units YTD' = TOTALYTD ( [Units Sold], Calendar[Date] )
+	/// D4 – lũy kế đến tháng cuối đang chọn
+	measure 'Units YTD' =
+			VAR _m = MAX ( kpi_monthly_overview[month_start] )
+			RETURN CALCULATE ( SUM ( kpi_monthly_overview[units_ytd] ), kpi_monthly_overview[month_start] = _m )
 		formatString: #,0
-		displayFolder: 2. Nhu cầu lịch sử
-		lineageTag: 99ac4763-aedf-4d12-aab0-aa3b3b132763
+		displayFolder: 1. Tổng quan
+		lineageTag: 7fa1c53f-60e0-476a-ae36-e48768ca5a64
+
+	measure 'Revenue YTD' =
+			VAR _m = MAX ( kpi_monthly_overview[month_start] )
+			RETURN CALCULATE ( SUM ( kpi_monthly_overview[revenue_ytd] ), kpi_monthly_overview[month_start] = _m )
+		formatString: $#,0
+		displayFolder: 1. Tổng quan
+		lineageTag: efd335d3-f316-4e39-8000-fa933b3e79ba
 
 	/// D4
-	measure 'Revenue YTD' = TOTALYTD ( [Revenue], Calendar[Date] )
-		formatString: $#,0
-		displayFolder: 2. Nhu cầu lịch sử
-		lineageTag: bff72949-a1f4-4889-8d0a-8ffa8bb0a407
+	measure 'Units YTD YoY %' =
+			VAR _m = MAX ( kpi_monthly_overview[month_start] )
+			VAR _c = CALCULATE ( SUM ( kpi_monthly_overview[units_ytd] ), kpi_monthly_overview[month_start] = _m )
+			VAR _p = CALCULATE ( SUM ( kpi_monthly_overview[units_ytd_py] ), kpi_monthly_overview[month_start] = _m )
+			RETURN DIVIDE ( _c - _p, _p )
+		formatString: 0.0%
+		displayFolder: 1. Tổng quan
+		lineageTag: 8f9be064-a71e-464f-a300-1922f05be8c1
 
 	/// D4
 	measure 'Revenue YTD YoY %' =
-			VAR _py = CALCULATE ( [Revenue YTD], SAMEPERIODLASTYEAR ( Calendar[Date] ) )
-			RETURN DIVIDE ( [Revenue YTD] - _py, _py )
+			VAR _m = MAX ( kpi_monthly_overview[month_start] )
+			VAR _c = CALCULATE ( SUM ( kpi_monthly_overview[revenue_ytd] ), kpi_monthly_overview[month_start] = _m )
+			VAR _p = CALCULATE ( SUM ( kpi_monthly_overview[revenue_ytd_py] ), kpi_monthly_overview[month_start] = _m )
+			RETURN DIVIDE ( _c - _p, _p )
 		formatString: 0.0%
-		displayFolder: 2. Nhu cầu lịch sử
-		lineageTag: 0d0b86cf-90a1-44ab-94e5-efae14b2f7f8
+		displayFolder: 1. Tổng quan
+		lineageTag: ff03da35-5e23-458c-8b40-6226dd08112b
 
-	/// D5, D12, D14, D15 – tỷ trọng theo thuộc tính xe
-	measure 'Units Share %' = DIVIDE ( [Units Sold], CALCULATE ( [Units Sold], ALLSELECTED ( dim_car ) ) )
-		formatString: 0.0%
-		displayFolder: 2. Nhu cầu lịch sử
-		lineageTag: 6cc0b8ea-6ad2-4ec8-861d-dfa1ec0f5c34
-
-	/// D6
-	measure 'Region Share %' = DIVIDE ( [Units Sold], CALCULATE ( [Units Sold], ALLSELECTED ( dim_dealer ) ) )
-		formatString: 0.0%
-		displayFolder: 2. Nhu cầu lịch sử
-		lineageTag: a2b3a90f-4e31-4b45-91af-7564353d19b1
-
-	/// D17
-	measure 'Gender Share %' = DIVIDE ( [Units Sold], CALCULATE ( [Units Sold], ALLSELECTED ( dim_customer[gender] ) ) )
-		formatString: 0.0%
-		displayFolder: 2. Nhu cầu lịch sử
-		lineageTag: 71a9baba-7754-48e4-a5f8-5dc4e2289cea
-
-	/// D7
-	measure 'Seasonality Index' =
-			DIVIDE (
-			    [Units Sold],
-			    AVERAGEX ( ALLSELECTED ( Calendar[MonthNo], Calendar[Month] ), [Units Sold] )
-			)
-		formatString: 0.00
-		displayFolder: 2. Nhu cầu lịch sử
-		lineageTag: efb358fd-243e-4d6f-a408-cf47aa0d386c
-
-	/// D9
-	measure 'Demand CV' =
-			VAR _t = FILTER ( ADDCOLUMNS ( VALUES ( Calendar[YearMonth] ), "u", [Units Sold] ), [u] > 0 )
-			RETURN DIVIDE ( STDEVX.P ( _t, [u] ), AVERAGEX ( _t, [u] ) )
+	/// D7 – 1,0 = tháng trung bình; trung bình 2 năm
+	measure 'Seasonality Index' = AVERAGE ( kpi_monthly_overview[seasonality_index_2y] )
 		formatString: 0.000
-		displayFolder: 2. Nhu cầu lịch sử
-		lineageTag: 7b44515b-eb0b-4358-b951-d5d76ccfa978
+		displayFolder: 1. Tổng quan
+		lineageTag: fddb732b-b98a-43b6-9591-6214847992d9
 
-	/// D9 trên toàn bộ lịch sử, dùng cho tháng dự báo
-	measure 'Demand CV Hist' = CALCULATE ( [Demand CV], REMOVEFILTERS ( Calendar ) )
-		formatString: 0.000
-		displayFolder: 2. Nhu cầu lịch sử
-		lineageTag: ca2af072-3b5a-428c-a519-b7aeb036c82b
+	/// D14
+	measure 'Auto Share %' = DIVIDE ( SUM ( kpi_monthly_overview[auto_units] ), [Units] )
+		formatString: 0.0%
+		displayFolder: 1. Tổng quan
+		lineageTag: 22157001-8152-4c19-9746-4482a40f6481
 
-	/// D3 trên toàn bộ lịch sử, dùng cho tháng dự báo
-	measure 'ASP Hist' = CALCULATE ( [ASP], REMOVEFILTERS ( Calendar ) )
+	/// D16 – % đại lý tăng so cùng kỳ
+	measure 'Dealers Growing %' = DIVIDE ( SUM ( kpi_monthly_overview[dealers_growing] ), SUM ( kpi_monthly_overview[dealers_compared] ) )
+		formatString: 0.0%
+		displayFolder: 1. Tổng quan
+		lineageTag: 6f0184e8-e8cc-4585-b86a-fa8ce73ea6d9
+
+	/// D16 – xe/đại lý/tháng
+	measure 'Units per Dealer' = AVERAGE ( kpi_monthly_overview[units_per_dealer] )
+		formatString: #,0.0
+		displayFolder: 1. Tổng quan
+		lineageTag: c8143671-4dbc-48a4-816a-00ce92d41232
+
+	/// Sản lượng theo chiều đang chọn ở dim_member[dimension_label]
+	measure 'Dim Units' = SUM ( kpi_monthly_by_dimension[units] )
+		formatString: #,0
+		displayFolder: 2. Theo chiều phân tích
+		lineageTag: 043d6fdc-be85-4381-9618-84f972c75a10
+
+	measure 'Dim Revenue' = SUM ( kpi_monthly_by_dimension[revenue] )
 		formatString: $#,0
-		displayFolder: 2. Nhu cầu lịch sử
-		lineageTag: c008c437-52c3-40d6-b456-ca73624fbc60
+		displayFolder: 2. Theo chiều phân tích
+		lineageTag: 38b2fc46-650b-462b-b591-3cad76826c4d
 
-	/// D10
-	measure 'Top10 Model Share %' =
-			DIVIDE (
-			    SUMX ( TOPN ( 10, ALLSELECTED ( dim_car[model] ), [Units Sold] ), [Units Sold] ),
-			    CALCULATE ( [Units Sold], ALLSELECTED ( dim_car[model] ) )
-			)
+	measure 'Dim ASP' = DIVIDE ( [Dim Revenue], [Dim Units] )
+		formatString: $#,0
+		displayFolder: 2. Theo chiều phân tích
+		lineageTag: 23aacdeb-f4af-4516-9da8-327957e312f7
+
+	measure 'Dim Units PY' = SUM ( kpi_monthly_by_dimension[units_py] )
+		formatString: #,0
+		displayFolder: 2. Theo chiều phân tích
+		lineageTag: 56e4d94a-0ce6-431e-a006-dc2b52c9f036
+
+	/// D12–D17
+	measure 'Dim Units YoY %' =
+			VAR _t = FILTER ( kpi_monthly_by_dimension, NOT ISBLANK ( kpi_monthly_by_dimension[units_py] ) )
+			VAR _cur = SUMX ( _t, kpi_monthly_by_dimension[units] )
+			VAR _base = SUMX ( _t, kpi_monthly_by_dimension[units_py] )
+			RETURN DIVIDE ( _cur - _base, _base )
 		formatString: 0.0%
-		displayFolder: 2. Nhu cầu lịch sử
-		lineageTag: 5a7484df-2217-4d5c-862d-a7bef0740ed8
+		displayFolder: 2. Theo chiều phân tích
+		lineageTag: a4beb498-1f2e-4f37-8fe3-f6a27113000b
 
-	/// D11
-	measure 'Price to Income' =
-			AVERAGEX (
-			    fact_car_sales,
-			    DIVIDE ( fact_car_sales[price], RELATED ( dim_customer[annual_income] ) )
-			)
-		formatString: 0.00
-		displayFolder: 2. Nhu cầu lịch sử
-		lineageTag: 00760cb0-dbe2-4b30-88b8-463d0abdc2b0
+	/// D12–D17
+	measure 'Dim Revenue YoY %' =
+			VAR _t = FILTER ( kpi_monthly_by_dimension, NOT ISBLANK ( kpi_monthly_by_dimension[revenue_py] ) )
+			VAR _cur = SUMX ( _t, kpi_monthly_by_dimension[revenue] )
+			VAR _base = SUMX ( _t, kpi_monthly_by_dimension[revenue_py] )
+			RETURN DIVIDE ( _cur - _base, _base )
+		formatString: 0.0%
+		displayFolder: 2. Theo chiều phân tích
+		lineageTag: bc497a8b-d011-405b-9fae-89127a2afe1a
 
-	/// D13 – mẫu tăng, giảm mạnh nhất
-	measure 'Units YoY Delta' = [Units Sold] - [Units PY]
+	/// D13 – chênh lệch xe so cùng kỳ
+	measure 'Dim Units YoY Delta' = SUM ( kpi_monthly_by_dimension[units_yoy_delta] )
 		formatString: +#,0;-#,0;0
-		displayFolder: 2. Nhu cầu lịch sử
-		lineageTag: d9e14fe5-2780-4f52-a022-ded9bb3a88a8
+		displayFolder: 2. Theo chiều phân tích
+		lineageTag: 1b483646-88c6-4014-86da-6be9e17fa595
 
-	/// D14
-	measure 'Auto Share %' = DIVIDE ( CALCULATE ( [Units Sold], dim_car[transmission] = "Auto" ), [Units Sold] )
+	/// D5, D6, D12–D17 – tỷ trọng trong chiều đang chọn
+	measure 'Dim Units Share %' =
+			DIVIDE (
+			    [Dim Units],
+			    CALCULATE ( [Dim Units], ALLSELECTED ( dim_member[dimension_value], dim_member[parent_value] ) )
+			)
 		formatString: 0.0%
-		displayFolder: 2. Nhu cầu lịch sử
-		lineageTag: 17f95f0b-1b6e-4ee8-a2b7-339740b1805f
+		displayFolder: 2. Theo chiều phân tích
+		lineageTag: f44495f5-4222-4cd1-bcd3-b37888af16ef
 
-	/// D14
-	measure 'Auto Share Change pp' = [Auto Share %] - CALCULATE ( [Auto Share %], SAMEPERIODLASTYEAR ( Calendar[Date] ) )
-		formatString: +0.0%;-0.0%;0.0%
-		displayFolder: 2. Nhu cầu lịch sử
-		lineageTag: b2fa1f37-81b9-49d0-af78-72b6d3c6aaae
-
-	/// D16
-	measure 'Dealer Rank' = RANKX ( ALLSELECTED ( dim_dealer[dealer_name] ), [Units Sold] )
+	/// D16 – xếp hạng theo sản lượng
+	measure 'Dim Rank' = IF ( NOT ISBLANK ( [Dim Units] ), RANKX ( ALLSELECTED ( dim_member[dimension_value] ), [Dim Units] ) )
 		formatString: 0
-		displayFolder: 2. Nhu cầu lịch sử
-		lineageTag: 4df632ac-7c7c-4da1-8fc1-3ca0345df7d5
+		displayFolder: 2. Theo chiều phân tích
+		lineageTag: bb25bee2-ec30-4ae7-b13e-20ea3a0eb2c6
 
-	/// D16
-	measure 'Units per Dealer per Month' =
-			DIVIDE (
-			    [Units Sold],
-			    DISTINCTCOUNT ( fact_car_sales[dealer_id] ) * DISTINCTCOUNT ( Calendar[YearMonth] )
-			)
-		formatString: 0.0
-		displayFolder: 2. Nhu cầu lịch sử
-		lineageTag: 81af714a-a400-4575-9bd4-4d5d825bcb27
+	/// D11, D17
+	measure 'Segment Units' = SUM ( kpi_customer_segment[units] )
+		formatString: #,0
+		displayFolder: 3. Khách hàng & ngày
+		lineageTag: 714ce2fb-5617-4073-af92-d17ddea35f16
 
-	/// D16
-	measure 'Dealers Growing %' =
-			DIVIDE (
-			    COUNTROWS ( FILTER ( VALUES ( dim_dealer[dealer_name] ), [Units YoY %] > 0 ) ),
-			    COUNTROWS ( VALUES ( dim_dealer[dealer_name] ) )
-			)
+	measure 'Segment Revenue' = SUM ( kpi_customer_segment[revenue] )
+		formatString: $#,0
+		displayFolder: 3. Khách hàng & ngày
+		lineageTag: 05b41dde-b902-41c9-a270-09d603a6ff60
+
+	measure 'Segment ASP' = DIVIDE ( [Segment Revenue], [Segment Units] )
+		formatString: $#,0
+		displayFolder: 3. Khách hàng & ngày
+		lineageTag: 21bdfff8-7a54-4f5b-bd70-2ff4d0b073ad
+
+	measure 'Segment Avg Income' = DIVIDE ( SUM ( kpi_customer_segment[sum_income] ), [Segment Units] )
+		formatString: $#,0
+		displayFolder: 3. Khách hàng & ngày
+		lineageTag: c2319c82-3552-4193-a061-bcda2636d9c0
+
+	/// D11 – giá xe / thu nhập năm
+	measure 'Price to Income' = DIVIDE ( SUM ( kpi_customer_segment[sum_price_to_income] ), [Segment Units] )
+		formatString: 0.00
+		displayFolder: 3. Khách hàng & ngày
+		lineageTag: bef92d2e-9ec4-4390-a42a-97f2903350e5
+
+	measure 'Segment Share %' = DIVIDE ( [Segment Units], CALCULATE ( [Segment Units], ALLSELECTED ( kpi_customer_segment[income_band], kpi_customer_segment[gender] ) ) )
 		formatString: 0.0%
-		displayFolder: 2. Nhu cầu lịch sử
-		lineageTag: 2e335fab-e2a9-4b71-bb19-05f6d2cb208f
+		displayFolder: 3. Khách hàng & ngày
+		lineageTag: ad8e7a81-0a3d-4cd7-9719-aa31067627c6
 
-	/// F1 – mặc định mô hình sarima, cấp tổng
+	/// D1 theo ngày
+	measure 'Daily Units' = SUM ( kpi_daily[units] )
+		formatString: #,0
+		displayFolder: 3. Khách hàng & ngày
+		lineageTag: 60deb6a5-3bf9-4467-a400-d95751cab50f
+
+	measure 'Daily Revenue' = SUM ( kpi_daily[revenue] )
+		formatString: $#,0
+		displayFolder: 3. Khách hàng & ngày
+		lineageTag: 7b9fac7a-e417-4e62-b683-fe805fd2934e
+
+	/// D8 – 1,0 = ngày trung bình
+	measure 'Weekday Index' =
+			DIVIDE (
+			    DIVIDE ( SUM ( kpi_weekday[units] ), SUM ( kpi_weekday[selling_days] ) ),
+			    CALCULATE ( DIVIDE ( SUM ( kpi_weekday[units] ), SUM ( kpi_weekday[selling_days] ) ),
+			                ALLSELECTED ( kpi_weekday[day_of_week], kpi_weekday[dow_no] ) )
+			)
+		formatString: 0.000
+		displayFolder: 3. Khách hàng & ngày
+		lineageTag: 7ffa8d44-3a1a-4c0a-bdaf-c435cabd8633
+
+	/// Thực tế trên trục dự báo (mặc định cấp tổng)
+	measure 'Actual Units' =
+			IF (
+			    ISFILTERED ( dim_forecast_member[level] ) || ISFILTERED ( dim_forecast_member[level_label] )
+			        || ISFILTERED ( dim_forecast_member[member] ),
+			    DIVIDE ( SUM ( forecast_series[actual_units] ), DISTINCTCOUNT ( forecast_series[model_name] ) ),
+			    CALCULATE ( DIVIDE ( SUM ( forecast_series[actual_units] ), DISTINCTCOUNT ( forecast_series[model_name] ) ), dim_forecast_member[level] = "total" )
+			)
+		formatString: #,0
+		displayFolder: 4. Dự báo
+		lineageTag: e9e5377c-a59f-4101-9dab-cbdf93c8c4a3
+
+	/// F1 – mặc định mô hình chính, cấp tổng
 	measure 'Forecast Units' =
-			VAR _useModel = NOT ISFILTERED ( fact_demand_forecast[model_name] )
-			VAR _useLevel =
-			    NOT ISFILTERED ( fact_demand_forecast[level] )
-			        && NOT ISFILTERED ( fact_demand_forecast[member] )
-			VAR _t =
-			    FILTER (
-			        fact_demand_forecast,
-			        fact_demand_forecast[is_backtest] = FALSE ()
-			            && ( NOT _useModel || fact_demand_forecast[model_name] = "sarima" )
-			            && ( NOT _useLevel || fact_demand_forecast[level] = "total" )
-			    )
-			RETURN SUMX ( _t, fact_demand_forecast[forecast_units] )
+			IF (
+			    ISFILTERED ( dim_forecast_member[level] ) || ISFILTERED ( dim_forecast_member[level_label] )
+			        || ISFILTERED ( dim_forecast_member[member] ),
+			    IF (
+			    ISFILTERED ( dim_forecast_model[model_name] ) || ISFILTERED ( dim_forecast_model[model_label] ),
+			    SUM ( forecast_series[forecast_units] ),
+			    CALCULATE ( SUM ( forecast_series[forecast_units] ), dim_forecast_model[is_main_model] = TRUE () )
+			),
+			    CALCULATE ( IF (
+			    ISFILTERED ( dim_forecast_model[model_name] ) || ISFILTERED ( dim_forecast_model[model_label] ),
+			    SUM ( forecast_series[forecast_units] ),
+			    CALCULATE ( SUM ( forecast_series[forecast_units] ), dim_forecast_model[is_main_model] = TRUE () )
+			), dim_forecast_member[level] = "total" )
+			)
 		formatString: #,0
-		displayFolder: 3. Dự báo
-		lineageTag: 1af6b9e4-cd94-4541-bfb4-db17a51f63d5
+		displayFolder: 4. Dự báo
+		lineageTag: c6d0a9da-ccec-4683-8ff9-049e47dead24
 
-	/// F1 – cận dưới khoảng 80%
-	measure 'Forecast Lower' =
-			VAR _useModel = NOT ISFILTERED ( fact_demand_forecast[model_name] )
-			VAR _useLevel =
-			    NOT ISFILTERED ( fact_demand_forecast[level] )
-			        && NOT ISFILTERED ( fact_demand_forecast[member] )
-			VAR _t =
-			    FILTER (
-			        fact_demand_forecast,
-			        fact_demand_forecast[is_backtest] = FALSE ()
-			            && ( NOT _useModel || fact_demand_forecast[model_name] = "sarima" )
-			            && ( NOT _useLevel || fact_demand_forecast[level] = "total" )
-			    )
-			RETURN SUMX ( _t, fact_demand_forecast[lower_80] )
+	measure 'Forecast Lower 80' =
+			IF (
+			    ISFILTERED ( dim_forecast_member[level] ) || ISFILTERED ( dim_forecast_member[level_label] )
+			        || ISFILTERED ( dim_forecast_member[member] ),
+			    IF (
+			    ISFILTERED ( dim_forecast_model[model_name] ) || ISFILTERED ( dim_forecast_model[model_label] ),
+			    SUM ( forecast_series[lower_80] ),
+			    CALCULATE ( SUM ( forecast_series[lower_80] ), dim_forecast_model[is_main_model] = TRUE () )
+			),
+			    CALCULATE ( IF (
+			    ISFILTERED ( dim_forecast_model[model_name] ) || ISFILTERED ( dim_forecast_model[model_label] ),
+			    SUM ( forecast_series[lower_80] ),
+			    CALCULATE ( SUM ( forecast_series[lower_80] ), dim_forecast_model[is_main_model] = TRUE () )
+			), dim_forecast_member[level] = "total" )
+			)
 		formatString: #,0
-		displayFolder: 3. Dự báo
-		lineageTag: 476eac70-ede1-4563-8935-90d1c0edba7f
+		displayFolder: 4. Dự báo
+		lineageTag: 2a9e97d6-986c-421c-9384-b0ecb23a1a57
 
-	/// F1 – cận trên khoảng 80%
-	measure 'Forecast Upper' =
-			VAR _useModel = NOT ISFILTERED ( fact_demand_forecast[model_name] )
-			VAR _useLevel =
-			    NOT ISFILTERED ( fact_demand_forecast[level] )
-			        && NOT ISFILTERED ( fact_demand_forecast[member] )
-			VAR _t =
-			    FILTER (
-			        fact_demand_forecast,
-			        fact_demand_forecast[is_backtest] = FALSE ()
-			            && ( NOT _useModel || fact_demand_forecast[model_name] = "sarima" )
-			            && ( NOT _useLevel || fact_demand_forecast[level] = "total" )
-			    )
-			RETURN SUMX ( _t, fact_demand_forecast[upper_80] )
+	measure 'Forecast Upper 80' =
+			IF (
+			    ISFILTERED ( dim_forecast_member[level] ) || ISFILTERED ( dim_forecast_member[level_label] )
+			        || ISFILTERED ( dim_forecast_member[member] ),
+			    IF (
+			    ISFILTERED ( dim_forecast_model[model_name] ) || ISFILTERED ( dim_forecast_model[model_label] ),
+			    SUM ( forecast_series[upper_80] ),
+			    CALCULATE ( SUM ( forecast_series[upper_80] ), dim_forecast_model[is_main_model] = TRUE () )
+			),
+			    CALCULATE ( IF (
+			    ISFILTERED ( dim_forecast_model[model_name] ) || ISFILTERED ( dim_forecast_model[model_label] ),
+			    SUM ( forecast_series[upper_80] ),
+			    CALCULATE ( SUM ( forecast_series[upper_80] ), dim_forecast_model[is_main_model] = TRUE () )
+			), dim_forecast_member[level] = "total" )
+			)
 		formatString: #,0
-		displayFolder: 3. Dự báo
-		lineageTag: 24d9d3b5-5bc2-4acd-a3c3-0c7216337d4b
+		displayFolder: 4. Dự báo
+		lineageTag: 7ee4684b-980a-48b6-89d2-9f6516e7539d
 
-	/// F1 – tháng đầu tiên sau dữ liệu (01/2024)
-	measure 'Forecast Next Month' =
-			VAR _first =
-			    CALCULATE (
-			        MIN ( fact_demand_forecast[month_start] ),
-			        fact_demand_forecast[is_backtest] = FALSE (),
-			        REMOVEFILTERS ( Calendar )
-			    )
-			RETURN CALCULATE ( [Forecast Units], fact_demand_forecast[month_start] = _first, REMOVEFILTERS ( Calendar ) )
-		formatString: #,0
-		displayFolder: 3. Dự báo
-		lineageTag: 18ff56ac-7443-4d77-bf4b-43ce99747c7d
-
-	/// Dự báo cho 6 tháng backtest
-	measure 'Backtest Forecast' =
-			VAR _useModel = NOT ISFILTERED ( fact_demand_forecast[model_name] )
-			VAR _useLevel =
-			    NOT ISFILTERED ( fact_demand_forecast[level] )
-			        && NOT ISFILTERED ( fact_demand_forecast[member] )
-			VAR _t =
-			    FILTER (
-			        fact_demand_forecast,
-			        fact_demand_forecast[is_backtest] = TRUE ()
-			            && ( NOT _useModel || fact_demand_forecast[model_name] = "sarima" )
-			            && ( NOT _useLevel || fact_demand_forecast[level] = "company" )
-			    )
-			RETURN SUMX ( _t, fact_demand_forecast[forecast_units] )
-		formatString: #,0
-		displayFolder: 3. Dự báo
-		lineageTag: b40b9145-af2d-404c-8e76-5d2dea12694c
-
-	/// Thực tế của 6 tháng backtest
-	measure 'Backtest Actual' =
-			VAR _useModel = NOT ISFILTERED ( fact_demand_forecast[model_name] )
-			VAR _useLevel =
-			    NOT ISFILTERED ( fact_demand_forecast[level] )
-			        && NOT ISFILTERED ( fact_demand_forecast[member] )
-			VAR _t =
-			    FILTER (
-			        fact_demand_forecast,
-			        fact_demand_forecast[is_backtest] = TRUE ()
-			            && ( NOT _useModel || fact_demand_forecast[model_name] = "sarima" )
-			            && ( NOT _useLevel || fact_demand_forecast[level] = "company" )
-			    )
-			RETURN SUMX ( _t, fact_demand_forecast[actual_units] )
-		formatString: #,0
-		displayFolder: 3. Dự báo
-		lineageTag: cac358d8-7036-45d7-8525-475449687ed2
-
-	/// F3 – mặc định cấp hãng
+	/// F3 – mặc định cấp hãng, mô hình chính
 	measure 'WAPE %' =
-			VAR _useModel = NOT ISFILTERED ( fact_demand_forecast[model_name] )
-			VAR _useLevel =
-			    NOT ISFILTERED ( fact_demand_forecast[level] )
-			        && NOT ISFILTERED ( fact_demand_forecast[member] )
-			VAR _t =
-			    FILTER (
-			        fact_demand_forecast,
-			        fact_demand_forecast[is_backtest] = TRUE ()
-			            && ( NOT _useModel || fact_demand_forecast[model_name] = "sarima" )
-			            && ( NOT _useLevel || fact_demand_forecast[level] = "company" )
-			    )
-			RETURN DIVIDE (
-			    SUMX ( _t, ABS ( fact_demand_forecast[actual_units] - fact_demand_forecast[forecast_units] ) ),
-			    SUMX ( _t, fact_demand_forecast[actual_units] )
+			IF (
+			    ISFILTERED ( dim_forecast_member[level] ) || ISFILTERED ( dim_forecast_member[level_label] )
+			        || ISFILTERED ( dim_forecast_member[member] ),
+			    IF (
+			    ISFILTERED ( dim_forecast_model[model_name] ) || ISFILTERED ( dim_forecast_model[model_label] ),
+			    DIVIDE ( SUM ( forecast_accuracy[abs_error_total] ), SUM ( forecast_accuracy[actual_total] ) ),
+			    CALCULATE ( DIVIDE ( SUM ( forecast_accuracy[abs_error_total] ), SUM ( forecast_accuracy[actual_total] ) ), dim_forecast_model[is_main_model] = TRUE () )
+			),
+			    CALCULATE ( IF (
+			    ISFILTERED ( dim_forecast_model[model_name] ) || ISFILTERED ( dim_forecast_model[model_label] ),
+			    DIVIDE ( SUM ( forecast_accuracy[abs_error_total] ), SUM ( forecast_accuracy[actual_total] ) ),
+			    CALCULATE ( DIVIDE ( SUM ( forecast_accuracy[abs_error_total] ), SUM ( forecast_accuracy[actual_total] ) ), dim_forecast_model[is_main_model] = TRUE () )
+			), dim_forecast_member[level] = "company" )
 			)
 		formatString: 0.0%
-		displayFolder: 3. Dự báo
-		lineageTag: e3898e3b-e5f3-4b49-803b-a758276017ef
+		displayFolder: 4. Dự báo
+		lineageTag: 2548129a-7450-4cb1-a7f6-5e1d2a2d1af5
 
 	/// F3
 	measure 'Forecast Accuracy %' = IF ( NOT ISBLANK ( [WAPE %] ), 1 - [WAPE %] )
 		formatString: 0.0%
-		displayFolder: 3. Dự báo
-		lineageTag: cecc954d-f0e6-4156-aa82-4bc9f679521d
-
-	/// F2
-	measure 'MAPE %' =
-			VAR _useModel = NOT ISFILTERED ( fact_demand_forecast[model_name] )
-			VAR _useLevel =
-			    NOT ISFILTERED ( fact_demand_forecast[level] )
-			        && NOT ISFILTERED ( fact_demand_forecast[member] )
-			VAR _t =
-			    FILTER (
-			        fact_demand_forecast,
-			        fact_demand_forecast[is_backtest] = TRUE ()
-			            && ( NOT _useModel || fact_demand_forecast[model_name] = "sarima" )
-			            && ( NOT _useLevel || fact_demand_forecast[level] = "company" )
-			    )
-			RETURN AVERAGEX (
-			    _t,
-			    DIVIDE ( ABS ( fact_demand_forecast[actual_units] - fact_demand_forecast[forecast_units] ), fact_demand_forecast[actual_units] )
-			)
-		formatString: 0.0%
-		displayFolder: 3. Dự báo
-		lineageTag: def479a0-d5a0-4759-a519-cf06392e7c2e
-
-	/// F4
-	measure 'MAE' =
-			VAR _useModel = NOT ISFILTERED ( fact_demand_forecast[model_name] )
-			VAR _useLevel =
-			    NOT ISFILTERED ( fact_demand_forecast[level] )
-			        && NOT ISFILTERED ( fact_demand_forecast[member] )
-			VAR _t =
-			    FILTER (
-			        fact_demand_forecast,
-			        fact_demand_forecast[is_backtest] = TRUE ()
-			            && ( NOT _useModel || fact_demand_forecast[model_name] = "sarima" )
-			            && ( NOT _useLevel || fact_demand_forecast[level] = "company" )
-			    )
-			RETURN AVERAGEX ( _t, ABS ( fact_demand_forecast[actual_units] - fact_demand_forecast[forecast_units] ) )
-		formatString: 0.0
-		displayFolder: 3. Dự báo
-		lineageTag: aaf79187-32bd-44b1-b73a-60de5675cbdd
-
-	/// F4
-	measure 'RMSE' =
-			VAR _useModel = NOT ISFILTERED ( fact_demand_forecast[model_name] )
-			VAR _useLevel =
-			    NOT ISFILTERED ( fact_demand_forecast[level] )
-			        && NOT ISFILTERED ( fact_demand_forecast[member] )
-			VAR _t =
-			    FILTER (
-			        fact_demand_forecast,
-			        fact_demand_forecast[is_backtest] = TRUE ()
-			            && ( NOT _useModel || fact_demand_forecast[model_name] = "sarima" )
-			            && ( NOT _useLevel || fact_demand_forecast[level] = "company" )
-			    )
-			RETURN SQRT ( AVERAGEX ( _t, ( fact_demand_forecast[actual_units] - fact_demand_forecast[forecast_units] ) ^ 2 ) )
-		formatString: 0.0
-		displayFolder: 3. Dự báo
-		lineageTag: 2572fae6-8c9c-46db-ad4d-df7933089cfb
+		displayFolder: 4. Dự báo
+		lineageTag: f630f835-355b-4a6e-b183-9d16cc3ae429
 
 	/// F5 – dương là dự báo dư
 	measure 'Bias %' =
-			VAR _useModel = NOT ISFILTERED ( fact_demand_forecast[model_name] )
-			VAR _useLevel =
-			    NOT ISFILTERED ( fact_demand_forecast[level] )
-			        && NOT ISFILTERED ( fact_demand_forecast[member] )
-			VAR _t =
-			    FILTER (
-			        fact_demand_forecast,
-			        fact_demand_forecast[is_backtest] = TRUE ()
-			            && ( NOT _useModel || fact_demand_forecast[model_name] = "sarima" )
-			            && ( NOT _useLevel || fact_demand_forecast[level] = "company" )
-			    )
-			RETURN DIVIDE (
-			    SUMX ( _t, fact_demand_forecast[forecast_units] - fact_demand_forecast[actual_units] ),
-			    SUMX ( _t, fact_demand_forecast[actual_units] )
+			IF (
+			    ISFILTERED ( dim_forecast_member[level] ) || ISFILTERED ( dim_forecast_member[level_label] )
+			        || ISFILTERED ( dim_forecast_member[member] ),
+			    IF (
+			    ISFILTERED ( dim_forecast_model[model_name] ) || ISFILTERED ( dim_forecast_model[model_label] ),
+			    DIVIDE ( SUM ( forecast_accuracy[error_total] ), SUM ( forecast_accuracy[actual_total] ) ),
+			    CALCULATE ( DIVIDE ( SUM ( forecast_accuracy[error_total] ), SUM ( forecast_accuracy[actual_total] ) ), dim_forecast_model[is_main_model] = TRUE () )
+			),
+			    CALCULATE ( IF (
+			    ISFILTERED ( dim_forecast_model[model_name] ) || ISFILTERED ( dim_forecast_model[model_label] ),
+			    DIVIDE ( SUM ( forecast_accuracy[error_total] ), SUM ( forecast_accuracy[actual_total] ) ),
+			    CALCULATE ( DIVIDE ( SUM ( forecast_accuracy[error_total] ), SUM ( forecast_accuracy[actual_total] ) ), dim_forecast_model[is_main_model] = TRUE () )
+			), dim_forecast_member[level] = "company" )
 			)
 		formatString: +0.0%;-0.0%;0.0%
-		displayFolder: 3. Dự báo
-		lineageTag: 6c81a292-4939-43cc-8742-9fb7196a5865
+		displayFolder: 4. Dự báo
+		lineageTag: 98ba560d-029c-42df-b594-b876a0fa1064
 
-	/// F6 – ngoài ±4 là cảnh báo
-	measure 'Tracking Signal' =
-			VAR _useModel = NOT ISFILTERED ( fact_demand_forecast[model_name] )
-			VAR _useLevel =
-			    NOT ISFILTERED ( fact_demand_forecast[level] )
-			        && NOT ISFILTERED ( fact_demand_forecast[member] )
-			VAR _t =
-			    FILTER (
-			        fact_demand_forecast,
-			        fact_demand_forecast[is_backtest] = TRUE ()
-			            && ( NOT _useModel || fact_demand_forecast[model_name] = "sarima" )
-			            && ( NOT _useLevel || fact_demand_forecast[level] = "company" )
-			    )
-			RETURN DIVIDE (
-			    SUMX ( _t, fact_demand_forecast[actual_units] - fact_demand_forecast[forecast_units] ),
-			    AVERAGEX ( _t, ABS ( fact_demand_forecast[actual_units] - fact_demand_forecast[forecast_units] ) )
+	/// F4
+	measure 'MAE' =
+			IF (
+			    ISFILTERED ( dim_forecast_member[level] ) || ISFILTERED ( dim_forecast_member[level_label] )
+			        || ISFILTERED ( dim_forecast_member[member] ),
+			    IF (
+			    ISFILTERED ( dim_forecast_model[model_name] ) || ISFILTERED ( dim_forecast_model[model_label] ),
+			    DIVIDE ( SUM ( forecast_accuracy[abs_error_total] ), SUM ( forecast_accuracy[n_points] ) ),
+			    CALCULATE ( DIVIDE ( SUM ( forecast_accuracy[abs_error_total] ), SUM ( forecast_accuracy[n_points] ) ), dim_forecast_model[is_main_model] = TRUE () )
+			),
+			    CALCULATE ( IF (
+			    ISFILTERED ( dim_forecast_model[model_name] ) || ISFILTERED ( dim_forecast_model[model_label] ),
+			    DIVIDE ( SUM ( forecast_accuracy[abs_error_total] ), SUM ( forecast_accuracy[n_points] ) ),
+			    CALCULATE ( DIVIDE ( SUM ( forecast_accuracy[abs_error_total] ), SUM ( forecast_accuracy[n_points] ) ), dim_forecast_model[is_main_model] = TRUE () )
+			), dim_forecast_member[level] = "company" )
 			)
-		formatString: 0.00
-		displayFolder: 3. Dự báo
-		lineageTag: d91cc7a8-e019-47f2-ae2e-a8b438a068ff
+		formatString: #,0.0
+		displayFolder: 4. Dự báo
+		lineageTag: 790e2584-131e-48aa-87a1-fbc66a8f29d4
 
-	/// F7 – dương là mô hình tốt hơn seasonal naive
-	measure 'FVA' = CALCULATE ( [WAPE %], fact_demand_forecast[model_name] = "seasonal_naive" ) - [WAPE %]
-		formatString: +0.0%;-0.0%;0.0%
-		displayFolder: 3. Dự báo
-		lineageTag: 33114440-8c93-4373-baea-513220d8f546
-
-	/// F8
+	/// F8 – mục tiêu ≈ 80%
 	measure 'Interval Coverage %' =
-			VAR _useModel = NOT ISFILTERED ( fact_demand_forecast[model_name] )
-			VAR _useLevel =
-			    NOT ISFILTERED ( fact_demand_forecast[level] )
-			        && NOT ISFILTERED ( fact_demand_forecast[member] )
-			VAR _t =
-			    FILTER (
-			        fact_demand_forecast,
-			        fact_demand_forecast[is_backtest] = TRUE ()
-			            && ( NOT _useModel || fact_demand_forecast[model_name] = "sarima" )
-			            && ( NOT _useLevel || fact_demand_forecast[level] = "company" )
-			    )
-			RETURN DIVIDE (
-			    COUNTROWS ( FILTER ( _t, fact_demand_forecast[actual_units] >= fact_demand_forecast[lower_80]
-			        && fact_demand_forecast[actual_units] <= fact_demand_forecast[upper_80] ) ),
-			    COUNTROWS ( _t )
+			IF (
+			    ISFILTERED ( dim_forecast_member[level] ) || ISFILTERED ( dim_forecast_member[level_label] )
+			        || ISFILTERED ( dim_forecast_member[member] ),
+			    IF (
+			    ISFILTERED ( dim_forecast_model[model_name] ) || ISFILTERED ( dim_forecast_model[model_label] ),
+			    DIVIDE ( SUM ( forecast_accuracy[n_in_interval] ), SUM ( forecast_accuracy[n_points] ) ),
+			    CALCULATE ( DIVIDE ( SUM ( forecast_accuracy[n_in_interval] ), SUM ( forecast_accuracy[n_points] ) ), dim_forecast_model[is_main_model] = TRUE () )
+			),
+			    CALCULATE ( IF (
+			    ISFILTERED ( dim_forecast_model[model_name] ) || ISFILTERED ( dim_forecast_model[model_label] ),
+			    DIVIDE ( SUM ( forecast_accuracy[n_in_interval] ), SUM ( forecast_accuracy[n_points] ) ),
+			    CALCULATE ( DIVIDE ( SUM ( forecast_accuracy[n_in_interval] ), SUM ( forecast_accuracy[n_points] ) ), dim_forecast_model[is_main_model] = TRUE () )
+			), dim_forecast_member[level] = "company" )
 			)
 		formatString: 0.0%
-		displayFolder: 3. Dự báo
-		lineageTag: d1afb42d-a641-4fe4-8534-ba5c1311c20e
+		displayFolder: 4. Dự báo
+		lineageTag: 5a66f062-bdab-4fc7-9ecb-374ae8bcadec
 
-	/// Sản lượng thực tế của đúng hãng / vùng trên trục của bảng dự báo
-	measure 'Actual Units for Member' =
-			VAR _lvl = SELECTEDVALUE ( fact_demand_forecast[level], "total" )
-			RETURN
-			    SWITCH (
-			        _lvl,
-			        "company", CALCULATE ( [Units Sold], TREATAS ( VALUES ( fact_demand_forecast[member] ), dim_car[company] ) ),
-			        "region", CALCULATE ( [Units Sold], TREATAS ( VALUES ( fact_demand_forecast[member] ), dim_dealer[dealer_region] ) ),
-			        [Units Sold]
-			    )
-		formatString: #,0
-		displayFolder: 4. Hỗ trợ quyết định
-		lineageTag: 1dbdee1a-480c-4c99-9393-f4db7e92f6a8
+	measure 'Naive WAPE %' = CALCULATE ( [WAPE %], dim_forecast_model[model_name] = "seasonal_naive" )
+		formatString: 0.0%
+		displayFolder: 4. Dự báo
+		lineageTag: a67b1914-bac9-471a-bca6-9bead56df8c2
 
-	/// Sản lượng cùng kỳ năm trước của đúng hãng / vùng
-	measure 'Actual Units PY for Member' =
-			VAR _lvl = SELECTEDVALUE ( fact_demand_forecast[level], "total" )
-			RETURN
-			    SWITCH (
-			        _lvl,
-			        "company", CALCULATE ( [Units PY], TREATAS ( VALUES ( fact_demand_forecast[member] ), dim_car[company] ) ),
-			        "region", CALCULATE ( [Units PY], TREATAS ( VALUES ( fact_demand_forecast[member] ), dim_dealer[dealer_region] ) ),
-			        [Units PY]
-			    )
+	/// F7 – dương là tốt hơn seasonal naive
+	measure 'FVA' = IF ( NOT ISBLANK ( [WAPE %] ), [Naive WAPE %] - [WAPE %] )
+		formatString: +0.0%;-0.0%;0.0%
+		displayFolder: 4. Dự báo
+		lineageTag: a62e4866-9806-4db3-93e8-93b9b36335d6
+
+	/// F1 6 tháng tới, mô hình chính
+	measure 'Plan Forecast Units' =
+			IF (
+			    ISFILTERED ( dim_forecast_member[level] ) || ISFILTERED ( dim_forecast_member[level_label] )
+			        || ISFILTERED ( dim_forecast_member[member] ),
+			    SUM ( dss_forecast_plan[forecast_units] ),
+			    CALCULATE ( SUM ( dss_forecast_plan[forecast_units] ), dim_forecast_member[level] = "total" )
+			)
 		formatString: #,0
-		displayFolder: 4. Hỗ trợ quyết định
-		lineageTag: fb57e7fa-b09f-45d3-9050-08c826e8bf2b
+		displayFolder: 5. Hỗ trợ quyết định
+		lineageTag: 804201c4-f101-4252-ae5b-4577b41ceebc
+
+	measure 'Plan Units PY' =
+			IF (
+			    ISFILTERED ( dim_forecast_member[level] ) || ISFILTERED ( dim_forecast_member[level_label] )
+			        || ISFILTERED ( dim_forecast_member[member] ),
+			    SUM ( dss_forecast_plan[units_py] ),
+			    CALCULATE ( SUM ( dss_forecast_plan[units_py] ), dim_forecast_member[level] = "total" )
+			)
+		formatString: #,0
+		displayFolder: 5. Hỗ trợ quyết định
+		lineageTag: 5d4b4938-591c-47ed-8d1a-9f044fd04920
 
 	/// S1
-	measure 'Forecast Growth %' = DIVIDE ( [Forecast Units] - [Actual Units PY for Member], [Actual Units PY for Member] )
+	measure 'Forecast Growth %' = DIVIDE ( [Plan Forecast Units] - [Plan Units PY], [Plan Units PY] )
 		formatString: 0.0%
-		displayFolder: 4. Hỗ trợ quyết định
-		lineageTag: 8e37b010-e809-41b1-9639-50d657ead574
+		displayFolder: 5. Hỗ trợ quyết định
+		lineageTag: df0a6f21-0b3d-4172-a222-d9710f9fd2a5
 
-	/// Tỷ trọng vùng / đại lý trong 6 tháng cuối dataset
-	measure 'Region Share 6M %' =
-			VAR _lastDay = CALCULATE ( MAX ( fact_car_sales[date_id] ), ALL ( fact_car_sales ) )
-			VAR _lastDate = DATE ( INT ( _lastDay / 10000 ), MOD ( INT ( _lastDay / 100 ), 100 ), MOD ( _lastDay, 100 ) )
-			VAR _win = DATESINPERIOD ( Calendar[Date], _lastDate, -6, MONTH )
-			RETURN
-			    DIVIDE (
-			        CALCULATE ( [Units Sold], _win, REMOVEFILTERS ( Calendar ) ),
-			        CALCULATE ( [Units Sold], _win, REMOVEFILTERS ( Calendar ), ALL ( dim_dealer ) )
-			    )
-		formatString: 0.0%
-		displayFolder: 4. Hỗ trợ quyết định
-		lineageTag: 4429fbae-09ad-4a65-8fa1-ed803239dcc7
-
-	/// S2
-	measure 'Allocated Units Next Month' = [Forecast Next Month] * [Region Share 6M %]
+	/// S3, S6 – theo thanh trượt What-if
+	measure 'Recommended Order' =
+			IF (
+			    ISFILTERED ( dim_forecast_member[level] ) || ISFILTERED ( dim_forecast_member[level_label] )
+			        || ISFILTERED ( dim_forecast_member[member] ),
+			    SUMX ( dss_forecast_plan, dss_forecast_plan[forecast_units] * ( 1 + [Demand Change Value] ) * ( 1 + [Safety Factor Value] * dss_forecast_plan[demand_cv] ) ),
+			    CALCULATE ( SUMX ( dss_forecast_plan, dss_forecast_plan[forecast_units] * ( 1 + [Demand Change Value] ) * ( 1 + [Safety Factor Value] * dss_forecast_plan[demand_cv] ) ), dim_forecast_member[level] = "total" )
+			)
 		formatString: #,0
-		displayFolder: 4. Hỗ trợ quyết định
-		lineageTag: 3c658a34-824a-4247-b7d8-8435635a193a
-
-	measure 'Demand CV for Member' =
-			VAR _lvl = SELECTEDVALUE ( fact_demand_forecast[level], "total" )
-			RETURN
-			    SWITCH (
-			        _lvl,
-			        "company", CALCULATE ( [Demand CV Hist], TREATAS ( VALUES ( fact_demand_forecast[member] ), dim_car[company] ) ),
-			        "region", CALCULATE ( [Demand CV Hist], TREATAS ( VALUES ( fact_demand_forecast[member] ), dim_dealer[dealer_region] ) ),
-			        [Demand CV Hist]
-			    )
-		formatString: 0.000
-		displayFolder: 4. Hỗ trợ quyết định
-		lineageTag: 6b22c44f-c94b-4323-bb91-1da00421f51b
-
-	measure 'ASP for Member' =
-			VAR _lvl = SELECTEDVALUE ( fact_demand_forecast[level], "total" )
-			RETURN
-			    SWITCH (
-			        _lvl,
-			        "company", CALCULATE ( [ASP Hist], TREATAS ( VALUES ( fact_demand_forecast[member] ), dim_car[company] ) ),
-			        "region", CALCULATE ( [ASP Hist], TREATAS ( VALUES ( fact_demand_forecast[member] ), dim_dealer[dealer_region] ) ),
-			        [ASP Hist]
-			    )
-		formatString: $#,0
-		displayFolder: 4. Hỗ trợ quyết định
-		lineageTag: 10695c99-8fb7-43ab-84c4-84c59687fa07
-
-	/// S3, S6 – có đệm theo độ biến động
-	measure 'Recommended Order' = [Forecast Units] * ( 1 + [Demand Change Value] ) * ( 1 + [Safety Factor Value] * [Demand CV for Member] )
-		formatString: #,0
-		displayFolder: 4. Hỗ trợ quyết định
-		lineageTag: 5d536889-098f-427b-9c49-9f2195b276fb
+		displayFolder: 5. Hỗ trợ quyết định
+		lineageTag: 89adf1f3-9c18-4d23-ac98-b7c3f103994a
 
 	/// S4, S6
-	measure 'Projected Revenue' = [Forecast Units] * ( 1 + [Demand Change Value] ) * [ASP for Member]
+	measure 'Projected Revenue' =
+			IF (
+			    ISFILTERED ( dim_forecast_member[level] ) || ISFILTERED ( dim_forecast_member[level_label] )
+			        || ISFILTERED ( dim_forecast_member[member] ),
+			    SUMX ( dss_forecast_plan, dss_forecast_plan[forecast_units] * ( 1 + [Demand Change Value] ) * dss_forecast_plan[asp_hist] ),
+			    CALCULATE ( SUMX ( dss_forecast_plan, dss_forecast_plan[forecast_units] * ( 1 + [Demand Change Value] ) * dss_forecast_plan[asp_hist] ), dim_forecast_member[level] = "total" )
+			)
 		formatString: $#,0
-		displayFolder: 4. Hỗ trợ quyết định
-		lineageTag: 69128833-7f2c-41e8-ba04-3972812625e7
+		displayFolder: 5. Hỗ trợ quyết định
+		lineageTag: b5aebb90-e257-404b-9453-f1195007db3b
 
-	/// Mục tiêu tăng trưởng so với cùng kỳ
-	measure 'Target Growth' = 0.05
-		formatString: 0.0%
-		displayFolder: 5. Mục tiêu & ngưỡng
-		lineageTag: d10ffd71-8e69-46af-b6b5-5690132fba8c
-
-	measure 'WAPE Threshold' = 0.2
-		formatString: 0.0%
-		displayFolder: 5. Mục tiêu & ngưỡng
-		lineageTag: 62274c35-d12c-4257-816a-6f0eecb5c350
-
-	measure 'Bias Threshold' = 0.05
-		formatString: 0.0%
-		displayFolder: 5. Mục tiêu & ngưỡng
-		lineageTag: e063a923-40d8-434a-b5a6-53186ebd41f2
-
-	measure 'Target Units' = IF ( NOT ISBLANK ( [Units PY] ), [Units PY] * ( 1 + [Target Growth] ) )
+	/// S2
+	measure 'Allocated Units' = SUM ( dss_dealer_allocation[allocated_units] ) * ( 1 + [Demand Change Value] )
 		formatString: #,0
-		displayFolder: 5. Mục tiêu & ngưỡng
-		lineageTag: 79d31699-955c-4636-b751-a71bde9dc968
+		displayFolder: 5. Hỗ trợ quyết định
+		lineageTag: 24969457-bac8-4dda-8600-0a2f06eeab23
 
-	measure 'Target Revenue' = IF ( NOT ISBLANK ( [Revenue PY] ), [Revenue PY] * ( 1 + [Target Growth] ) )
+	/// S2
+	measure 'Allocated Revenue' = SUM ( dss_dealer_allocation[allocated_revenue] ) * ( 1 + [Demand Change Value] )
 		formatString: $#,0
-		displayFolder: 5. Mục tiêu & ngưỡng
-		lineageTag: 813ed3de-96da-44e8-868c-00adef18f8ac
+		displayFolder: 5. Hỗ trợ quyết định
+		lineageTag: 710e8370-6fc6-4bea-be41-eca938abece0
 
-	measure 'Units vs Target %' = DIVIDE ( [Units Sold], [Target Units] ) - 1
+	/// S5
+	measure 'Priority Score' = AVERAGE ( dss_company_priority[priority_score] )
+		formatString: 0.000
+		displayFolder: 5. Hỗ trợ quyết định
+		lineageTag: 0ad5e8bd-904a-46f5-8b30-842f47afba70
+
+	/// S5
+	measure 'Priority Rank' = MIN ( dss_company_priority[priority_rank] )
+		formatString: 0
+		displayFolder: 5. Hỗ trợ quyết định
+		lineageTag: 19505b38-bd28-4f44-ae30-85c1417d8082
+
+	measure 'Target Growth' = MAX ( kpi_parameters[target_growth] )
+		formatString: 0.0%
+		displayFolder: 6. Mục tiêu & ngưỡng
+		lineageTag: c0dc970a-0641-428a-bb8c-0069106d8e56
+
+	measure 'WAPE Threshold' = MAX ( kpi_parameters[wape_threshold] )
+		formatString: 0.0%
+		displayFolder: 6. Mục tiêu & ngưỡng
+		lineageTag: b6226d5e-0027-4dd7-8856-25d5294f9759
+
+	measure 'Bias Threshold' = MAX ( kpi_parameters[bias_threshold] )
+		formatString: 0.0%
+		displayFolder: 6. Mục tiêu & ngưỡng
+		lineageTag: a8d04a95-206b-41c1-800e-7fea1222e216
+
+	measure 'Target Units' = SUMX ( FILTER ( kpi_monthly_overview, NOT ISBLANK ( kpi_monthly_overview[target_units] ) ), kpi_monthly_overview[target_units] )
+		formatString: #,0
+		displayFolder: 6. Mục tiêu & ngưỡng
+		lineageTag: dbe7922c-eb55-45ed-b16a-fd59e72aaff1
+
+	measure 'Target Revenue' = SUMX ( FILTER ( kpi_monthly_overview, NOT ISBLANK ( kpi_monthly_overview[target_revenue] ) ), kpi_monthly_overview[target_revenue] )
+		formatString: $#,0
+		displayFolder: 6. Mục tiêu & ngưỡng
+		lineageTag: 6e5b7ed2-ee41-4cc6-a858-4284d24774ef
+
+	measure 'Units vs Target %' =
+			VAR _a = SUMX ( FILTER ( kpi_monthly_overview, NOT ISBLANK ( kpi_monthly_overview[target_units] ) ), kpi_monthly_overview[units] )
+			RETURN DIVIDE ( _a, [Target Units] ) - 1
 		formatString: +0.0%;-0.0%;0.0%
-		displayFolder: 5. Mục tiêu & ngưỡng
-		lineageTag: da803af6-94c8-4d03-a5de-08000d7a2735
+		displayFolder: 6. Mục tiêu & ngưỡng
+		lineageTag: 2a74c1b4-abe7-4f08-a316-99b91818e8dd
 
-	measure 'Revenue vs Target %' = DIVIDE ( [Revenue], [Target Revenue] ) - 1
+	measure 'Revenue vs Target %' =
+			VAR _a = SUMX ( FILTER ( kpi_monthly_overview, NOT ISBLANK ( kpi_monthly_overview[target_revenue] ) ), kpi_monthly_overview[revenue] )
+			RETURN DIVIDE ( _a, [Target Revenue] ) - 1
 		formatString: +0.0%;-0.0%;0.0%
-		displayFolder: 5. Mục tiêu & ngưỡng
-		lineageTag: 980ab5b2-1b68-4751-ba8c-4918627e587b
+		displayFolder: 6. Mục tiêu & ngưỡng
+		lineageTag: 54665c23-0df8-419f-a795-5f21e5afa3a1
 
-	/// Dùng cho Conditional formatting > Field value
-	measure 'Units Target Color' = IF ( ISBLANK ( [Target Units] ), BLANK (), IF ( [Units Sold] >= [Target Units], "#2E7D32", "#C62828" ) )
-		displayFolder: 5. Mục tiêu & ngưỡng
-		lineageTag: c07d806d-d8f0-4520-83fd-13a994be4cc8
+	/// Conditional formatting > Field value
+	measure 'Units Target Color' = IF ( ISBLANK ( [Units vs Target %] ), BLANK (), IF ( [Units vs Target %] >= 0, "#2E7D32", "#C62828" ) )
+		displayFolder: 6. Mục tiêu & ngưỡng
+		lineageTag: 4a456f85-e0fe-46b8-90c1-73a7fa37cf72
 
-	measure 'Revenue Target Color' = IF ( ISBLANK ( [Target Revenue] ), BLANK (), IF ( [Revenue] >= [Target Revenue], "#2E7D32", "#C62828" ) )
-		displayFolder: 5. Mục tiêu & ngưỡng
-		lineageTag: c5f75458-a644-4457-9dd3-3f1e7a036338
+	measure 'Revenue Target Color' = IF ( ISBLANK ( [Revenue vs Target %] ), BLANK (), IF ( [Revenue vs Target %] >= 0, "#2E7D32", "#C62828" ) )
+		displayFolder: 6. Mục tiêu & ngưỡng
+		lineageTag: 082bf763-30ab-4cea-aa65-48dec04002fc
 
 	measure 'WAPE Color' = IF ( ISBLANK ( [WAPE %] ), BLANK (), IF ( [WAPE %] <= [WAPE Threshold], "#2E7D32", "#C62828" ) )
-		displayFolder: 5. Mục tiêu & ngưỡng
-		lineageTag: 1d9a7d94-0cf3-4794-9b9b-0ae25aa65188
+		displayFolder: 6. Mục tiêu & ngưỡng
+		lineageTag: e5e3b9ec-f69e-4d85-84b9-1f6a9bcad001
 
 	measure 'Bias Color' = IF ( ISBLANK ( [Bias %] ), BLANK (), IF ( ABS ( [Bias %] ) <= [Bias Threshold], "#2E7D32", "#C62828" ) )
-		displayFolder: 5. Mục tiêu & ngưỡng
-		lineageTag: 95683fc6-e584-4351-b1c6-5ef409bee9c3
+		displayFolder: 6. Mục tiêu & ngưỡng
+		lineageTag: 52e529a9-d3eb-4c3c-8008-7814ed22973d
 
 	/// Đạt khi WAPE và |Bias| cùng trong ngưỡng
 	measure 'Forecast Status' =
@@ -615,210 +553,19 @@ table _Measures
 			    BLANK (),
 			    IF ( [WAPE %] <= [WAPE Threshold] && ABS ( [Bias %] ) <= [Bias Threshold], "Đạt", "Không đạt" )
 			)
-		displayFolder: 5. Mục tiêu & ngưỡng
-		lineageTag: d1cc97ab-65e8-427c-aa47-7d910bae8c82
+		displayFolder: 6. Mục tiêu & ngưỡng
+		lineageTag: 2091cbe3-d278-4ea5-bbd1-1dcfce717d7c
 
-	/// Q4 – độ đầy đủ các cột khóa và giá
-	measure 'Q4 Completeness %' =
-			VAR _rows = COUNTROWS ( fact_car_sales )
-			VAR _nulls = COUNTBLANK ( fact_car_sales[date_id] ) + COUNTBLANK ( fact_car_sales[customer_id] )
-			    + COUNTBLANK ( fact_car_sales[car_key] ) + COUNTBLANK ( fact_car_sales[dealer_id] )
-			    + COUNTBLANK ( fact_car_sales[price] )
-			RETURN DIVIDE ( _rows * 5 - _nulls, _rows * 5 )
-		formatString: 0.0%
-		displayFolder: 1. Chất lượng dữ liệu
-		lineageTag: 40c6d261-4e13-45bb-a69f-ba6bb1455597
-
-	/// Q5 – tỷ lệ car_id trùng
-	measure 'Q5 Duplicate Rate' = DIVIDE ( COUNTROWS ( fact_car_sales ) - DISTINCTCOUNT ( fact_car_sales[car_id] ), COUNTROWS ( fact_car_sales ) )
-		formatString: 0.00%
-		displayFolder: 1. Chất lượng dữ liệu
-		lineageTag: d69d87af-6bdb-4be5-97a0-adb56f73485e
-
-	/// Q6 – số ngày từ giao dịch mới nhất đến hôm nay
-	measure 'Q6 Data Freshness Days' =
-			VAR _lastDay = CALCULATE ( MAX ( fact_car_sales[date_id] ), ALL ( fact_car_sales ) )
-			VAR _firstDay = CALCULATE ( MIN ( fact_car_sales[date_id] ), ALL ( fact_car_sales ) )
-			VAR _last = DATE ( INT ( _lastDay / 10000 ), MOD ( INT ( _lastDay / 100 ), 100 ), MOD ( _lastDay, 100 ) )
-			VAR _first = DATE ( INT ( _firstDay / 10000 ), MOD ( INT ( _firstDay / 100 ), 100 ), MOD ( _firstDay, 100 ) )
-			RETURN DATEDIFF ( _last, TODAY (), DAY )
-		formatString: #,0
-		displayFolder: 1. Chất lượng dữ liệu
-		lineageTag: 99e71998-e433-439a-bf61-24b1ef1f0c16
-
-	/// Q7 – số tháng có giao dịch
-	measure 'Q7 Months with Sales' = COUNTROWS ( FILTER ( ALL ( Calendar[YearMonth] ), [Units Sold] > 0 ) )
+	measure 'DQ Checks Passed' = COUNTROWS ( FILTER ( dq_checks, dq_checks[passed] = TRUE () ) )
 		formatString: 0
-		displayFolder: 1. Chất lượng dữ liệu
-		lineageTag: 8253c49d-c41f-40d2-ac31-d0ce60b00a21
+		displayFolder: 7. Chất lượng dữ liệu
+		lineageTag: 1637d6a1-1497-4081-ab7b-98241d084ff7
 
-	/// Q7 – số tháng từ giao dịch đầu đến cuối
-	measure 'Q7 Months in Range' =
-			VAR _lastDay = CALCULATE ( MAX ( fact_car_sales[date_id] ), ALL ( fact_car_sales ) )
-			VAR _firstDay = CALCULATE ( MIN ( fact_car_sales[date_id] ), ALL ( fact_car_sales ) )
-			VAR _last = DATE ( INT ( _lastDay / 10000 ), MOD ( INT ( _lastDay / 100 ), 100 ), MOD ( _lastDay, 100 ) )
-			VAR _first = DATE ( INT ( _firstDay / 10000 ), MOD ( INT ( _firstDay / 100 ), 100 ), MOD ( _firstDay, 100 ) )
-			RETURN DATEDIFF ( _first, _last, MONTH ) + 1
-		formatString: 0
-		displayFolder: 1. Chất lượng dữ liệu
-		lineageTag: bb6e0694-9f90-46ec-a3dd-32fcc16dc180
-
-	/// Q7 – độ phủ chuỗi thời gian (cần ≥ 24 tháng lịch sử)
-	measure 'Q7 Coverage %' = DIVIDE ( [Q7 Months with Sales], [Q7 Months in Range] )
+	/// Q1–Q6
+	measure 'DQ Pass Rate' = DIVIDE ( [DQ Checks Passed], COUNTROWS ( dq_checks ) )
 		formatString: 0.0%
-		displayFolder: 1. Chất lượng dữ liệu
-		lineageTag: f2532fb8-ec10-4a71-a8e4-0211550d1099
-
-	/// D8 – số xe trung bình mỗi ngày có bán
-	measure 'Units per Selling Day' = DIVIDE ( [Units Sold], CALCULATE ( DISTINCTCOUNT ( fact_car_sales[date_id] ) ) )
-		formatString: 0.0
-		displayFolder: 2. Nhu cầu lịch sử
-		lineageTag: d9c894e8-d558-4a61-aa96-398b4076250b
-
-	/// D8 – chỉ số ngày trong tuần
-	measure 'Weekday Index' =
-			DIVIDE (
-			    [Units per Selling Day],
-			    AVERAGEX ( ALLSELECTED ( Calendar[DayOfWeekNo], Calendar[DayOfWeek] ), [Units per Selling Day] )
-			)
-		formatString: 0.00
-		displayFolder: 2. Nhu cầu lịch sử
-		lineageTag: ab31fcc7-a2ea-4aea-ae2b-a2b82ae04d47
-
-	/// D13 – xếp hạng mẫu tăng mạnh nhất (lọc ≤ 5 trong visual)
-	measure 'Model Gain Rank' = RANKX ( ALLSELECTED ( dim_car[model] ), [Units YoY Delta], , DESC, DENSE )
-		formatString: 0
-		displayFolder: 2. Nhu cầu lịch sử
-		lineageTag: 7aa174c0-1e2a-4ce8-8969-bf91097665e9
-
-	/// D13 – xếp hạng mẫu giảm mạnh nhất (lọc ≤ 5 trong visual)
-	measure 'Model Loss Rank' = RANKX ( ALLSELECTED ( dim_car[model] ), [Units YoY Delta], , ASC, DENSE )
-		formatString: 0
-		displayFolder: 2. Nhu cầu lịch sử
-		lineageTag: 4a57674d-d401-4b0d-9507-e4b76a39b2d2
-
-	/// S5 – trọng số tăng trưởng (tổng 4 trọng số = 1)
-	measure 'Priority Weight Growth' = 0.25
-		formatString: 0.00
-		displayFolder: 5. Mục tiêu & ngưỡng
-		lineageTag: 8ca923bf-63c9-484a-af64-90620b418ed1
-
-	/// S5 – trọng số thị phần
-	measure 'Priority Weight Share' = 0.25
-		formatString: 0.00
-		displayFolder: 5. Mục tiêu & ngưỡng
-		lineageTag: 345553bd-668d-48d8-a44d-8c7fd91bd815
-
-	/// S5 – trọng số ổn định (1 − CV)
-	measure 'Priority Weight Stability' = 0.25
-		formatString: 0.00
-		displayFolder: 5. Mục tiêu & ngưỡng
-		lineageTag: 8910b192-f60e-448d-b1d6-f74cf7198cfd
-
-	/// S5 – trọng số độ chính xác dự báo
-	measure 'Priority Weight Accuracy' = 0.25
-		formatString: 0.00
-		displayFolder: 5. Mục tiêu & ngưỡng
-		lineageTag: 45e0bff3-1d19-4f44-8b5a-02505c46e106
-
-	/// S5 – tăng trưởng YoY tháng mới nhất
-	measure 'Priority Growth Raw' =
-			VAR _lastDay = CALCULATE ( MAX ( fact_car_sales[date_id] ), ALL ( fact_car_sales ) )
-			VAR _ym = INT ( _lastDay / 100 )
-			VAR _cur = CALCULATE ( [Units Sold], REMOVEFILTERS ( Calendar ), Calendar[YearMonth] = _ym )
-			VAR _py = CALCULATE ( [Units Sold], REMOVEFILTERS ( Calendar ), Calendar[YearMonth] = _ym - 100 )
-			RETURN DIVIDE ( _cur - _py, _py )
-		formatString: 0.0%
-		displayFolder: 4. Hỗ trợ quyết định
-		lineageTag: bf2631d6-75f8-4a65-8e75-82652a778650
-
-	/// S5 – thị phần toàn lịch sử
-	measure 'Priority Share Raw' =
-			DIVIDE (
-			    CALCULATE ( [Units Sold], REMOVEFILTERS ( Calendar ) ),
-			    CALCULATE ( [Units Sold], REMOVEFILTERS ( Calendar ), ALLSELECTED ( dim_car ) )
-			)
-		formatString: 0.0%
-		displayFolder: 4. Hỗ trợ quyết định
-		lineageTag: 00157a91-1068-42cf-9d4f-c0c4d441788e
-
-	/// S5 – 1 − CV
-	measure 'Priority Stability Raw' = 1 - COALESCE ( [Demand CV Hist], 0 )
-		formatString: 0.000
-		displayFolder: 4. Hỗ trợ quyết định
-		lineageTag: 9a23ba8f-be79-4442-b04a-b85c5471d118
-
-	/// S5 – độ chính xác backtest cấp hãng
-	measure 'Priority Accuracy Raw' =
-			COALESCE (
-			    CALCULATE (
-			        [Forecast Accuracy %],
-			        REMOVEFILTERS ( Calendar ),
-			        fact_demand_forecast[level] = "company",
-			        fact_demand_forecast[model_name] = "sarima",
-			        TREATAS ( VALUES ( dim_car[company] ), fact_demand_forecast[member] )
-			    ),
-			    0
-			)
-		formatString: 0.0%
-		displayFolder: 4. Hỗ trợ quyết định
-		lineageTag: 8aa7a266-8ed0-4ae9-948a-36b3aa7bfba5
-
-	/// S5 – chuẩn hóa 0–1
-	measure 'Priority Growth Score' =
-			VAR _v = [Priority Growth Raw]
-			VAR _min = MINX ( ALLSELECTED ( dim_car[company] ), [Priority Growth Raw] )
-			VAR _max = MAXX ( ALLSELECTED ( dim_car[company] ), [Priority Growth Raw] )
-			RETURN DIVIDE ( _v - _min, _max - _min, 0 )
-		formatString: 0.000
-		displayFolder: 4. Hỗ trợ quyết định
-		lineageTag: b1718ff1-ddf7-409a-a646-ba67511f07b7
-
-	/// S5 – chuẩn hóa 0–1
-	measure 'Priority Share Score' =
-			VAR _v = [Priority Share Raw]
-			VAR _min = MINX ( ALLSELECTED ( dim_car[company] ), [Priority Share Raw] )
-			VAR _max = MAXX ( ALLSELECTED ( dim_car[company] ), [Priority Share Raw] )
-			RETURN DIVIDE ( _v - _min, _max - _min, 0 )
-		formatString: 0.000
-		displayFolder: 4. Hỗ trợ quyết định
-		lineageTag: f276328a-2769-46b3-b776-818196a11bef
-
-	/// S5 – chuẩn hóa 0–1
-	measure 'Priority Stability Score' =
-			VAR _v = [Priority Stability Raw]
-			VAR _min = MINX ( ALLSELECTED ( dim_car[company] ), [Priority Stability Raw] )
-			VAR _max = MAXX ( ALLSELECTED ( dim_car[company] ), [Priority Stability Raw] )
-			RETURN DIVIDE ( _v - _min, _max - _min, 0 )
-		formatString: 0.000
-		displayFolder: 4. Hỗ trợ quyết định
-		lineageTag: b2031ac1-bd94-4a40-97d4-919ab34dc127
-
-	/// S5 – chuẩn hóa 0–1
-	measure 'Priority Accuracy Score' =
-			VAR _v = [Priority Accuracy Raw]
-			VAR _min = MINX ( ALLSELECTED ( dim_car[company] ), [Priority Accuracy Raw] )
-			VAR _max = MAXX ( ALLSELECTED ( dim_car[company] ), [Priority Accuracy Raw] )
-			RETURN DIVIDE ( _v - _min, _max - _min, 0 )
-		formatString: 0.000
-		displayFolder: 4. Hỗ trợ quyết định
-		lineageTag: 78b95cd4-84dd-4850-b55c-b11d3a48a6d9
-
-	/// S5 – điểm ưu tiên theo hãng (đặt hãng trên trục của visual)
-	measure 'Priority Score' =
-			[Priority Weight Growth] * [Priority Growth Score]
-			    + [Priority Weight Share] * [Priority Share Score]
-			    + [Priority Weight Stability] * [Priority Stability Score]
-			    + [Priority Weight Accuracy] * [Priority Accuracy Score]
-		formatString: 0.000
-		displayFolder: 4. Hỗ trợ quyết định
-		lineageTag: 797d2da8-7e67-4ea2-92b5-5fa143fc11ab
-
-	/// S5 – xếp hạng
-	measure 'Priority Rank' = RANKX ( ALLSELECTED ( dim_car[company] ), [Priority Score] )
-		formatString: 0
-		displayFolder: 4. Hỗ trợ quyết định
-		lineageTag: 76b268c9-0552-43f1-bf9e-648a89f595ce
+		displayFolder: 7. Chất lượng dữ liệu
+		lineageTag: b65b6a37-1995-4583-8a75-3b2023a11bf4
 
 	column 'Value'
 		dataType: int64
@@ -826,7 +573,7 @@ table _Measures
 		summarizeBy: none
 		isNameInferred
 		sourceColumn: [Value]
-		lineageTag: 643458fc-4681-4d17-9b80-f1352cb991f5
+		lineageTag: 831755eb-5f18-4380-b4db-aae2934df42c
 
 	partition _Measures = calculated
 		mode: import

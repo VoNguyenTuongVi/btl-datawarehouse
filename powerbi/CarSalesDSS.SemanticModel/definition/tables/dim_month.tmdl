@@ -1,0 +1,96 @@
+table 'dim_month'
+	lineageTag: 499ac97c-7c4f-4bbb-87b9-30e638774710
+
+	column 'month_start'
+		dataType: dateTime
+		formatString: mmm yyyy
+		summarizeBy: none
+		isKey
+		sourceColumn: month_start
+		lineageTag: 554d385e-74f5-48e6-bf21-0eff45313f47
+
+	column 'year'
+		dataType: int64
+		formatString: 0
+		isHidden
+		summarizeBy: none
+		sourceColumn: year
+		lineageTag: 933a81c3-f143-4229-916a-291bf56ca6b5
+
+	column 'quarter_no'
+		dataType: int64
+		formatString: 0
+		summarizeBy: none
+		sourceColumn: quarter_no
+		lineageTag: bff6082b-170e-4dfb-a999-3875b46f50c4
+
+	column 'quarter'
+		dataType: string
+		summarizeBy: none
+		sourceColumn: quarter
+		lineageTag: 746f4eb6-6202-42cb-8188-f03421570889
+
+	column 'year_quarter'
+		dataType: string
+		summarizeBy: none
+		sourceColumn: year_quarter
+		lineageTag: 7bc94b40-dad8-4f26-9435-045d0977a94a
+
+	column 'month_no'
+		dataType: int64
+		formatString: 0
+		summarizeBy: none
+		sourceColumn: month_no
+		lineageTag: d0ca72c4-518f-463b-ab21-12d8db6496d7
+
+	column 'month_name'
+		dataType: string
+		summarizeBy: none
+		sortByColumn: 'month_no'
+		sourceColumn: month_name
+		lineageTag: f257e755-c7a4-4f00-8470-43c080532c2b
+
+	column 'year_month'
+		dataType: int64
+		formatString: 0
+		summarizeBy: none
+		sourceColumn: year_month
+		lineageTag: 6f376ce3-9f08-427c-bf8c-a2d9601db1f1
+
+	column 'year_month_label'
+		dataType: string
+		summarizeBy: none
+		sourceColumn: year_month_label
+		lineageTag: 4fb93138-3493-48e1-b97d-22c9aafc6905
+
+	column 'period_type'
+		dataType: string
+		summarizeBy: none
+		sourceColumn: period_type
+		lineageTag: 8fe46157-38cf-43eb-98d2-9d05b7197b5a
+
+	hierarchy 'Thời gian'
+		lineageTag: 6f1ec7a1-2aa9-4292-87b3-e239e0170230
+
+		level 'year'
+			column: 'year'
+			lineageTag: 841db03d-5595-4807-929f-3e82ca64e1d6
+
+		level 'year_quarter'
+			column: 'year_quarter'
+			lineageTag: 4447e012-e3b4-427a-8ae3-4e89c1b5684c
+
+		level 'year_month_label'
+			column: 'year_month_label'
+			lineageTag: f3ebc5cb-8932-4821-9afb-c85c13b8f1d6
+
+	partition 'dim_month' = m
+		mode: import
+		source =
+				let
+				    Source = PostgreSQL.Database(PgServer, PgDatabase),
+				    Data = Source{[Schema = PgSchema, Item = "dim_month"]}[Data],
+				    Selected = Table.SelectColumns(Data, {"month_start", "year", "quarter_no", "quarter", "year_quarter", "month_no", "month_name", "year_month", "year_month_label", "period_type"}),
+				    Typed = Table.TransformColumnTypes(Selected, {{"month_start", type date}, {"year", Int64.Type}, {"quarter_no", Int64.Type}, {"quarter", type text}, {"year_quarter", type text}, {"month_no", Int64.Type}, {"month_name", type text}, {"year_month", Int64.Type}, {"year_month_label", type text}, {"period_type", type text}})
+				in
+				    Typed

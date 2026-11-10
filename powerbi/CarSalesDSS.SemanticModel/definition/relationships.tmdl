@@ -1,19 +1,79 @@
-relationship 6e1338b8-a993-4f4b-a644-5487a1e21d2e
-	fromColumn: 'fact_car_sales'.'date_id'
-	toColumn: 'Calendar'.'DateId'
+relationship 7fb047f7-22eb-4ee4-b6ea-284a0175628c
+	fromColumn: 'dim_month'.'year'
+	toColumn: 'dim_year'.'year'
 
-relationship 6e5343b0-44a2-48f9-a534-f6614f43f131
-	fromColumn: 'fact_car_sales'.'customer_id'
-	toColumn: 'dim_customer'.'customer_id'
+relationship da6ce637-acd6-4790-aeef-46d667e95053
+	fromColumn: 'kpi_monthly_overview'.'month_start'
+	toColumn: 'dim_month'.'month_start'
 
-relationship 42f8348b-5279-4450-a494-6a07d8f0dc49
-	fromColumn: 'fact_car_sales'.'car_key'
-	toColumn: 'dim_car'.'car_key'
+relationship 3ac5d836-a49c-47a3-9464-44efc9eee331
+	fromColumn: 'kpi_quarterly'.'quarter_start'
+	toColumn: 'dim_month'.'month_start'
 
-relationship 76d3f190-e85c-4bdf-9985-ab06528bf559
-	fromColumn: 'fact_car_sales'.'dealer_id'
-	toColumn: 'dim_dealer'.'dealer_id'
+relationship 49667de9-0cef-4ca8-ae33-eacb84582349
+	fromColumn: 'kpi_daily'.'month_start'
+	toColumn: 'dim_month'.'month_start'
 
-relationship d7f6fd04-70d4-4e1c-af7c-816a5bfeb2bc
-	fromColumn: 'fact_demand_forecast'.'month_start'
-	toColumn: 'Calendar'.'Date'
+relationship 4c033c9b-92be-4281-95b7-a8bf3b402bcd
+	fromColumn: 'kpi_weekday'.'year'
+	toColumn: 'dim_year'.'year'
+
+relationship 51e8d913-01fb-40e8-bd3c-f2b7f97fb174
+	fromColumn: 'kpi_monthly_by_dimension'.'month_start'
+	toColumn: 'dim_month'.'month_start'
+
+relationship c2eda419-727a-4f75-80b9-a0f566460041
+	fromColumn: 'kpi_monthly_by_dimension'.'member_key'
+	toColumn: 'dim_member'.'member_key'
+
+relationship eeedfd30-931f-4d39-82f9-d286c80f1170
+	fromColumn: 'kpi_dimension_summary'.'member_key'
+	toColumn: 'dim_member'.'member_key'
+
+relationship 873047aa-b716-4e66-8cc7-d6eac8f1613b
+	fromColumn: 'kpi_dimension_summary'.'year'
+	toColumn: 'dim_year'.'year'
+
+relationship 7110688f-100c-4ec4-980e-0435ae30cfd8
+	fromColumn: 'kpi_customer_segment'.'year'
+	toColumn: 'dim_year'.'year'
+
+relationship fb5d9895-11bb-4976-ab4f-4ce243d2526e
+	fromColumn: 'kpi_annual_summary'.'year'
+	toColumn: 'dim_year'.'year'
+
+relationship 1e06df95-df38-48e5-8256-6a8cfe0ef3a5
+	fromColumn: 'forecast_series'.'month_start'
+	toColumn: 'dim_month'.'month_start'
+
+relationship ca6b9ecd-33f1-40a3-863e-4b6e45366ac8
+	fromColumn: 'forecast_series'.'series_key'
+	toColumn: 'dim_forecast_member'.'series_key'
+
+relationship 8e4c6a02-2428-483d-943f-0c26d3e31f13
+	fromColumn: 'forecast_series'.'model_name'
+	toColumn: 'dim_forecast_model'.'model_name'
+
+relationship 28e803e5-2009-4e2a-98f0-c3c03e769cec
+	fromColumn: 'forecast_accuracy'.'series_key'
+	toColumn: 'dim_forecast_member'.'series_key'
+
+relationship 8f97174a-eed5-453b-b536-fb0dd53b26ab
+	fromColumn: 'forecast_accuracy'.'model_name'
+	toColumn: 'dim_forecast_model'.'model_name'
+
+relationship 75a96853-2527-4e75-aeb1-c954d30af702
+	fromColumn: 'dss_forecast_plan'.'month_start'
+	toColumn: 'dim_month'.'month_start'
+
+relationship ea51ccab-202e-4630-b68f-d09a8daa05f6
+	fromColumn: 'dss_forecast_plan'.'series_key'
+	toColumn: 'dim_forecast_member'.'series_key'
+
+relationship 12491685-5654-4b47-a157-823b36e3597c
+	fromColumn: 'dss_dealer_allocation'.'month_start'
+	toColumn: 'dim_month'.'month_start'
+
+relationship 4d98fc19-de20-439c-b9b0-eef378384c81
+	fromColumn: 'dss_company_priority'.'series_key'
+	toColumn: 'dim_forecast_member'.'series_key'

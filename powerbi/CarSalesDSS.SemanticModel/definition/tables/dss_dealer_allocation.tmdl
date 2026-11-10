@@ -1,0 +1,96 @@
+table 'dss_dealer_allocation'
+	lineageTag: 5ca92969-fac3-4ed1-8351-da6884f234f9
+
+	column 'month_start'
+		dataType: dateTime
+		formatString: mmm yyyy
+		isHidden
+		summarizeBy: none
+		sourceColumn: month_start
+		lineageTag: f69a66e0-ebc4-45f6-9644-ba7af78baac0
+
+	column 'dealer_region'
+		dataType: string
+		summarizeBy: none
+		sourceColumn: dealer_region
+		lineageTag: 1b79dbd8-ff32-45fa-a2e0-09700bd9300f
+
+	column 'dealer_name'
+		dataType: string
+		summarizeBy: none
+		sourceColumn: dealer_name
+		lineageTag: d942b2be-1d53-4f07-a691-5673229941e3
+
+	column 'units_6m'
+		dataType: double
+		formatString: #,0
+		summarizeBy: sum
+		sourceColumn: units_6m
+		lineageTag: 48b6f1e4-00f1-41e7-958e-db9d0e209810
+
+	column 'dealer_share_6m'
+		dataType: double
+		formatString: 0.0%
+		summarizeBy: none
+		sourceColumn: dealer_share_6m
+		lineageTag: 0e15b932-7cb9-44f6-8088-80f1d877f947
+
+	column 'region_share_6m'
+		dataType: double
+		formatString: 0.0%
+		summarizeBy: none
+		sourceColumn: region_share_6m
+		lineageTag: 77dd5138-a32d-4011-953b-a417b6f3fc62
+
+	column 'total_forecast_units'
+		dataType: double
+		formatString: #,0
+		summarizeBy: none
+		sourceColumn: total_forecast_units
+		lineageTag: 16f2f005-0f22-47a6-b008-221c13372e2d
+
+	column 'allocated_units'
+		dataType: double
+		formatString: #,0
+		summarizeBy: sum
+		sourceColumn: allocated_units
+		lineageTag: 6a81df92-2b08-4e50-905d-7c0748ae6251
+
+	column 'allocated_units_low'
+		dataType: double
+		formatString: #,0
+		summarizeBy: sum
+		sourceColumn: allocated_units_low
+		lineageTag: 17d21b2d-0728-4401-94c8-1331e00d08e8
+
+	column 'allocated_units_high'
+		dataType: double
+		formatString: #,0
+		summarizeBy: sum
+		sourceColumn: allocated_units_high
+		lineageTag: a3135839-c404-4abb-a204-86d4670f9c70
+
+	column 'allocated_revenue'
+		dataType: double
+		formatString: $#,0
+		summarizeBy: sum
+		sourceColumn: allocated_revenue
+		lineageTag: 5b7c7367-137d-47f4-85d9-0904b1656181
+
+	column 'region_model_forecast'
+		dataType: double
+		formatString: #,0
+		summarizeBy: none
+		sourceColumn: region_model_forecast
+		lineageTag: 65edae00-2a09-4c07-98b9-09a40e8dcc03
+
+	partition 'dss_dealer_allocation' = m
+		mode: import
+		source =
+				let
+				    Source = PostgreSQL.Database(PgServer, PgDatabase),
+				    Data = Source{[Schema = PgSchema, Item = "dss_dealer_allocation"]}[Data],
+				    Selected = Table.SelectColumns(Data, {"month_start", "dealer_region", "dealer_name", "units_6m", "dealer_share_6m", "region_share_6m", "total_forecast_units", "allocated_units", "allocated_units_low", "allocated_units_high", "allocated_revenue", "region_model_forecast"}),
+				    Typed = Table.TransformColumnTypes(Selected, {{"month_start", type date}, {"dealer_region", type text}, {"dealer_name", type text}, {"units_6m", type number}, {"dealer_share_6m", type number}, {"region_share_6m", type number}, {"total_forecast_units", type number}, {"allocated_units", type number}, {"allocated_units_low", type number}, {"allocated_units_high", type number}, {"allocated_revenue", type number}, {"region_model_forecast", type number}})
+				in
+				    Typed

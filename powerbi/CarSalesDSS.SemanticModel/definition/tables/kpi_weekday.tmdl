@@ -1,0 +1,76 @@
+table 'kpi_weekday'
+	lineageTag: 22a91eeb-60cf-467e-8810-80f86bc26e30
+
+	column 'period'
+		dataType: string
+		summarizeBy: none
+		sourceColumn: period
+		lineageTag: 2f3aedd7-b31d-42d1-8d81-0f4aa9e96675
+
+	column 'year'
+		dataType: int64
+		formatString: 0
+		isHidden
+		summarizeBy: none
+		sourceColumn: year
+		lineageTag: 05cb41dc-b6a3-4ec1-bd87-95fd6982056c
+
+	column 'dow_no'
+		dataType: int64
+		formatString: 0
+		summarizeBy: none
+		sourceColumn: dow_no
+		lineageTag: af6c9481-61d3-4042-8c9a-01ec2ee37a31
+
+	column 'day_of_week'
+		dataType: string
+		summarizeBy: none
+		sortByColumn: 'dow_no'
+		sourceColumn: day_of_week
+		lineageTag: 5efb71db-1a63-4026-803b-0481b182e29d
+
+	column 'selling_days'
+		dataType: int64
+		formatString: 0
+		summarizeBy: sum
+		sourceColumn: selling_days
+		lineageTag: deeccf2b-9194-434b-a75f-f9cd6581a51b
+
+	column 'units'
+		dataType: double
+		formatString: #,0
+		summarizeBy: sum
+		sourceColumn: units
+		lineageTag: 5795400e-7816-41d5-840a-ad0d4eaaa052
+
+	column 'revenue'
+		dataType: double
+		formatString: $#,0
+		summarizeBy: sum
+		sourceColumn: revenue
+		lineageTag: 5634493d-8395-4a26-988e-817a473bdc42
+
+	column 'avg_units_per_day'
+		dataType: double
+		formatString: #,0.0
+		summarizeBy: none
+		sourceColumn: avg_units_per_day
+		lineageTag: d3de7c54-fe9e-4d61-b5e2-ae460c7ce913
+
+	column 'weekday_index'
+		dataType: double
+		formatString: 0.000
+		summarizeBy: none
+		sourceColumn: weekday_index
+		lineageTag: d39c650b-2526-4962-8534-2e59e46a5a69
+
+	partition 'kpi_weekday' = m
+		mode: import
+		source =
+				let
+				    Source = PostgreSQL.Database(PgServer, PgDatabase),
+				    Data = Source{[Schema = PgSchema, Item = "kpi_weekday"]}[Data],
+				    Selected = Table.SelectColumns(Data, {"period", "year", "dow_no", "day_of_week", "selling_days", "units", "revenue", "avg_units_per_day", "weekday_index"}),
+				    Typed = Table.TransformColumnTypes(Selected, {{"period", type text}, {"year", Int64.Type}, {"dow_no", Int64.Type}, {"day_of_week", type text}, {"selling_days", Int64.Type}, {"units", type number}, {"revenue", type number}, {"avg_units_per_day", type number}, {"weekday_index", type number}})
+				in
+				    Typed

@@ -1,0 +1,59 @@
+table 'dim_forecast_member'
+	lineageTag: 4c872b8a-0d73-47f1-ac01-21f9d07b1619
+
+	column 'series_key'
+		dataType: string
+		isHidden
+		summarizeBy: none
+		isKey
+		sourceColumn: series_key
+		lineageTag: 9e0f37b9-33f1-43dc-8b53-2618bbe14d3d
+
+	column 'level'
+		dataType: string
+		summarizeBy: none
+		sourceColumn: level
+		lineageTag: 1b93a761-2316-4d3a-8d35-93ecbacef241
+
+	column 'level_label'
+		dataType: string
+		summarizeBy: none
+		sortByColumn: 'level_order'
+		sourceColumn: level_label
+		lineageTag: 71614459-3271-4727-a1a2-233691695e9c
+
+	column 'member'
+		dataType: string
+		summarizeBy: none
+		sourceColumn: member
+		lineageTag: 522b9b2e-b23c-4f45-ab8f-53eb2259057c
+
+	column 'level_order'
+		dataType: int64
+		formatString: 0
+		isHidden
+		summarizeBy: none
+		sourceColumn: level_order
+		lineageTag: 789be8f4-014a-4c46-8f19-1db41f545717
+
+	hierarchy 'Chuỗi dự báo'
+		lineageTag: 61070c75-cea7-4f16-b338-112072b38bdb
+
+		level 'level_label'
+			column: 'level_label'
+			lineageTag: c1d73a11-5be3-40c1-9f37-c5c3b3822f1b
+
+		level 'member'
+			column: 'member'
+			lineageTag: 9f8ad606-1b36-4c90-a778-11f7c37f4f9a
+
+	partition 'dim_forecast_member' = m
+		mode: import
+		source =
+				let
+				    Source = PostgreSQL.Database(PgServer, PgDatabase),
+				    Data = Source{[Schema = PgSchema, Item = "dim_forecast_member"]}[Data],
+				    Selected = Table.SelectColumns(Data, {"series_key", "level", "level_label", "member", "level_order"}),
+				    Typed = Table.TransformColumnTypes(Selected, {{"series_key", type text}, {"level", type text}, {"level_label", type text}, {"member", type text}, {"level_order", Int64.Type}})
+				in
+				    Typed

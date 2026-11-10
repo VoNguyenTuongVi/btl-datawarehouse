@@ -1,0 +1,199 @@
+table 'kpi_annual_summary'
+	lineageTag: 1d523454-2585-42cd-916c-0c7bd18823df
+
+	column 'period'
+		dataType: string
+		summarizeBy: none
+		sourceColumn: period
+		lineageTag: 4ff13c45-0eb2-4bf2-8936-04a3d53b7d54
+
+	column 'year'
+		dataType: int64
+		formatString: 0
+		isHidden
+		summarizeBy: none
+		sourceColumn: year
+		lineageTag: f21419c6-4ea0-483d-adda-cac502cfe181
+
+	column 'units'
+		dataType: double
+		formatString: #,0
+		summarizeBy: sum
+		sourceColumn: units
+		lineageTag: 9aadc3b2-8bb8-49fb-ade1-c8235df83dcd
+
+	column 'revenue'
+		dataType: double
+		formatString: $#,0
+		summarizeBy: sum
+		sourceColumn: revenue
+		lineageTag: 67d8ac7c-34d7-4136-8378-177d0cce1407
+
+	column 'asp'
+		dataType: double
+		formatString: $#,0
+		summarizeBy: none
+		sourceColumn: asp
+		lineageTag: fcad1070-da81-42ee-a3db-97ff0300ecfd
+
+	column 'units_py'
+		dataType: double
+		formatString: #,0
+		summarizeBy: sum
+		sourceColumn: units_py
+		lineageTag: 3aeac153-dfd0-4ca2-bf62-2285d369bb23
+
+	column 'revenue_py'
+		dataType: double
+		formatString: $#,0
+		summarizeBy: sum
+		sourceColumn: revenue_py
+		lineageTag: 5acddbee-6e23-427a-9bae-d8a6937d2790
+
+	column 'units_yoy_pct'
+		dataType: double
+		formatString: 0.0%
+		summarizeBy: none
+		sourceColumn: units_yoy_pct
+		lineageTag: f35d68a9-243a-4fd3-a3e8-f3f5ed212f14
+
+	column 'revenue_yoy_pct'
+		dataType: double
+		formatString: 0.0%
+		summarizeBy: none
+		sourceColumn: revenue_yoy_pct
+		lineageTag: e5caa6e4-9be3-494f-b3c5-004fef08a4a2
+
+	column 'target_units'
+		dataType: double
+		formatString: #,0
+		summarizeBy: sum
+		sourceColumn: target_units
+		lineageTag: 0abae5a0-fc9d-4b65-980f-221987a64e06
+
+	column 'target_revenue'
+		dataType: double
+		formatString: $#,0
+		summarizeBy: sum
+		sourceColumn: target_revenue
+		lineageTag: 080fefe0-c973-4631-9976-53a887ac1568
+
+	column 'units_target_status'
+		dataType: string
+		summarizeBy: none
+		sourceColumn: units_target_status
+		lineageTag: 70a9ca5b-34e3-4d0d-8d5b-d46b0cbb8a00
+
+	column 'auto_share_pct'
+		dataType: double
+		formatString: 0.0%
+		summarizeBy: none
+		sourceColumn: auto_share_pct
+		lineageTag: ca2a09b6-7803-4dc4-89cd-086e0f6e972d
+
+	column 'auto_share_change_pp'
+		dataType: double
+		formatString: +0.0%;-0.0%;0.0%
+		summarizeBy: none
+		sourceColumn: auto_share_change_pp
+		lineageTag: 577ca8a5-e9df-4f80-972a-e102273031d2
+
+	column 'top10_model_share_pct'
+		dataType: double
+		formatString: 0.0%
+		summarizeBy: none
+		sourceColumn: top10_model_share_pct
+		lineageTag: 254e4614-7842-4b21-9f2f-51630fafb1c5
+
+	column 'hhi_company'
+		dataType: double
+		formatString: 0.000
+		summarizeBy: none
+		sourceColumn: hhi_company
+		lineageTag: 8865e46a-1dbb-4ee0-9f10-2d66dd3866f4
+
+	column 'n_companies'
+		dataType: int64
+		formatString: 0
+		summarizeBy: none
+		sourceColumn: n_companies
+		lineageTag: 25654704-9656-4719-8c6a-ed18028a8b80
+
+	column 'n_models'
+		dataType: int64
+		formatString: 0
+		summarizeBy: none
+		sourceColumn: n_models
+		lineageTag: 14820527-d653-43b5-82a1-df404e15ff35
+
+	column 'n_dealers'
+		dataType: int64
+		formatString: 0
+		summarizeBy: none
+		sourceColumn: n_dealers
+		lineageTag: a1d76a77-a1e8-4da4-9fbe-0288dd7689ff
+
+	column 'selling_days'
+		dataType: int64
+		formatString: 0
+		summarizeBy: sum
+		sourceColumn: selling_days
+		lineageTag: a3e081b3-fcf9-4d23-aff4-9a92d8ebbe2e
+
+	column 'units_per_dealer_month'
+		dataType: double
+		formatString: #,0.0
+		summarizeBy: none
+		sourceColumn: units_per_dealer_month
+		lineageTag: babdf2fd-e357-4aa8-8f98-7655a3c793f2
+
+	column 'dealers_growing_pct'
+		dataType: double
+		formatString: 0.0%
+		summarizeBy: none
+		sourceColumn: dealers_growing_pct
+		lineageTag: 54447ffe-08a3-4dfd-8254-fa5ef8f4f8db
+
+	column 'demand_cv'
+		dataType: double
+		formatString: 0.000
+		summarizeBy: none
+		sourceColumn: demand_cv
+		lineageTag: fca246ad-4312-4e62-981d-67bf66d75275
+
+	column 'peak_month'
+		dataType: string
+		summarizeBy: none
+		sourceColumn: peak_month
+		lineageTag: af453c5f-cb29-4343-93b3-da1999d73224
+
+	column 'peak_month_units'
+		dataType: double
+		formatString: #,0
+		summarizeBy: none
+		sourceColumn: peak_month_units
+		lineageTag: 8dce52d3-3170-4a46-9702-54371f49b293
+
+	column 'low_month'
+		dataType: string
+		summarizeBy: none
+		sourceColumn: low_month
+		lineageTag: 072516a9-5442-43c8-a933-5c27948a9bdd
+
+	column 'low_month_units'
+		dataType: double
+		formatString: #,0
+		summarizeBy: none
+		sourceColumn: low_month_units
+		lineageTag: a9264f7f-5c18-49fb-8c76-10eb44ebd001
+
+	partition 'kpi_annual_summary' = m
+		mode: import
+		source =
+				let
+				    Source = PostgreSQL.Database(PgServer, PgDatabase),
+				    Data = Source{[Schema = PgSchema, Item = "kpi_annual_summary"]}[Data],
+				    Selected = Table.SelectColumns(Data, {"period", "year", "units", "revenue", "asp", "units_py", "revenue_py", "units_yoy_pct", "revenue_yoy_pct", "target_units", "target_revenue", "units_target_status", "auto_share_pct", "auto_share_change_pp", "top10_model_share_pct", "hhi_company", "n_companies", "n_models", "n_dealers", "selling_days", "units_per_dealer_month", "dealers_growing_pct", "demand_cv", "peak_month", "peak_month_units", "low_month", "low_month_units"}),
+				    Typed = Table.TransformColumnTypes(Selected, {{"period", type text}, {"year", Int64.Type}, {"units", type number}, {"revenue", type number}, {"asp", type number}, {"units_py", type number}, {"revenue_py", type number}, {"units_yoy_pct", type number}, {"revenue_yoy_pct", type number}, {"target_units", type number}, {"target_revenue", type number}, {"units_target_status", type text}, {"auto_share_pct", type number}, {"auto_share_change_pp", type number}, {"top10_model_share_pct", type number}, {"hhi_company", type number}, {"n_companies", Int64.Type}, {"n_models", Int64.Type}, {"n_dealers", Int64.Type}, {"selling_days", Int64.Type}, {"units_per_dealer_month", type number}, {"dealers_growing_pct", type number}, {"demand_cv", type number}, {"peak_month", type text}, {"peak_month_units", type number}, {"low_month", type text}, {"low_month_units", type number}})
+				in
+				    Typed

@@ -1,0 +1,110 @@
+table 'forecast_series'
+	lineageTag: 3f7a5b16-c8bd-443d-8ac0-d5ea4828ec80
+
+	column 'month_start'
+		dataType: dateTime
+		formatString: mmm yyyy
+		isHidden
+		summarizeBy: none
+		sourceColumn: month_start
+		lineageTag: eb5cdc5c-6760-4eb3-8bd8-eec41bc9e627
+
+	column 'level'
+		dataType: string
+		isHidden
+		summarizeBy: none
+		sourceColumn: level
+		lineageTag: 4b28828b-8263-4c97-bc36-00e117176a7e
+
+	column 'level_label'
+		dataType: string
+		isHidden
+		summarizeBy: none
+		sourceColumn: level_label
+		lineageTag: 9bf8d829-d8ad-4e86-9809-b4b2bbae5728
+
+	column 'member'
+		dataType: string
+		isHidden
+		summarizeBy: none
+		sourceColumn: member
+		lineageTag: dcfd6ec8-4d60-4749-b6bc-2b180c2e806e
+
+	column 'series_key'
+		dataType: string
+		isHidden
+		summarizeBy: none
+		sourceColumn: series_key
+		lineageTag: 0c085f2b-da2c-4b99-99a1-f6f8c17e8cb6
+
+	column 'model_name'
+		dataType: string
+		isHidden
+		summarizeBy: none
+		sourceColumn: model_name
+		lineageTag: 2c709a14-c90c-457d-b9af-a065f0cdd088
+
+	column 'is_main_model'
+		dataType: boolean
+		isHidden
+		summarizeBy: none
+		sourceColumn: is_main_model
+		lineageTag: 5bf95000-e50c-4dae-b69a-cc3c3ca61a84
+
+	column 'series_type'
+		dataType: string
+		summarizeBy: none
+		sourceColumn: series_type
+		lineageTag: 3df9ca48-b71e-49a9-b9e0-3217047729d1
+
+	column 'actual_units'
+		dataType: double
+		formatString: #,0
+		summarizeBy: sum
+		sourceColumn: actual_units
+		lineageTag: 2058ab7e-6497-4fb8-8947-a1b843f1b42e
+
+	column 'forecast_units'
+		dataType: double
+		formatString: #,0
+		summarizeBy: sum
+		sourceColumn: forecast_units
+		lineageTag: ae5193a7-3c23-48a0-a14e-9340cbd4d26c
+
+	column 'lower_80'
+		dataType: double
+		formatString: #,0
+		summarizeBy: sum
+		sourceColumn: lower_80
+		lineageTag: e139d445-d4f9-428b-9104-33d8a4f8cc94
+
+	column 'upper_80'
+		dataType: double
+		formatString: #,0
+		summarizeBy: sum
+		sourceColumn: upper_80
+		lineageTag: c42aeb13-aa6a-4ce8-a524-dcdcdf6b2c51
+
+	column 'forecast_error'
+		dataType: double
+		formatString: #,0
+		summarizeBy: sum
+		sourceColumn: forecast_error
+		lineageTag: 536acd96-9ffb-49d5-992f-b40399496a77
+
+	column 'in_interval'
+		dataType: boolean
+		summarizeBy: none
+		sourceColumn: in_interval
+		lineageTag: 4ec6cdd9-f4ca-4c98-ac97-0114b368c20d
+
+	partition 'forecast_series' = m
+		mode: import
+		source =
+				let
+				    Source = PostgreSQL.Database(PgServer, PgDatabase),
+				    Data = Source{[Schema = PgSchema, Item = "forecast_series"]}[Data],
+				    Selected = Table.SelectColumns(Data, {"month_start", "level", "level_label", "member", "series_key", "model_name", "is_main_model", "series_type", "actual_units", "forecast_units", "lower_80", "upper_80", "forecast_error", "in_interval"}),
+				    Typed = Table.TransformColumnTypes(Selected, {{"month_start", type date}, {"level", type text}, {"level_label", type text}, {"member", type text}, {"series_key", type text}, {"model_name", type text}, {"is_main_model", type logical}, {"series_type", type text}, {"actual_units", type number}, {"forecast_units", type number}, {"lower_80", type number}, {"upper_80", type number}, {"forecast_error", type number}, {"in_interval", type logical}})
+				in
+				    Typed

@@ -1,0 +1,32 @@
+table 'dim_forecast_model'
+	lineageTag: f4447b7a-b39a-4545-9915-b50d28988fb2
+
+	column 'model_name'
+		dataType: string
+		summarizeBy: none
+		isKey
+		sourceColumn: model_name
+		lineageTag: 3418bce8-325f-4e6b-b518-a54a06cb753e
+
+	column 'model_label'
+		dataType: string
+		summarizeBy: none
+		sourceColumn: model_label
+		lineageTag: 25caa6f5-f975-4738-8bc9-e9bf2e6f945a
+
+	column 'is_main_model'
+		dataType: boolean
+		summarizeBy: none
+		sourceColumn: is_main_model
+		lineageTag: 36dabf42-925b-4933-8c66-9a7433046252
+
+	partition 'dim_forecast_model' = m
+		mode: import
+		source =
+				let
+				    Source = PostgreSQL.Database(PgServer, PgDatabase),
+				    Data = Source{[Schema = PgSchema, Item = "dim_forecast_model"]}[Data],
+				    Selected = Table.SelectColumns(Data, {"model_name", "model_label", "is_main_model"}),
+				    Typed = Table.TransformColumnTypes(Selected, {{"model_name", type text}, {"model_label", type text}, {"is_main_model", type logical}})
+				in
+				    Typed

@@ -1,0 +1,181 @@
+table 'kpi_dimension_summary'
+	lineageTag: 5d82d7f8-a45c-4713-afa2-89cbfa4c8559
+
+	column 'dimension_name'
+		dataType: string
+		isHidden
+		summarizeBy: none
+		sourceColumn: dimension_name
+		lineageTag: 6a30599b-cd7e-4683-b863-0a38d4b42e4e
+
+	column 'dimension_label'
+		dataType: string
+		isHidden
+		summarizeBy: none
+		sourceColumn: dimension_label
+		lineageTag: 0599c21a-202b-4321-85c8-e05d28ea7a3d
+
+	column 'dimension_value'
+		dataType: string
+		isHidden
+		summarizeBy: none
+		sourceColumn: dimension_value
+		lineageTag: 017cad20-60f4-4383-aa8b-2d65c15c5cf3
+
+	column 'parent_value'
+		dataType: string
+		isHidden
+		summarizeBy: none
+		sourceColumn: parent_value
+		lineageTag: 9c5c513b-9a4a-4080-a70d-ac8a7086c2b2
+
+	column 'member_key'
+		dataType: string
+		isHidden
+		summarizeBy: none
+		sourceColumn: member_key
+		lineageTag: 4c841f2a-a953-4282-a6e3-7365c2c79ac1
+
+	column 'period'
+		dataType: string
+		isHidden
+		summarizeBy: none
+		sourceColumn: period
+		lineageTag: 4e2a0725-5bcc-478c-bc56-9a1e9f14e9b3
+
+	column 'year'
+		dataType: int64
+		formatString: 0
+		isHidden
+		summarizeBy: none
+		sourceColumn: year
+		lineageTag: b34658c6-dd41-499e-ac1b-5d58b0ed00d3
+
+	column 'units'
+		dataType: double
+		formatString: #,0
+		summarizeBy: sum
+		sourceColumn: units
+		lineageTag: 6289bd3a-f93e-4424-8102-78c1a0665877
+
+	column 'revenue'
+		dataType: double
+		formatString: $#,0
+		summarizeBy: sum
+		sourceColumn: revenue
+		lineageTag: fa55ffec-3566-4943-8207-bb5c5ef259dd
+
+	column 'asp'
+		dataType: double
+		formatString: $#,0
+		summarizeBy: none
+		sourceColumn: asp
+		lineageTag: 6ed72fe2-0194-4068-9ef2-7a31cd422aba
+
+	column 'units_share_pct'
+		dataType: double
+		formatString: 0.0%
+		summarizeBy: none
+		sourceColumn: units_share_pct
+		lineageTag: 105d9a45-03ca-45bf-9bf8-6c1232b1b639
+
+	column 'revenue_share_pct'
+		dataType: double
+		formatString: 0.0%
+		summarizeBy: none
+		sourceColumn: revenue_share_pct
+		lineageTag: fb77dd44-6fc2-4e72-9f98-8d9add33a2e7
+
+	column 'units_py'
+		dataType: double
+		formatString: #,0
+		summarizeBy: sum
+		sourceColumn: units_py
+		lineageTag: f37c5da6-0d35-4123-a416-7a095a8eb645
+
+	column 'revenue_py'
+		dataType: double
+		formatString: $#,0
+		summarizeBy: sum
+		sourceColumn: revenue_py
+		lineageTag: d8da11ec-0621-4e9d-a7d4-de0770126e03
+
+	column 'units_yoy_pct'
+		dataType: double
+		formatString: 0.0%
+		summarizeBy: none
+		sourceColumn: units_yoy_pct
+		lineageTag: 2f978c52-b416-4427-83f7-44ea42be27b5
+
+	column 'revenue_yoy_pct'
+		dataType: double
+		formatString: 0.0%
+		summarizeBy: none
+		sourceColumn: revenue_yoy_pct
+		lineageTag: 035a7400-7d27-481b-9712-4ccc3dcf989f
+
+	column 'units_yoy_delta'
+		dataType: double
+		formatString: #,0
+		summarizeBy: sum
+		sourceColumn: units_yoy_delta
+		lineageTag: f47e2a92-5e47-47dc-b439-00e1576e3069
+
+	column 'share_change_pp'
+		dataType: double
+		formatString: +0.0%;-0.0%;0.0%
+		summarizeBy: none
+		sourceColumn: share_change_pp
+		lineageTag: db3cf5aa-61e2-4780-99ff-c3643c7d8357
+
+	column 'avg_monthly_units'
+		dataType: double
+		formatString: #,0.0
+		summarizeBy: none
+		sourceColumn: avg_monthly_units
+		lineageTag: c8846a8d-cb0b-46b7-95ac-3961472376a4
+
+	column 'demand_cv'
+		dataType: double
+		formatString: 0.000
+		summarizeBy: none
+		sourceColumn: demand_cv
+		lineageTag: cca3ff53-3371-4510-8dc5-f2a55815eccd
+
+	column 'active_months'
+		dataType: int64
+		formatString: 0
+		summarizeBy: none
+		sourceColumn: active_months
+		lineageTag: 86200704-594a-4a13-811b-36b9ca2fc86f
+
+	column 'rank_units'
+		dataType: int64
+		formatString: 0
+		summarizeBy: none
+		sourceColumn: rank_units
+		lineageTag: a01b0691-56ce-46a8-aa37-8b77d1e8068a
+
+	column 'rank_revenue'
+		dataType: int64
+		formatString: 0
+		summarizeBy: none
+		sourceColumn: rank_revenue
+		lineageTag: 919ffdcd-53bf-4271-808b-98cdadef9082
+
+	column 'mover_group'
+		dataType: string
+		summarizeBy: none
+		sourceColumn: mover_group
+		lineageTag: 24b887ad-eb4c-4504-b520-9ae241c8b550
+
+	partition 'kpi_dimension_summary' = m
+		mode: import
+		source =
+				let
+				    Source = PostgreSQL.Database(PgServer, PgDatabase),
+				    Data = Source{[Schema = PgSchema, Item = "kpi_dimension_summary"]}[Data],
+				    Selected = Table.SelectColumns(Data, {"dimension_name", "dimension_label", "dimension_value", "parent_value", "member_key", "period", "year", "units", "revenue", "asp", "units_share_pct", "revenue_share_pct", "units_py", "revenue_py", "units_yoy_pct", "revenue_yoy_pct", "units_yoy_delta", "share_change_pp", "avg_monthly_units", "demand_cv", "active_months", "rank_units", "rank_revenue", "mover_group"}),
+				    Typed = Table.TransformColumnTypes(Selected, {{"dimension_name", type text}, {"dimension_label", type text}, {"dimension_value", type text}, {"parent_value", type text}, {"member_key", type text}, {"period", type text}, {"year", Int64.Type}, {"units", type number}, {"revenue", type number}, {"asp", type number}, {"units_share_pct", type number}, {"revenue_share_pct", type number}, {"units_py", type number}, {"revenue_py", type number}, {"units_yoy_pct", type number}, {"revenue_yoy_pct", type number}, {"units_yoy_delta", type number}, {"share_change_pp", type number}, {"avg_monthly_units", type number}, {"demand_cv", type number}, {"active_months", Int64.Type}, {"rank_units", Int64.Type}, {"rank_revenue", Int64.Type}, {"mover_group", type text}})
+				in
+				    Typed

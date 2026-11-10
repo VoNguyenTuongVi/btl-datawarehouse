@@ -2,7 +2,8 @@
 Chạy trọn chuỗi DW -> dự báo -> Power BI bằng một lệnh.
 
     schema.sql -> etl.py -> test_quality.py -> forecast.py
-               -> build_pbip.py (sinh mô hình Power BI)
+               -> build_marts.py (tổng hợp KPI vào schema mart)
+               -> build_pbip.py (sinh mô hình Power BI từ các bảng mart)
                -> mở Power BI Desktop + tự Refresh (Windows)
 
 Cách dùng (từ thư mục gốc repo):
@@ -27,7 +28,7 @@ SRC = ROOT / "src"
 PBI_DIR = ROOT / "powerbi"
 PBI_NAME = "CarSalesDSS"
 
-STEPS = ["schema", "etl", "test", "forecast", "powerbi"]
+STEPS = ["schema", "etl", "test", "forecast", "marts", "powerbi"]
 
 
 def load_env(path: Path = ROOT / ".env") -> None:
@@ -99,9 +100,18 @@ def step_forecast() -> None:
     run([sys.executable, str(f)])
 
 
+def step_marts(args) -> None:
+    cmd = [sys.executable, str(SRC / "build_marts.py"), "--main-model", args.main_model]
+    if args.safety_factor is not None:
+        cmd += ["--safety-factor", str(args.safety_factor)]
+    if args.weights:
+        cmd += ["--weights", *map(str, args.weights)]
+    run(cmd)
+
+
 def step_powerbi(args) -> None:
     cmd = [sys.executable, str(SRC / "powerbi" / "build_pbip.py"),
-           "--out", str(PBI_DIR), "--name", PBI_NAME, "--main-model", args.main_model]
+           "--out", str(PBI_DIR), "--name", PBI_NAME]
     run(cmd)
     if args.no_open:
         return
@@ -144,6 +154,9 @@ def main() -> None:
     ap.add_argument("--only", nargs="+", choices=STEPS, help="chỉ chạy các bước này")
     ap.add_argument("--skip", nargs="+", choices=STEPS, default=[], help="bỏ qua các bước này")
     ap.add_argument("--main-model", default="sarima", choices=["sarima", "holt_winters", "seasonal_naive"])
+    ap.add_argument("--safety-factor", type=float, help="hệ số đệm k cho S3 (mặc định 1.0)")
+    ap.add_argument("--weights", type=float, nargs=4, metavar=("GROWTH", "SHARE", "STABILITY", "ACCURACY"),
+                    help="trọng số S5, tổng = 1")
     ap.add_argument("--no-open", action="store_true", help="không mở Power BI Desktop")
     ap.add_argument("--no-refresh", action="store_true", help="mở Power BI nhưng không tự refresh")
     ap.add_argument("--refresh-timeout", type=int, default=180)
@@ -152,7 +165,8 @@ def main() -> None:
     steps = [s for s in (args.only or STEPS) if s not in args.skip]
     actions = {
         "schema": step_schema, "etl": step_etl, "test": step_test,
-        "forecast": step_forecast, "powerbi": lambda: step_powerbi(args),
+        "forecast": step_forecast, "marts": lambda: step_marts(args),
+        "powerbi": lambda: step_powerbi(args),
     }
     t0 = time.time()
     for i, s in enumerate(steps, 1):

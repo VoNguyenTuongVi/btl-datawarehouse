@@ -1,0 +1,160 @@
+table 'dss_forecast_plan'
+	lineageTag: 5fc753c5-718b-44b4-8646-169833695ec8
+
+	column 'month_start'
+		dataType: dateTime
+		formatString: mmm yyyy
+		isHidden
+		summarizeBy: none
+		sourceColumn: month_start
+		lineageTag: 7410e20d-658c-48c2-96c7-4a78a6a44a94
+
+	column 'level'
+		dataType: string
+		isHidden
+		summarizeBy: none
+		sourceColumn: level
+		lineageTag: 7f61a9d1-c5b9-4681-859b-9e82d180eb87
+
+	column 'level_label'
+		dataType: string
+		isHidden
+		summarizeBy: none
+		sourceColumn: level_label
+		lineageTag: 8931e1c5-8164-4cc0-b2be-d9562a89deb9
+
+	column 'member'
+		dataType: string
+		isHidden
+		summarizeBy: none
+		sourceColumn: member
+		lineageTag: 07d2bf8b-4023-45fe-9e8c-5f85f235f392
+
+	column 'series_key'
+		dataType: string
+		isHidden
+		summarizeBy: none
+		sourceColumn: series_key
+		lineageTag: 83e100bd-b5a0-43fa-8bd6-ead6c4c906b8
+
+	column 'model_name'
+		dataType: string
+		isHidden
+		summarizeBy: none
+		sourceColumn: model_name
+		lineageTag: 7db5e3c7-4215-4cec-a9dd-637de1429c0e
+
+	column 'forecast_units'
+		dataType: double
+		formatString: #,0
+		summarizeBy: sum
+		sourceColumn: forecast_units
+		lineageTag: bf917b6f-2935-4b47-b561-c44d2eaea183
+
+	column 'lower_80'
+		dataType: double
+		formatString: #,0
+		summarizeBy: sum
+		sourceColumn: lower_80
+		lineageTag: 889c76b6-ba62-4efc-aac3-c31a5cfd3cfb
+
+	column 'upper_80'
+		dataType: double
+		formatString: #,0
+		summarizeBy: sum
+		sourceColumn: upper_80
+		lineageTag: 48bed403-2c39-4f40-806a-c4b7d82bf17f
+
+	column 'units_py'
+		dataType: double
+		formatString: #,0
+		summarizeBy: sum
+		sourceColumn: units_py
+		lineageTag: 0c05a1c8-07f9-464e-8d9d-59df2b18b7ad
+
+	column 'forecast_growth_pct'
+		dataType: double
+		formatString: 0.0%
+		summarizeBy: none
+		sourceColumn: forecast_growth_pct
+		lineageTag: b219ec46-feaa-4eb0-8895-e6c78732d1ba
+
+	column 'demand_cv'
+		dataType: double
+		formatString: 0.000
+		summarizeBy: none
+		sourceColumn: demand_cv
+		lineageTag: aa4afa24-a739-43cc-99c1-0400c598a9ec
+
+	column 'avg_monthly_units'
+		dataType: double
+		formatString: #,0.0
+		summarizeBy: none
+		sourceColumn: avg_monthly_units
+		lineageTag: 3040ddf7-d666-49a8-bb7a-34db9d807ec3
+
+	column 'asp_hist'
+		dataType: double
+		formatString: $#,0
+		summarizeBy: none
+		sourceColumn: asp_hist
+		lineageTag: b8bc8400-97ff-47b8-9171-eaab165a754d
+
+	column 'safety_factor'
+		dataType: double
+		formatString: 0.000
+		summarizeBy: none
+		sourceColumn: safety_factor
+		lineageTag: 6cd6fe75-f524-4231-b782-0befe97482b4
+
+	column 'recommended_order'
+		dataType: double
+		formatString: #,0
+		summarizeBy: sum
+		sourceColumn: recommended_order
+		lineageTag: ba0e3302-5bb8-4ab3-8b33-416bd2af6589
+
+	column 'projected_revenue'
+		dataType: double
+		formatString: $#,0
+		summarizeBy: sum
+		sourceColumn: projected_revenue
+		lineageTag: 547e8714-b963-4ff9-9794-8be66a307514
+
+	column 'projected_revenue_low'
+		dataType: double
+		formatString: $#,0
+		summarizeBy: sum
+		sourceColumn: projected_revenue_low
+		lineageTag: 8b414494-7793-45c0-b0ef-c7defb1bbd5d
+
+	column 'projected_revenue_high'
+		dataType: double
+		formatString: $#,0
+		summarizeBy: sum
+		sourceColumn: projected_revenue_high
+		lineageTag: b83a92bb-5aca-4756-a76c-3769e199ef08
+
+	column 'backtest_accuracy_pct'
+		dataType: double
+		formatString: 0.0%
+		summarizeBy: none
+		sourceColumn: backtest_accuracy_pct
+		lineageTag: 0e2a358d-6aff-470d-b59f-a8facf851296
+
+	column 'backtest_status'
+		dataType: string
+		summarizeBy: none
+		sourceColumn: backtest_status
+		lineageTag: 7b2eabce-c865-4507-bcf7-a02650422057
+
+	partition 'dss_forecast_plan' = m
+		mode: import
+		source =
+				let
+				    Source = PostgreSQL.Database(PgServer, PgDatabase),
+				    Data = Source{[Schema = PgSchema, Item = "dss_forecast_plan"]}[Data],
+				    Selected = Table.SelectColumns(Data, {"month_start", "level", "level_label", "member", "series_key", "model_name", "forecast_units", "lower_80", "upper_80", "units_py", "forecast_growth_pct", "demand_cv", "avg_monthly_units", "asp_hist", "safety_factor", "recommended_order", "projected_revenue", "projected_revenue_low", "projected_revenue_high", "backtest_accuracy_pct", "backtest_status"}),
+				    Typed = Table.TransformColumnTypes(Selected, {{"month_start", type date}, {"level", type text}, {"level_label", type text}, {"member", type text}, {"series_key", type text}, {"model_name", type text}, {"forecast_units", type number}, {"lower_80", type number}, {"upper_80", type number}, {"units_py", type number}, {"forecast_growth_pct", type number}, {"demand_cv", type number}, {"avg_monthly_units", type number}, {"asp_hist", type number}, {"safety_factor", type number}, {"recommended_order", type number}, {"projected_revenue", type number}, {"projected_revenue_low", type number}, {"projected_revenue_high", type number}, {"backtest_accuracy_pct", type number}, {"backtest_status", type text}})
+				in
+				    Typed

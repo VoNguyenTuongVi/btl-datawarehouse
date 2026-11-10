@@ -1,0 +1,33 @@
+table 'dim_year'
+	lineageTag: d205db2d-515a-4932-881f-b686fe0b3257
+
+	column 'year'
+		dataType: int64
+		formatString: 0
+		summarizeBy: none
+		isKey
+		sourceColumn: year
+		lineageTag: 70f64136-5a0c-4043-913a-4632d89b1d65
+
+	column 'year_label'
+		dataType: string
+		summarizeBy: none
+		sourceColumn: year_label
+		lineageTag: b04d9add-eeb7-42c4-9d8e-3dd348945d47
+
+	column 'period_type'
+		dataType: string
+		summarizeBy: none
+		sourceColumn: period_type
+		lineageTag: 2b28fe23-3c50-47e3-9a60-a2a4ef183a41
+
+	partition 'dim_year' = m
+		mode: import
+		source =
+				let
+				    Source = PostgreSQL.Database(PgServer, PgDatabase),
+				    Data = Source{[Schema = PgSchema, Item = "dim_year"]}[Data],
+				    Selected = Table.SelectColumns(Data, {"year", "year_label", "period_type"}),
+				    Typed = Table.TransformColumnTypes(Selected, {{"year", Int64.Type}, {"year_label", type text}, {"period_type", type text}})
+				in
+				    Typed

@@ -1,0 +1,71 @@
+table 'kpi_daily'
+	lineageTag: ac9eb618-146b-4618-84b0-2907340b9352
+
+	column 'full_date'
+		dataType: dateTime
+		formatString: yyyy-mm-dd
+		summarizeBy: none
+		sourceColumn: full_date
+		lineageTag: 8de8763c-6928-485f-a3e4-1330a4bede77
+
+	column 'month_start'
+		dataType: dateTime
+		formatString: mmm yyyy
+		isHidden
+		summarizeBy: none
+		sourceColumn: month_start
+		lineageTag: de7c1759-2111-4044-9fbf-5a7e3230a576
+
+	column 'year'
+		dataType: int64
+		formatString: 0
+		isHidden
+		summarizeBy: none
+		sourceColumn: year
+		lineageTag: 483c5b11-3888-4772-8765-b94f1d4b93c1
+
+	column 'dow_no'
+		dataType: int64
+		formatString: 0
+		summarizeBy: none
+		sourceColumn: dow_no
+		lineageTag: f1a03516-6df2-492b-a90a-e8d2fbadeea7
+
+	column 'day_of_week'
+		dataType: string
+		summarizeBy: none
+		sortByColumn: 'dow_no'
+		sourceColumn: day_of_week
+		lineageTag: 868e41b4-9e36-4efb-a49c-65e0e450f355
+
+	column 'units'
+		dataType: double
+		formatString: #,0
+		summarizeBy: sum
+		sourceColumn: units
+		lineageTag: 0ac7b58f-23f2-460e-863a-b0dc77e001ee
+
+	column 'revenue'
+		dataType: double
+		formatString: $#,0
+		summarizeBy: sum
+		sourceColumn: revenue
+		lineageTag: e764cf3c-18eb-4412-8fe1-0429b73604f3
+
+	column 'asp'
+		dataType: double
+		formatString: $#,0
+		summarizeBy: none
+		sourceColumn: asp
+		lineageTag: 1b3b52bc-0b1c-4969-86da-fec59683a42a
+
+	partition 'kpi_daily' = m
+		mode: import
+		source =
+				let
+				    Source = PostgreSQL.Database(PgServer, PgDatabase),
+				    Data = Source{[Schema = PgSchema, Item = "kpi_daily"]}[Data],
+				    Selected = Table.SelectColumns(Data, {"full_date", "month_start", "year", "dow_no", "day_of_week", "units", "revenue", "asp"}),
+				    Typed = Table.TransformColumnTypes(Selected, {{"full_date", type date}, {"month_start", type date}, {"year", Int64.Type}, {"dow_no", Int64.Type}, {"day_of_week", type text}, {"units", type number}, {"revenue", type number}, {"asp", type number}})
+				in
+				    Typed

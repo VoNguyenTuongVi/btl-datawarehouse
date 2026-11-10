@@ -1,0 +1,265 @@
+table 'kpi_monthly_overview'
+	lineageTag: 491f4c0f-5ffa-41d7-83f3-b0c5aa2b7cef
+
+	column 'month_start'
+		dataType: dateTime
+		formatString: mmm yyyy
+		isHidden
+		summarizeBy: none
+		sourceColumn: month_start
+		lineageTag: 945754fb-4209-49df-b9aa-3ddf73cdeba1
+
+	column 'year'
+		dataType: int64
+		formatString: 0
+		isHidden
+		summarizeBy: none
+		sourceColumn: year
+		lineageTag: 484309f8-2c5b-45c4-928f-2c0ce6abac9d
+
+	column 'units'
+		dataType: double
+		formatString: #,0
+		summarizeBy: sum
+		sourceColumn: units
+		lineageTag: 00bd9254-f638-4736-99cd-c77c91077081
+
+	column 'revenue'
+		dataType: double
+		formatString: $#,0
+		summarizeBy: sum
+		sourceColumn: revenue
+		lineageTag: 5451715a-39d1-4212-893d-ac2cbd61064b
+
+	column 'asp'
+		dataType: double
+		formatString: $#,0
+		summarizeBy: none
+		sourceColumn: asp
+		lineageTag: 8064db67-a78e-475a-b46d-d34280d11680
+
+	column 'units_pm'
+		dataType: double
+		formatString: #,0
+		summarizeBy: sum
+		sourceColumn: units_pm
+		lineageTag: 27b5d158-a716-443b-8071-06b825877772
+
+	column 'revenue_pm'
+		dataType: double
+		formatString: $#,0
+		summarizeBy: sum
+		sourceColumn: revenue_pm
+		lineageTag: 190a4387-6668-4b51-81a6-7c6584072375
+
+	column 'units_py'
+		dataType: double
+		formatString: #,0
+		summarizeBy: sum
+		sourceColumn: units_py
+		lineageTag: 4233642c-1e31-4fdb-bac3-96db083c61cd
+
+	column 'revenue_py'
+		dataType: double
+		formatString: $#,0
+		summarizeBy: sum
+		sourceColumn: revenue_py
+		lineageTag: c71cd8d4-b097-433a-98d9-ca931738f70a
+
+	column 'units_mom_pct'
+		dataType: double
+		formatString: 0.0%
+		summarizeBy: none
+		sourceColumn: units_mom_pct
+		lineageTag: 67592ac7-207e-4b12-88a9-f5cadcb5bf46
+
+	column 'revenue_mom_pct'
+		dataType: double
+		formatString: 0.0%
+		summarizeBy: none
+		sourceColumn: revenue_mom_pct
+		lineageTag: 323f16b7-a397-4df2-aa51-0f9b7ea860fe
+
+	column 'units_yoy_pct'
+		dataType: double
+		formatString: 0.0%
+		summarizeBy: none
+		sourceColumn: units_yoy_pct
+		lineageTag: af06f0a7-1b5b-4a33-a0a6-4336c72790c2
+
+	column 'revenue_yoy_pct'
+		dataType: double
+		formatString: 0.0%
+		summarizeBy: none
+		sourceColumn: revenue_yoy_pct
+		lineageTag: 6234f1c6-2c4f-4b21-acae-ba0fd8726e4e
+
+	column 'units_ytd'
+		dataType: double
+		formatString: #,0
+		summarizeBy: none
+		sourceColumn: units_ytd
+		lineageTag: 0c8df6a5-7029-4c2d-8b80-7bd21a42bc6a
+
+	column 'revenue_ytd'
+		dataType: double
+		formatString: $#,0
+		summarizeBy: none
+		sourceColumn: revenue_ytd
+		lineageTag: b648b345-46fd-4d11-84a4-592cb672ed65
+
+	column 'units_ytd_py'
+		dataType: double
+		formatString: #,0
+		summarizeBy: none
+		sourceColumn: units_ytd_py
+		lineageTag: 1f41bc90-e209-410d-b77e-22e65c1a7fe4
+
+	column 'revenue_ytd_py'
+		dataType: double
+		formatString: $#,0
+		summarizeBy: none
+		sourceColumn: revenue_ytd_py
+		lineageTag: 44c5c3d9-0f83-4cb5-a3ae-2504dbd076fd
+
+	column 'units_ytd_yoy_pct'
+		dataType: double
+		formatString: 0.0%
+		summarizeBy: none
+		sourceColumn: units_ytd_yoy_pct
+		lineageTag: 0badd554-3f86-4646-8b6a-5bd022253fa8
+
+	column 'revenue_ytd_yoy_pct'
+		dataType: double
+		formatString: 0.0%
+		summarizeBy: none
+		sourceColumn: revenue_ytd_yoy_pct
+		lineageTag: 16083ea8-a256-4e39-a4f6-32697f0ea4b7
+
+	column 'seasonality_index'
+		dataType: double
+		formatString: 0.000
+		summarizeBy: none
+		sourceColumn: seasonality_index
+		lineageTag: f0e64d37-b213-417c-8a67-8ec374161401
+
+	column 'seasonality_index_2y'
+		dataType: double
+		formatString: 0.000
+		summarizeBy: none
+		sourceColumn: seasonality_index_2y
+		lineageTag: d1137802-fb91-44a7-8603-e03e9a61ab3b
+
+	column 'target_units'
+		dataType: double
+		formatString: #,0
+		summarizeBy: sum
+		sourceColumn: target_units
+		lineageTag: e050bee8-a7b6-4c62-b2ec-7ee4b8cbfd56
+
+	column 'target_revenue'
+		dataType: double
+		formatString: $#,0
+		summarizeBy: sum
+		sourceColumn: target_revenue
+		lineageTag: 8b8ae0db-a74c-470b-91fa-1b116b643e7d
+
+	column 'units_vs_target_pct'
+		dataType: double
+		formatString: 0.0%
+		summarizeBy: none
+		sourceColumn: units_vs_target_pct
+		lineageTag: ea572e2d-9363-4038-afa2-33b80c03d15b
+
+	column 'revenue_vs_target_pct'
+		dataType: double
+		formatString: 0.0%
+		summarizeBy: none
+		sourceColumn: revenue_vs_target_pct
+		lineageTag: fdfbce98-ef6b-4aed-8e01-9e969711e3de
+
+	column 'units_target_status'
+		dataType: string
+		summarizeBy: none
+		sourceColumn: units_target_status
+		lineageTag: 53a07d30-d9e0-4466-aebc-4ceb5cbcf567
+
+	column 'revenue_target_status'
+		dataType: string
+		summarizeBy: none
+		sourceColumn: revenue_target_status
+		lineageTag: 16ef583f-0615-42ad-8749-7c5d81d696d9
+
+	column 'auto_units'
+		dataType: double
+		formatString: #,0
+		summarizeBy: sum
+		sourceColumn: auto_units
+		lineageTag: 4118e4c9-9413-4126-b65f-8b502ee7aaa3
+
+	column 'auto_share_pct'
+		dataType: double
+		formatString: 0.0%
+		summarizeBy: none
+		sourceColumn: auto_share_pct
+		lineageTag: 41a0079f-c998-469d-8f44-542e9ef1b9fa
+
+	column 'auto_share_change_pp'
+		dataType: double
+		formatString: +0.0%;-0.0%;0.0%
+		summarizeBy: none
+		sourceColumn: auto_share_change_pp
+		lineageTag: ae5356ff-4716-496e-964b-e0f43d2804d0
+
+	column 'active_dealers'
+		dataType: int64
+		formatString: 0
+		summarizeBy: none
+		sourceColumn: active_dealers
+		lineageTag: 7dfdeb04-ffc3-47ca-90f6-db51bcbcd23a
+
+	column 'units_per_dealer'
+		dataType: double
+		formatString: #,0.0
+		summarizeBy: none
+		sourceColumn: units_per_dealer
+		lineageTag: f1ba9f66-e0cc-4d89-a9a6-f09395668c4a
+
+	column 'selling_days'
+		dataType: int64
+		formatString: 0
+		summarizeBy: sum
+		sourceColumn: selling_days
+		lineageTag: cf4c8392-0093-41fc-a019-7cba2c29672b
+
+	column 'dealers_growing'
+		dataType: int64
+		formatString: 0
+		summarizeBy: sum
+		sourceColumn: dealers_growing
+		lineageTag: 6e84d185-1cc9-4418-8148-ac51a27c7a7f
+
+	column 'dealers_compared'
+		dataType: int64
+		formatString: 0
+		summarizeBy: sum
+		sourceColumn: dealers_compared
+		lineageTag: 2453f12f-6d16-424e-b29e-cf4ef72289ea
+
+	column 'dealers_growing_pct'
+		dataType: double
+		formatString: 0.0%
+		summarizeBy: none
+		sourceColumn: dealers_growing_pct
+		lineageTag: ebf3c070-c65d-4610-8d1a-d9900556a60a
+
+	partition 'kpi_monthly_overview' = m
+		mode: import
+		source =
+				let
+				    Source = PostgreSQL.Database(PgServer, PgDatabase),
+				    Data = Source{[Schema = PgSchema, Item = "kpi_monthly_overview"]}[Data],
+				    Selected = Table.SelectColumns(Data, {"month_start", "year", "units", "revenue", "asp", "units_pm", "revenue_pm", "units_py", "revenue_py", "units_mom_pct", "revenue_mom_pct", "units_yoy_pct", "revenue_yoy_pct", "units_ytd", "revenue_ytd", "units_ytd_py", "revenue_ytd_py", "units_ytd_yoy_pct", "revenue_ytd_yoy_pct", "seasonality_index", "seasonality_index_2y", "target_units", "target_revenue", "units_vs_target_pct", "revenue_vs_target_pct", "units_target_status", "revenue_target_status", "auto_units", "auto_share_pct", "auto_share_change_pp", "active_dealers", "units_per_dealer", "selling_days", "dealers_growing", "dealers_compared", "dealers_growing_pct"}),
+				    Typed = Table.TransformColumnTypes(Selected, {{"month_start", type date}, {"year", Int64.Type}, {"units", type number}, {"revenue", type number}, {"asp", type number}, {"units_pm", type number}, {"revenue_pm", type number}, {"units_py", type number}, {"revenue_py", type number}, {"units_mom_pct", type number}, {"revenue_mom_pct", type number}, {"units_yoy_pct", type number}, {"revenue_yoy_pct", type number}, {"units_ytd", type number}, {"revenue_ytd", type number}, {"units_ytd_py", type number}, {"revenue_ytd_py", type number}, {"units_ytd_yoy_pct", type number}, {"revenue_ytd_yoy_pct", type number}, {"seasonality_index", type number}, {"seasonality_index_2y", type number}, {"target_units", type number}, {"target_revenue", type number}, {"units_vs_target_pct", type number}, {"revenue_vs_target_pct", type number}, {"units_target_status", type text}, {"revenue_target_status", type text}, {"auto_units", type number}, {"auto_share_pct", type number}, {"auto_share_change_pp", type number}, {"active_dealers", Int64.Type}, {"units_per_dealer", type number}, {"selling_days", Int64.Type}, {"dealers_growing", Int64.Type}, {"dealers_compared", Int64.Type}, {"dealers_growing_pct", type number}})
+				in
+				    Typed
