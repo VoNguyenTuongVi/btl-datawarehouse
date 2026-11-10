@@ -1,10 +1,10 @@
 table 'Demand Change'
-	lineageTag: 5ee9b053-d574-4b30-a65c-66bce2cf59f0
+	lineageTag: ca30737e-c554-4f3b-932f-44289187851a
 
 	/// Tham số What-if (S6)
 	measure 'Demand Change Value' = SELECTEDVALUE ( 'Demand Change'[Value], 0 )
 		formatString: 0%
-		lineageTag: b0b9a65e-2c42-4cf7-b9c9-00aae88c473b
+		lineageTag: 2a68bce4-c130-4a9a-983e-ecbd01631db9
 
 	column 'Value'
 		dataType: double
@@ -12,7 +12,7 @@ table 'Demand Change'
 		summarizeBy: none
 		isNameInferred
 		sourceColumn: [Value]
-		lineageTag: 11abfae7-1e09-4eef-9928-6efe13519271
+		lineageTag: 13e6a90f-1069-4b51-86dc-f545c9f40206
 
 	partition 'Demand Change' = calculated
 		mode: import

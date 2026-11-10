@@ -67,6 +67,7 @@ SOURCE_TABLES: dict[str, list[tuple[str, str, str, bool]]] = {
     ],
     "fact_demand_forecast": [
         ("forecast_id", "int64", "none", True),
+        ("run_date", "dateTime", "none", False),
         ("month_id", "int64", "none", True),
         ("month_start", "dateTime", "none", False),
         ("level", "string", "none", False),
@@ -97,6 +98,33 @@ RELATIONSHIPS = [
     (("fact_demand_forecast", "month_start"), ("Calendar", "Date")),
 ]
 
+# Cột tính toán thêm vào bảng nguồn: bảng -> [(tên, kiểu, biểu thức DAX)]
+CALC_COLUMNS = {
+    "dim_customer": [(
+        "income_quartile", "int64",
+        # D11: tứ phân vị thu nhập (1 = thấp nhất), tính theo ngưỡng phân vị
+        "VAR _i = dim_customer[annual_income]\n"
+        "VAR _q1 = PERCENTILEX.INC ( ALL ( dim_customer ), dim_customer[annual_income], 0.25 )\n"
+        "VAR _q2 = PERCENTILEX.INC ( ALL ( dim_customer ), dim_customer[annual_income], 0.5 )\n"
+        "VAR _q3 = PERCENTILEX.INC ( ALL ( dim_customer ), dim_customer[annual_income], 0.75 )\n"
+        "RETURN\n"
+        "    IF ( ISBLANK ( _i ), BLANK (), IF ( _i <= _q1, 1, IF ( _i <= _q2, 2, IF ( _i <= _q3, 3, 4 ) ) ) )",
+    )],
+}
+
+# Bảng tính toán: mỗi dòng = 1 ngày x hãng x model x engine x transmission x color x body_style
+DAILY_SALES_COLS = [
+    ("Date", "dateTime", "none"),
+    ("company", "string", "none"),
+    ("model", "string", "none"),
+    ("engine", "string", "none"),
+    ("transmission", "string", "none"),
+    ("color", "string", "none"),
+    ("body_style", "string", "none"),
+    ("Units Qty", "int64", "sum"),
+    ("Sales Amount", "int64", "sum"),
+]
+
 HIERARCHIES = {
     "dim_car": [("Product", ["company", "model"])],
     "dim_dealer": [("Geography", ["dealer_region", "dealer_name"])],
@@ -114,6 +142,22 @@ def build_measures(main_model: str, target_growth: float,
     PCT, INT, USD, DEC = "0.0%", "#,0", "$#,0", "0.00"
     F2, F3, F4, FT = ("2. Nhu cầu lịch sử", "3. Dự báo", "4. Hỗ trợ quyết định",
                       "5. Mục tiêu & ngưỡng")
+    FQ = "1. Chất lượng dữ liệu"
+    last_date = (
+        "VAR _lastDay = CALCULATE ( MAX ( fact_car_sales[date_id] ), ALL ( fact_car_sales ) )\n"
+        "VAR _firstDay = CALCULATE ( MIN ( fact_car_sales[date_id] ), ALL ( fact_car_sales ) )\n"
+        "VAR _last = DATE ( INT ( _lastDay / 10000 ), MOD ( INT ( _lastDay / 100 ), 100 ), MOD ( _lastDay, 100 ) )\n"
+        "VAR _first = DATE ( INT ( _firstDay / 10000 ), MOD ( INT ( _firstDay / 100 ), 100 ), MOD ( _firstDay, 100 ) )\n"
+    )
+
+    def norm(raw: str) -> str:
+        """Chuẩn hóa min-max 0–1 giữa các hãng đang hiển thị (S5)."""
+        return (
+            f"VAR _v = [{raw}]\n"
+            f"VAR _min = MINX ( ALLSELECTED ( dim_car[company] ), [{raw}] )\n"
+            f"VAR _max = MAXX ( ALLSELECTED ( dim_car[company] ), [{raw}] )\n"
+            "RETURN DIVIDE ( _v - _min, _max - _min, 0 )"
+        )
 
     def fc_table(backtest: bool, default_level: str) -> str:
         """Bảng dự báo đã lọc: mô hình chính và cấp mặc định nếu chưa có slicer."""
@@ -340,6 +384,84 @@ def build_measures(main_model: str, target_growth: float,
          "    BLANK (),\n"
          "    IF ( [WAPE %] <= [WAPE Threshold] && ABS ( [Bias %] ) <= [Bias Threshold], \"Đạt\", \"Không đạt\" )\n"
          ")", None, FT, "Đạt khi WAPE và |Bias| cùng trong ngưỡng"),
+
+        # ---------------- Nhóm 1: chất lượng dữ liệu (Q4–Q7) ----------------
+        ("Q4 Completeness %",
+         "VAR _rows = COUNTROWS ( fact_car_sales )\n"
+         "VAR _nulls = COUNTBLANK ( fact_car_sales[date_id] ) + COUNTBLANK ( fact_car_sales[customer_id] )\n"
+         "    + COUNTBLANK ( fact_car_sales[car_key] ) + COUNTBLANK ( fact_car_sales[dealer_id] )\n"
+         "    + COUNTBLANK ( fact_car_sales[price] )\n"
+         "RETURN DIVIDE ( _rows * 5 - _nulls, _rows * 5 )", PCT, FQ, "Q4 – độ đầy đủ các cột khóa và giá"),
+        ("Q5 Duplicate Rate",
+         "DIVIDE ( COUNTROWS ( fact_car_sales ) - DISTINCTCOUNT ( fact_car_sales[car_id] ), COUNTROWS ( fact_car_sales ) )",
+         "0.00%", FQ, "Q5 – tỷ lệ car_id trùng"),
+        ("Q6 Data Freshness Days",
+         last_date + "RETURN DATEDIFF ( _last, TODAY (), DAY )", INT, FQ,
+         "Q6 – số ngày từ giao dịch mới nhất đến hôm nay"),
+        ("Q7 Months with Sales",
+         "COUNTROWS ( FILTER ( ALL ( Calendar[YearMonth] ), [Units Sold] > 0 ) )", "0", FQ,
+         "Q7 – số tháng có giao dịch"),
+        ("Q7 Months in Range",
+         last_date + "RETURN DATEDIFF ( _first, _last, MONTH ) + 1", "0", FQ,
+         "Q7 – số tháng từ giao dịch đầu đến cuối"),
+        ("Q7 Coverage %", "DIVIDE ( [Q7 Months with Sales], [Q7 Months in Range] )", PCT, FQ,
+         "Q7 – độ phủ chuỗi thời gian (cần ≥ 24 tháng lịch sử)"),
+
+        # ---------------- D8, D13: chỉ số ngày trong tuần, mẫu tăng/giảm mạnh ----------------
+        ("Units per Selling Day",
+         "DIVIDE ( [Units Sold], CALCULATE ( DISTINCTCOUNT ( fact_car_sales[date_id] ) ) )",
+         "0.0", F2, "D8 – số xe trung bình mỗi ngày có bán"),
+        ("Weekday Index",
+         "DIVIDE (\n"
+         "    [Units per Selling Day],\n"
+         "    AVERAGEX ( ALLSELECTED ( Calendar[DayOfWeekNo], Calendar[DayOfWeek] ), [Units per Selling Day] )\n"
+         ")", DEC, F2, "D8 – chỉ số ngày trong tuần"),
+        ("Model Gain Rank",
+         "RANKX ( ALLSELECTED ( dim_car[model] ), [Units YoY Delta], , DESC, DENSE )", "0", F2,
+         "D13 – xếp hạng mẫu tăng mạnh nhất (lọc ≤ 5 trong visual)"),
+        ("Model Loss Rank",
+         "RANKX ( ALLSELECTED ( dim_car[model] ), [Units YoY Delta], , ASC, DENSE )", "0", F2,
+         "D13 – xếp hạng mẫu giảm mạnh nhất (lọc ≤ 5 trong visual)"),
+
+        # ---------------- S5: điểm ưu tiên theo hãng ----------------
+        ("Priority Weight Growth", "0.25", "0.00", FT, "S5 – trọng số tăng trưởng (tổng 4 trọng số = 1)"),
+        ("Priority Weight Share", "0.25", "0.00", FT, "S5 – trọng số thị phần"),
+        ("Priority Weight Stability", "0.25", "0.00", FT, "S5 – trọng số ổn định (1 − CV)"),
+        ("Priority Weight Accuracy", "0.25", "0.00", FT, "S5 – trọng số độ chính xác dự báo"),
+        ("Priority Growth Raw",
+         "VAR _lastDay = CALCULATE ( MAX ( fact_car_sales[date_id] ), ALL ( fact_car_sales ) )\n"
+         "VAR _ym = INT ( _lastDay / 100 )\n"
+         "VAR _cur = CALCULATE ( [Units Sold], REMOVEFILTERS ( Calendar ), Calendar[YearMonth] = _ym )\n"
+         "VAR _py = CALCULATE ( [Units Sold], REMOVEFILTERS ( Calendar ), Calendar[YearMonth] = _ym - 100 )\n"
+         "RETURN DIVIDE ( _cur - _py, _py )", PCT, F4, "S5 – tăng trưởng YoY tháng mới nhất"),
+        ("Priority Share Raw",
+         "DIVIDE (\n"
+         "    CALCULATE ( [Units Sold], REMOVEFILTERS ( Calendar ) ),\n"
+         "    CALCULATE ( [Units Sold], REMOVEFILTERS ( Calendar ), ALLSELECTED ( dim_car ) )\n"
+         ")", PCT, F4, "S5 – thị phần toàn lịch sử"),
+        ("Priority Stability Raw", "1 - COALESCE ( [Demand CV Hist], 0 )", "0.000", F4, "S5 – 1 − CV"),
+        ("Priority Accuracy Raw",
+         "COALESCE (\n"
+         "    CALCULATE (\n"
+         "        [Forecast Accuracy %],\n"
+         "        REMOVEFILTERS ( Calendar ),\n"
+         "        fact_demand_forecast[level] = \"company\",\n"
+         f"        fact_demand_forecast[model_name] = \"{main_model}\",\n"
+         "        TREATAS ( VALUES ( dim_car[company] ), fact_demand_forecast[member] )\n"
+         "    ),\n"
+         "    0\n"
+         ")", PCT, F4, "S5 – độ chính xác backtest cấp hãng"),
+        ("Priority Growth Score", norm("Priority Growth Raw"), "0.000", F4, "S5 – chuẩn hóa 0–1"),
+        ("Priority Share Score", norm("Priority Share Raw"), "0.000", F4, "S5 – chuẩn hóa 0–1"),
+        ("Priority Stability Score", norm("Priority Stability Raw"), "0.000", F4, "S5 – chuẩn hóa 0–1"),
+        ("Priority Accuracy Score", norm("Priority Accuracy Raw"), "0.000", F4, "S5 – chuẩn hóa 0–1"),
+        ("Priority Score",
+         "[Priority Weight Growth] * [Priority Growth Score]\n"
+         "    + [Priority Weight Share] * [Priority Share Score]\n"
+         "    + [Priority Weight Stability] * [Priority Stability Score]\n"
+         "    + [Priority Weight Accuracy] * [Priority Accuracy Score]", "0.000", F4,
+         "S5 – điểm ưu tiên theo hãng (đặt hãng trên trục của visual)"),
+        ("Priority Rank", "RANKX ( ALLSELECTED ( dim_car[company] ), [Priority Score] )", "0", F4, "S5 – xếp hạng"),
     ]
     return m
 
@@ -398,6 +520,10 @@ def source_table_tmdl(table: str, cols) -> str:
     for name, dtype, summ, hidden in cols:
         fmt = "yyyy-mm-dd" if dtype == "dateTime" else None
         parts.append(column_block(name, dtype, summ, hidden, fmt=fmt))
+    for cname, ctype, cdax in CALC_COLUMNS.get(table, []):
+        parts += [f"\tcolumn {q(cname)} =", indent(cdax, 3),
+                  f"\t\tdataType: {ctype}", "\t\tsummarizeBy: none",
+                  f"\t\tlineageTag: {tag()}", ""]
     for hname, levels in HIERARCHIES.get(table, []):
         parts.append(f"\thierarchy {q(hname)}")
         parts.append(f"\t\tlineageTag: {tag()}")
@@ -466,6 +592,30 @@ def calendar_tmdl(start: str, end: str) -> str:
         parts += [f"\t\tlevel {lv}", f"\t\t\tcolumn: {lv}", f"\t\t\tlineageTag: {tag()}"]
     parts += ["", "\tpartition Calendar = calculated", "\t\tmode: import", "\t\tsource =",
               indent(dax, 4), ""]
+    return "\n".join(parts)
+
+
+def daily_sales_tmdl() -> str:
+    dax = (
+        "SUMMARIZECOLUMNS (\n"
+        "    Calendar[Date],\n"
+        "    dim_car[company],\n"
+        "    dim_car[model],\n"
+        "    dim_car[engine],\n"
+        "    dim_car[transmission],\n"
+        "    dim_car[color],\n"
+        "    dim_car[body_style],\n"
+        "    \"Units Qty\", SUM ( fact_car_sales[quantity] ),\n"
+        "    \"Sales Amount\", SUM ( fact_car_sales[price] )\n"
+        ")"
+    )
+    parts = ["table 'Daily Car Sales'", f"\tlineageTag: {tag()}", ""]
+    for name, dtype, summ in DAILY_SALES_COLS:
+        fmt = "yyyy-mm-dd" if dtype == "dateTime" else ("#,0" if summ == "sum" else None)
+        parts.append(column_block(name, dtype, summ, source=f"[{name}]", fmt=fmt,
+                                  extra=["isNameInferred"]))
+    parts += ["\tpartition 'Daily Car Sales' = calculated", "\t\tmode: import",
+              "\t\tsource =", indent(dax, 4), ""]
     return "\n".join(parts)
 
 
@@ -602,6 +752,7 @@ def build(args) -> Path:
     for t, cols in SOURCE_TABLES.items():
         tables[t] = source_table_tmdl(t, cols)
     tables["Calendar"] = calendar_tmdl(args.calendar_start, args.calendar_end)
+    tables["Daily Car Sales"] = daily_sales_tmdl()
     tables["Demand Change"] = whatif_tmdl("Demand Change", -0.3, 0.3, 0.05, 0, "0%")
     tables["Safety Factor"] = whatif_tmdl("Safety Factor", 0, 2, 0.1, 1, "0.0")
     tables["_Measures"] = measures_tmdl(measures)

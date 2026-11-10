@@ -1,14 +1,14 @@
 expression PgServer = "localhost:5432" meta [IsParameterQuery=true, Type="Text", IsParameterQueryRequired=true]
-	lineageTag: d7c00995-3aef-48e4-a51f-d2ee33f72db5
+	lineageTag: f6463a3d-ed83-4988-b256-7ecdeac0e1ab
 
 	annotation PBI_ResultType = Text
 
 expression PgDatabase = "car_sales_dw" meta [IsParameterQuery=true, Type="Text", IsParameterQueryRequired=true]
-	lineageTag: 89244c50-6f16-4487-aac6-8fcd8bc96766
+	lineageTag: 6fa98459-60c1-451c-9e81-cbdc16df7fae
 
 	annotation PBI_ResultType = Text
 
 expression PgSchema = "public" meta [IsParameterQuery=true, Type="Text", IsParameterQueryRequired=true]
-	lineageTag: e93f1d37-63e7-4900-9306-dfe7b2240def
+	lineageTag: 227dcc39-7ea1-4258-83c1-7139766038c7
 
 	annotation PBI_ResultType = Text

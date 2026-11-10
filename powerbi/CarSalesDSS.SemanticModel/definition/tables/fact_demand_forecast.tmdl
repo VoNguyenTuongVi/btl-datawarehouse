@@ -1,74 +1,81 @@
 table 'fact_demand_forecast'
-	lineageTag: fa060bc6-61e8-405e-9c72-5e6774a4d50c
+	lineageTag: 356ec88c-d41b-4794-a066-112fb081107f
 
 	column 'forecast_id'
 		dataType: int64
 		isHidden
 		summarizeBy: none
 		sourceColumn: forecast_id
-		lineageTag: 0f328e0d-a66d-4e3b-9685-d6a9587857a5
+		lineageTag: 47b02a62-c6b1-433a-8982-2f3dcc109de3
+
+	column 'run_date'
+		dataType: dateTime
+		formatString: yyyy-mm-dd
+		summarizeBy: none
+		sourceColumn: run_date
+		lineageTag: 336094e3-252c-4722-a8d4-f3935565bd07
 
 	column 'month_id'
 		dataType: int64
 		isHidden
 		summarizeBy: none
 		sourceColumn: month_id
-		lineageTag: b3f2e5f2-5f16-40f1-841a-9123353c6ed6
+		lineageTag: 2dea4be3-d9ac-47c5-a391-a85097e83080
 
 	column 'month_start'
 		dataType: dateTime
 		formatString: yyyy-mm-dd
 		summarizeBy: none
 		sourceColumn: month_start
-		lineageTag: b70c497e-c04b-4a0a-b4e1-552a59c43fc3
+		lineageTag: 4dc308ff-2408-4930-90be-ce8ef0638872
 
 	column 'level'
 		dataType: string
 		summarizeBy: none
 		sourceColumn: level
-		lineageTag: 1e77363f-acfe-4daf-93e8-ab6eb16efdde
+		lineageTag: 89f9b4a2-cde2-4436-8238-d10445462be4
 
 	column 'member'
 		dataType: string
 		summarizeBy: none
 		sourceColumn: member
-		lineageTag: fde4ba99-f1f8-4ab7-b832-72a3efc69d19
+		lineageTag: 43c20830-c10a-41ec-a829-a948d1ed9e3b
 
 	column 'model_name'
 		dataType: string
 		summarizeBy: none
 		sourceColumn: model_name
-		lineageTag: be094cb3-5453-4398-b39d-39e74a8ed883
+		lineageTag: b999c798-8ec3-4f07-838c-84c79713cd8a
 
 	column 'forecast_units'
 		dataType: double
 		summarizeBy: sum
 		sourceColumn: forecast_units
-		lineageTag: e000e2a9-f225-496a-b205-a13ad1c87b3d
+		lineageTag: 2e198f59-6301-4eb5-bf4a-20e27132465d
 
 	column 'lower_80'
 		dataType: double
 		summarizeBy: sum
 		sourceColumn: lower_80
-		lineageTag: 4777dcbc-81f5-4beb-991e-350f5ce88f72
+		lineageTag: db003e65-efa6-4f7e-9345-1e192a9445e0
 
 	column 'upper_80'
 		dataType: double
 		summarizeBy: sum
 		sourceColumn: upper_80
-		lineageTag: a4e6b056-0e90-4db7-837e-08765cf4bda5
+		lineageTag: 9d4730a3-371c-46ea-b699-e84e95da640d
 
 	column 'actual_units'
 		dataType: double
 		summarizeBy: sum
 		sourceColumn: actual_units
-		lineageTag: d7d23d13-57f7-4329-85c7-984555c8c068
+		lineageTag: 878ff905-92f9-43c4-8c57-a43ce7db95da
 
 	column 'is_backtest'
 		dataType: boolean
 		summarizeBy: none
 		sourceColumn: is_backtest
-		lineageTag: 4fbff94e-c7b7-42f5-b5d4-60b82f1afb44
+		lineageTag: a7aa6fef-7b45-4ee4-b6c4-669e200efc62
 
 	partition 'fact_demand_forecast' = m
 		mode: import
@@ -76,7 +83,7 @@ table 'fact_demand_forecast'
 				let
 				    Source = PostgreSQL.Database(PgServer, PgDatabase),
 				    Data = Source{[Schema = PgSchema, Item = "fact_demand_forecast"]}[Data],
-				    Selected = Table.SelectColumns(Data, {"forecast_id", "month_id", "month_start", "level", "member", "model_name", "forecast_units", "lower_80", "upper_80", "actual_units", "is_backtest"}),
-				    Typed = Table.TransformColumnTypes(Selected, {{"forecast_id", Int64.Type}, {"month_id", Int64.Type}, {"month_start", type datetime}, {"level", type text}, {"member", type text}, {"model_name", type text}, {"forecast_units", type number}, {"lower_80", type number}, {"upper_80", type number}, {"actual_units", type number}, {"is_backtest", type logical}})
+				    Selected = Table.SelectColumns(Data, {"forecast_id", "run_date", "month_id", "month_start", "level", "member", "model_name", "forecast_units", "lower_80", "upper_80", "actual_units", "is_backtest"}),
+				    Typed = Table.TransformColumnTypes(Selected, {{"forecast_id", Int64.Type}, {"run_date", type datetime}, {"month_id", Int64.Type}, {"month_start", type datetime}, {"level", type text}, {"member", type text}, {"model_name", type text}, {"forecast_units", type number}, {"lower_80", type number}, {"upper_80", type number}, {"actual_units", type number}, {"is_backtest", type logical}})
 				in
 				    Typed

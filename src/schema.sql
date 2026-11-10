@@ -157,6 +157,10 @@ CREATE TABLE IF NOT EXISTS fact_demand_forecast (
     CHECK (lower_80 IS NULL OR lower_80 <= upper_80)
 );
 
+-- Thời điểm chạy dự báo (bảng cũ chưa có cột này thì được thêm vào).
+ALTER TABLE fact_demand_forecast
+    ADD COLUMN IF NOT EXISTS run_date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP;
+
 ALTER TABLE fact_demand_forecast
     DROP CONSTRAINT IF EXISTS fact_demand_forecast_model_name_check;
 

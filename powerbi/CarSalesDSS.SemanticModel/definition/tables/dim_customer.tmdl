@@ -1,37 +1,48 @@
 table 'dim_customer'
-	lineageTag: b473a0f7-aa08-4be4-9509-4425e958ae36
+	lineageTag: 19a69919-0d0e-4d03-b50b-de23485497f6
 
 	column 'customer_id'
 		dataType: int64
 		isHidden
 		summarizeBy: none
 		sourceColumn: customer_id
-		lineageTag: f8005ebf-ebdc-430c-ae85-a4d94ab9a47f
+		lineageTag: 68e3687d-fc3e-4c3c-a39a-1180b5fb265f
 
 	column 'customer_name'
 		dataType: string
 		summarizeBy: none
 		sourceColumn: customer_name
-		lineageTag: 46eb4b5e-eb33-4ffc-ad8f-6563dc947acb
+		lineageTag: 9f7ba081-a39f-4740-a6fa-0538e27c3f39
 
 	column 'gender'
 		dataType: string
 		summarizeBy: none
 		sourceColumn: gender
-		lineageTag: 8b924ecd-f615-4987-bc87-4ccf967a5a5f
+		lineageTag: 16bcf50d-a107-4b80-9b74-8c13f547b3ee
 
 	column 'annual_income'
 		dataType: int64
 		summarizeBy: none
 		sourceColumn: annual_income
-		lineageTag: ffebf847-f904-4f07-a84c-2bc7323569c3
+		lineageTag: d1c230cf-1e23-449e-b661-ce1651f9a580
 
 	column 'phone'
 		dataType: string
 		isHidden
 		summarizeBy: none
 		sourceColumn: phone
-		lineageTag: dc40f408-3c4b-4232-b2b2-286004d3e0f7
+		lineageTag: 3d6938dc-6312-410b-8c14-d37ec093642d
+
+	column 'income_quartile' =
+			VAR _i = dim_customer[annual_income]
+			VAR _q1 = PERCENTILEX.INC ( ALL ( dim_customer ), dim_customer[annual_income], 0.25 )
+			VAR _q2 = PERCENTILEX.INC ( ALL ( dim_customer ), dim_customer[annual_income], 0.5 )
+			VAR _q3 = PERCENTILEX.INC ( ALL ( dim_customer ), dim_customer[annual_income], 0.75 )
+			RETURN
+			    IF ( ISBLANK ( _i ), BLANK (), IF ( _i <= _q1, 1, IF ( _i <= _q2, 2, IF ( _i <= _q3, 3, 4 ) ) ) )
+		dataType: int64
+		summarizeBy: none
+		lineageTag: 69903525-b91d-40e1-ad0d-12a3d669a959
 
 	partition 'dim_customer' = m
 		mode: import

@@ -34,7 +34,8 @@ UPSERT_FORECAST_QUERY = text(
         lower_80 = EXCLUDED.lower_80,
         upper_80 = EXCLUDED.upper_80,
         actual_units = EXCLUDED.actual_units,
-        is_backtest = EXCLUDED.is_backtest
+        is_backtest = EXCLUDED.is_backtest,
+        run_date = CURRENT_TIMESTAMP
     """
 )
 
