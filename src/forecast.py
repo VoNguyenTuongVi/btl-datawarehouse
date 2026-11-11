@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import os
 from statistics import NormalDist
 from typing import Any
 
@@ -11,6 +10,8 @@ import pandas as pd
 from sqlalchemy import create_engine, text
 from statsmodels.tsa.holtwinters import ExponentialSmoothing
 from statsmodels.tsa.statespace.sarimax import SARIMAX
+
+from env_config import get_database_url
 
 MONTHLY_DEMAND_QUERY = """
 SELECT month_start, company, dealer_region, units
@@ -229,7 +230,7 @@ def _forecast_rows(
 
 
 def main() -> None:
-    database_url = os.environ.get("DATABASE_URL")
+    database_url = get_database_url()
     if not database_url:
         raise RuntimeError(
             "Set DATABASE_URL to a PostgreSQL SQLAlchemy URL, for example "

@@ -36,7 +36,7 @@ Mô hình Power BI còn có 69 measure trong `_Measures`, chia 7 thư mục, và
 
 ## Chuẩn bị (một lần)
 
-1. Tạo file `.env` từ `.env.example` và điền mật khẩu PostgreSQL. Mật khẩu có ký tự đặc biệt thì mã hóa URL, ví dụ `@` → `%40`.
+1. Tạo file `.env` từ `.env.example` và điền mật khẩu PostgreSQL. Mật khẩu có ký tự đặc biệt thì mã hóa URL, ví dụ `@` → `%40`. Giá trị trong `.env` luôn được ưu tiên hơn biến môi trường cùng tên, nên không cần `setx` hay `$env:DATABASE_URL`.
 2. Cài thư viện: `pip install -r requirements.txt`.
 3. (Tùy chọn, để tự Refresh) `Install-Module SqlServer -Scope CurrentUser` trong PowerShell.
 
@@ -87,4 +87,5 @@ Dashboard thiết kế một lần trong Power BI Desktop, Ctrl+S, rồi commit 
 | Visual cũ báo lỗi sau khi đổi mô hình | Visual đang trỏ vào bảng thô đã bỏ; kéo lại trường từ bảng `mart` mới |
 | Mở được nhưng mọi bảng trống | Bấm **Refresh**. Script cố ý xóa `cache.abf` để luôn nạp dữ liệu mới |
 | Lỗi đăng nhập khi script tự Refresh | Bấm Refresh trong Power BI một lần và nhập tài khoản PostgreSQL |
+| Cảnh báo `[!] DATABASE_URL: biến môi trường có MẬT KHẨU KHÁC với .env` | Còn biến cũ từ `$env:` hoặc `setx`; chương trình đã dùng `.env`. Xóa biến cũ để hết cảnh báo: `Remove-Item Env:DATABASE_URL` và `[Environment]::SetEnvironmentVariable('DATABASE_URL', $null, 'User')`, rồi mở terminal mới |
 | Không thấy PBIP hay TMDL trong Preview features | Bình thường: hai tính năng đã có sẵn trong bản chính thức |

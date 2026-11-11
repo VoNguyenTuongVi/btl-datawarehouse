@@ -31,19 +31,10 @@ PBI_NAME = "CarSalesDSS"
 STEPS = ["schema", "etl", "test", "forecast", "marts", "powerbi"]
 
 
-def load_env(path: Path = ROOT / ".env") -> None:
-    """Nạp biến từ file .env (KEY=VALUE) vào os.environ; biến đã có sẵn được ưu tiên."""
-    if not path.exists():
-        return
-    for line in path.read_text(encoding="utf-8-sig").splitlines():
-        line = line.strip()
-        if not line or line.startswith("#") or "=" not in line:
-            continue
-        key, _, value = line.partition("=")
-        value = value.strip().strip('"').strip("'")
-        os.environ.setdefault(key.strip(), value)
+sys.path.insert(0, str(SRC))
+from env_config import load_env  # noqa: E402
 
-
+# .env được ưu tiên hơn biến môi trường cũ; các bước con (subprocess) thừa hưởng giá trị này
 load_env()
 
 

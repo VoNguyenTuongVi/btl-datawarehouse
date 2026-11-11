@@ -26,14 +26,8 @@ SQL_FILE = ROOT / "src" / "kpi_marts.sql"
 CSV_FILE = ROOT / "data" / "car_sales_cleaned.csv"
 
 
-def load_env(path: Path = ROOT / ".env") -> None:
-    if not path.exists():
-        return
-    for line in path.read_text(encoding="utf-8-sig").splitlines():
-        line = line.strip()
-        if line and not line.startswith("#") and "=" in line:
-            key, _, value = line.partition("=")
-            os.environ.setdefault(key.strip(), value.strip().strip('"').strip("'"))
+sys.path.insert(0, str(ROOT / "src"))
+from env_config import load_env  # noqa: E402
 
 
 def main(argv=None) -> int:
