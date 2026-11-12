@@ -6,14 +6,15 @@ table 'Safety Factor'
 		formatString: 0.0
 		lineageTag: 72a2f7bf-157e-4c21-85da-fd42bc1fcfac
 
-	column 'Value'
+	column Value
 		dataType: double
 		formatString: 0.0
+		lineageTag: 043b3414-2e61-4cb0-99da-42118b0d17d5
 		summarizeBy: none
 		isNameInferred
 		sourceColumn: [Value]
-		lineageTag: 043b3414-2e61-4cb0-99da-42118b0d17d5
 
 	partition 'Safety Factor' = calculated
 		mode: import
 		source = GENERATESERIES ( 0, 2, 0.1 )
+

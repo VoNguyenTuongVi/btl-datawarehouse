@@ -3,3 +3,31 @@ model Model
 	defaultPowerBIDataSourceVersion: powerBI_V3
 	discourageImplicitMeasures
 	sourceQueryCulture: en-US
+	dataAccessOptions
+		legacyRedirects
+		returnErrorValuesAsNull
+
+annotation PBI_QueryOrder = ["dim_car","dim_customer","dim_dealer","fact_car_sales","fact_demand_forecast","PgServer","PgDatabase","PgSchema"]
+
+annotation __PBI_TimeIntelligenceEnabled = 1
+
+annotation PBI_ProTooling = ["DevMode"]
+
+ref table Calendar
+ref table 'Daily Car Sales'
+ref table 'Demand Change'
+ref table dim_car
+ref table dim_customer
+ref table dim_dealer
+ref table fact_car_sales
+ref table fact_demand_forecast
+ref table Param_Accuracy
+ref table Param_Growth
+ref table Param_Share
+ref table Param_Stability
+ref table 'Safety Factor'
+ref table _Measures
+ref table DateTableTemplate_4c737a14-c2ae-4b28-b1a6-0ac8e9ce0282
+ref table LocalDateTable_fb799d77-d5ca-4fc9-9294-429605a68dbc
+ref table LocalDateTable_f6ba0e40-87ef-4318-985c-63d4a8898165
+

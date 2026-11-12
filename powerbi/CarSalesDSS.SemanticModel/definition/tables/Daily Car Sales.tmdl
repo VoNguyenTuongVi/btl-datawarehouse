@@ -1,71 +1,82 @@
 table 'Daily Car Sales'
 	lineageTag: cb58a1ef-a3be-4ce7-b338-cf53683e6cc4
 
-	column 'Date'
-		dataType: dateTime
-		formatString: yyyy-mm-dd
-		summarizeBy: none
-		isNameInferred
-		sourceColumn: [Date]
-		lineageTag: 4dacd7c8-ffc3-4a15-82f4-4f59bfd4037b
-
-	column 'company'
-		dataType: string
-		summarizeBy: none
-		isNameInferred
-		sourceColumn: [company]
-		lineageTag: c4c2ce48-b5f3-4b7f-9fbc-279224ef9bde
-
-	column 'model'
-		dataType: string
-		summarizeBy: none
-		isNameInferred
-		sourceColumn: [model]
-		lineageTag: 64f693a1-d410-49f7-8c20-4a52a1190414
-
-	column 'engine'
-		dataType: string
-		summarizeBy: none
-		isNameInferred
-		sourceColumn: [engine]
-		lineageTag: 8e90fa1c-2635-4b9b-a179-2622ba5d8ff7
-
-	column 'transmission'
-		dataType: string
-		summarizeBy: none
-		isNameInferred
-		sourceColumn: [transmission]
-		lineageTag: 5458c5f4-77ed-4a89-9bd3-d677951a1e8b
-
-	column 'color'
-		dataType: string
-		summarizeBy: none
-		isNameInferred
-		sourceColumn: [color]
-		lineageTag: 03eb545f-cb8c-4a1d-acb2-af697cc6e833
-
-	column 'body_style'
-		dataType: string
-		summarizeBy: none
-		isNameInferred
-		sourceColumn: [body_style]
-		lineageTag: 8c3c1ce7-bf14-47f6-a7ee-badb758c768a
-
 	column 'Units Qty'
 		dataType: int64
 		formatString: #,0
+		lineageTag: bd936c54-e3fe-49ce-9b7a-e90eb50a700a
 		summarizeBy: sum
 		isNameInferred
 		sourceColumn: [Units Qty]
-		lineageTag: bd936c54-e3fe-49ce-9b7a-e90eb50a700a
 
 	column 'Sales Amount'
 		dataType: int64
 		formatString: #,0
+		lineageTag: bbfacb85-3cc8-4157-a4a4-4b17e415edf1
 		summarizeBy: sum
 		isNameInferred
 		sourceColumn: [Sales Amount]
-		lineageTag: bbfacb85-3cc8-4157-a4a4-4b17e415edf1
+
+	column Date
+		lineageTag: 6d2e1623-9500-4c31-b694-7a15e4583a39
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: Calendar[Date]
+
+		variation Variation
+			isDefault
+			relationship: e9a7cf43-333b-4e4c-aade-5632336c1b94
+			defaultHierarchy: LocalDateTable_fb799d77-d5ca-4fc9-9294-429605a68dbc.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+	column company
+		lineageTag: 90072046-ccb4-4442-81b6-dae87920f712
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: dim_car[company]
+
+		annotation SummarizationSetBy = Automatic
+
+	column model
+		lineageTag: 2251a5ac-c4c8-4df0-9c74-1936204e12df
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: dim_car[model]
+
+		annotation SummarizationSetBy = Automatic
+
+	column engine
+		lineageTag: e82c92ba-5217-4e5c-b81b-c00fb68c65e1
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: dim_car[engine]
+
+		annotation SummarizationSetBy = Automatic
+
+	column transmission
+		lineageTag: 0f8f9a4f-2a98-433f-8277-627ed6158e51
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: dim_car[transmission]
+
+		annotation SummarizationSetBy = Automatic
+
+	column color
+		lineageTag: 48bb0f59-fa7c-4dfe-aeda-91e96209a0fc
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: dim_car[color]
+
+		annotation SummarizationSetBy = Automatic
+
+	column body_style
+		lineageTag: 6eab4044-daa7-40db-a947-2018be03d450
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: dim_car[body_style]
+
+		annotation SummarizationSetBy = Automatic
 
 	partition 'Daily Car Sales' = calculated
 		mode: import
@@ -81,3 +92,4 @@ table 'Daily Car Sales'
 				    "Units Qty", SUM ( fact_car_sales[quantity] ),
 				    "Sales Amount", SUM ( fact_car_sales[price] )
 				)
+

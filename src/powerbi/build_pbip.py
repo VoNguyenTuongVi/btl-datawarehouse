@@ -26,6 +26,7 @@ import sys
 import uuid
 from pathlib import Path
 from urllib.parse import urlparse
+from dss_measures import DSS_MEASURES 
 
 ROOT = Path(__file__).resolve().parents[2]
 
@@ -423,46 +424,8 @@ def build_measures(main_model: str, target_growth: float,
          "RANKX ( ALLSELECTED ( dim_car[model] ), [Units YoY Delta], , ASC, DENSE )", "0", F2,
          "D13 – xếp hạng mẫu giảm mạnh nhất (lọc ≤ 5 trong visual)"),
 
-        # ---------------- S5: điểm ưu tiên theo hãng ----------------
-        ("Priority Weight Growth", "0.25", "0.00", FT, "S5 – trọng số tăng trưởng (tổng 4 trọng số = 1)"),
-        ("Priority Weight Share", "0.25", "0.00", FT, "S5 – trọng số thị phần"),
-        ("Priority Weight Stability", "0.25", "0.00", FT, "S5 – trọng số ổn định (1 − CV)"),
-        ("Priority Weight Accuracy", "0.25", "0.00", FT, "S5 – trọng số độ chính xác dự báo"),
-        ("Priority Growth Raw",
-         "VAR _lastDay = CALCULATE ( MAX ( fact_car_sales[date_id] ), ALL ( fact_car_sales ) )\n"
-         "VAR _ym = INT ( _lastDay / 100 )\n"
-         "VAR _cur = CALCULATE ( [Units Sold], REMOVEFILTERS ( Calendar ), Calendar[YearMonth] = _ym )\n"
-         "VAR _py = CALCULATE ( [Units Sold], REMOVEFILTERS ( Calendar ), Calendar[YearMonth] = _ym - 100 )\n"
-         "RETURN DIVIDE ( _cur - _py, _py )", PCT, F4, "S5 – tăng trưởng YoY tháng mới nhất"),
-        ("Priority Share Raw",
-         "DIVIDE (\n"
-         "    CALCULATE ( [Units Sold], REMOVEFILTERS ( Calendar ) ),\n"
-         "    CALCULATE ( [Units Sold], REMOVEFILTERS ( Calendar ), ALLSELECTED ( dim_car ) )\n"
-         ")", PCT, F4, "S5 – thị phần toàn lịch sử"),
-        ("Priority Stability Raw", "1 - COALESCE ( [Demand CV Hist], 0 )", "0.000", F4, "S5 – 1 − CV"),
-        ("Priority Accuracy Raw",
-         "COALESCE (\n"
-         "    CALCULATE (\n"
-         "        [Forecast Accuracy %],\n"
-         "        REMOVEFILTERS ( Calendar ),\n"
-         "        fact_demand_forecast[level] = \"company\",\n"
-         f"        fact_demand_forecast[model_name] = \"{main_model}\",\n"
-         "        TREATAS ( VALUES ( dim_car[company] ), fact_demand_forecast[member] )\n"
-         "    ),\n"
-         "    0\n"
-         ")", PCT, F4, "S5 – độ chính xác backtest cấp hãng"),
-        ("Priority Growth Score", norm("Priority Growth Raw"), "0.000", F4, "S5 – chuẩn hóa 0–1"),
-        ("Priority Share Score", norm("Priority Share Raw"), "0.000", F4, "S5 – chuẩn hóa 0–1"),
-        ("Priority Stability Score", norm("Priority Stability Raw"), "0.000", F4, "S5 – chuẩn hóa 0–1"),
-        ("Priority Accuracy Score", norm("Priority Accuracy Raw"), "0.000", F4, "S5 – chuẩn hóa 0–1"),
-        ("Priority Score",
-         "[Priority Weight Growth] * [Priority Growth Score]\n"
-         "    + [Priority Weight Share] * [Priority Share Score]\n"
-         "    + [Priority Weight Stability] * [Priority Stability Score]\n"
-         "    + [Priority Weight Accuracy] * [Priority Accuracy Score]", "0.000", F4,
-         "S5 – điểm ưu tiên theo hãng (đặt hãng trên trục của visual)"),
-        ("Priority Rank", "RANKX ( ALLSELECTED ( dim_car[company] ), [Priority Score] )", "0", F4, "S5 – xếp hạng"),
     ]
+    m.extend(DSS_MEASURES)
     return m
 
 
@@ -635,6 +598,17 @@ def whatif_tmdl(table: str, start: float, end: float, step: float, default: floa
     ])
 
 
+def dss_weight_tmdl(name: str) -> str:
+    """Bảng weight S5 (0,5,...100), disconnected và không liên kết fact."""
+    return "\n".join([
+        f"table {q(name)}", f"\tlineageTag: {tag()}", "",
+        column_block("Value", "int64", "none", source="[Value]", fmt="0",
+                     extra=["isNameInferred"]),
+        f"\tpartition {q(name)} = calculated", "\t\tmode: import",
+        "\t\tsource = GENERATESERIES ( 0, 100, 5 )", "",
+    ])
+
+
 def measures_tmdl(measures) -> str:
     parts = ["table _Measures", f"\tlineageTag: {tag()}", ""]
     for mdef in measures:
@@ -755,6 +729,8 @@ def build(args) -> Path:
     tables["Daily Car Sales"] = daily_sales_tmdl()
     tables["Demand Change"] = whatif_tmdl("Demand Change", -0.3, 0.3, 0.05, 0, "0%")
     tables["Safety Factor"] = whatif_tmdl("Safety Factor", 0, 2, 0.1, 1, "0.0")
+    for name in ("Param_Growth", "Param_Share", "Param_Stability", "Param_Accuracy"):
+        tables[name] = dss_weight_tmdl(name)
     tables["_Measures"] = measures_tmdl(measures)
 
     for t, text in tables.items():

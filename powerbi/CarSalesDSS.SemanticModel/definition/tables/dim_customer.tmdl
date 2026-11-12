@@ -1,39 +1,39 @@
-table 'dim_customer'
+table dim_customer
 	lineageTag: 19a69919-0d0e-4d03-b50b-de23485497f6
 
-	column 'customer_id'
+	column customer_id
 		dataType: int64
 		isHidden
+		lineageTag: 68e3687d-fc3e-4c3c-a39a-1180b5fb265f
 		summarizeBy: none
 		sourceColumn: customer_id
-		lineageTag: 68e3687d-fc3e-4c3c-a39a-1180b5fb265f
 
-	column 'customer_name'
+	column customer_name
 		dataType: string
+		lineageTag: 9f7ba081-a39f-4740-a6fa-0538e27c3f39
 		summarizeBy: none
 		sourceColumn: customer_name
-		lineageTag: 9f7ba081-a39f-4740-a6fa-0538e27c3f39
 
-	column 'gender'
+	column gender
 		dataType: string
+		lineageTag: 16bcf50d-a107-4b80-9b74-8c13f547b3ee
 		summarizeBy: none
 		sourceColumn: gender
-		lineageTag: 16bcf50d-a107-4b80-9b74-8c13f547b3ee
 
-	column 'annual_income'
+	column annual_income
 		dataType: int64
+		lineageTag: d1c230cf-1e23-449e-b661-ce1651f9a580
 		summarizeBy: none
 		sourceColumn: annual_income
-		lineageTag: d1c230cf-1e23-449e-b661-ce1651f9a580
 
-	column 'phone'
+	column phone
 		dataType: string
 		isHidden
+		lineageTag: 3d6938dc-6312-410b-8c14-d37ec093642d
 		summarizeBy: none
 		sourceColumn: phone
-		lineageTag: 3d6938dc-6312-410b-8c14-d37ec093642d
 
-	column 'income_quartile' =
+	column income_quartile =
 			VAR _i = dim_customer[annual_income]
 			VAR _q1 = PERCENTILEX.INC ( ALL ( dim_customer ), dim_customer[annual_income], 0.25 )
 			VAR _q2 = PERCENTILEX.INC ( ALL ( dim_customer ), dim_customer[annual_income], 0.5 )
@@ -41,10 +41,10 @@ table 'dim_customer'
 			RETURN
 			    IF ( ISBLANK ( _i ), BLANK (), IF ( _i <= _q1, 1, IF ( _i <= _q2, 2, IF ( _i <= _q3, 3, 4 ) ) ) )
 		dataType: int64
-		summarizeBy: none
 		lineageTag: 69903525-b91d-40e1-ad0d-12a3d669a959
+		summarizeBy: none
 
-	partition 'dim_customer' = m
+	partition dim_customer = m
 		mode: import
 		source =
 				let
@@ -54,3 +54,4 @@ table 'dim_customer'
 				    Typed = Table.TransformColumnTypes(Selected, {{"customer_id", Int64.Type}, {"customer_name", type text}, {"gender", type text}, {"annual_income", Int64.Type}, {"phone", type text}})
 				in
 				    Typed
+

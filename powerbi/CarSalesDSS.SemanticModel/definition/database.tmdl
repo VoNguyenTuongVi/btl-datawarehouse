@@ -1,2 +1,3 @@
-database 'CarSalesDSS'
-	compatibilityLevel: 1567
+database
+	compatibilityLevel: 1606
+

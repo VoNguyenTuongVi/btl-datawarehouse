@@ -12,3 +12,4 @@ expression PgSchema = "public" meta [IsParameterQuery=true, Type="Text", IsParam
 	lineageTag: 227dcc39-7ea1-4258-83c1-7139766038c7
 
 	annotation PBI_ResultType = Text
+

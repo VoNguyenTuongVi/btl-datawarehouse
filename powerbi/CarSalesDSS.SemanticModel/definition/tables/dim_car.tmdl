@@ -1,59 +1,61 @@
-table 'dim_car'
+table dim_car
 	lineageTag: 40f9c67c-8229-42b2-96c2-7ea929ed2797
 
-	column 'car_key'
+	column car_key
 		dataType: int64
 		isHidden
+		lineageTag: 572bc47e-45e2-4ccb-8311-55d6495fd442
 		summarizeBy: none
 		sourceColumn: car_key
-		lineageTag: 572bc47e-45e2-4ccb-8311-55d6495fd442
 
-	column 'company'
+	column company
 		dataType: string
+		lineageTag: ff26682b-2bca-4dc2-b6d8-34c9c75fbfba
 		summarizeBy: none
 		sourceColumn: company
-		lineageTag: ff26682b-2bca-4dc2-b6d8-34c9c75fbfba
 
-	column 'model'
+	column model
 		dataType: string
+		lineageTag: 57dd3522-f850-49ec-b3b3-3a5340ea03c2
 		summarizeBy: none
 		sourceColumn: model
-		lineageTag: 57dd3522-f850-49ec-b3b3-3a5340ea03c2
 
-	column 'engine'
+	column engine
 		dataType: string
+		lineageTag: fbfb4d94-8d99-4b50-a273-e0428bd1d29c
 		summarizeBy: none
 		sourceColumn: engine
-		lineageTag: fbfb4d94-8d99-4b50-a273-e0428bd1d29c
 
-	column 'transmission'
+	column transmission
 		dataType: string
+		lineageTag: 2f4a3620-2874-4708-87af-a2977d47f363
 		summarizeBy: none
 		sourceColumn: transmission
-		lineageTag: 2f4a3620-2874-4708-87af-a2977d47f363
 
-	column 'color'
+	column color
 		dataType: string
+		lineageTag: d34d95c7-c5ab-4d32-bc11-fa13b6f483e8
 		summarizeBy: none
 		sourceColumn: color
-		lineageTag: d34d95c7-c5ab-4d32-bc11-fa13b6f483e8
 
-	column 'body_style'
+	column body_style
 		dataType: string
+		lineageTag: 0b0b5acf-772e-4b79-a270-0cd74773be42
 		summarizeBy: none
 		sourceColumn: body_style
-		lineageTag: 0b0b5acf-772e-4b79-a270-0cd74773be42
 
-	hierarchy 'Product'
+	hierarchy Product
 		lineageTag: 50a3d3a1-c7dc-4a63-84fd-8ac245ddd5df
-		level 'company'
-			column: 'company'
-			lineageTag: 3a4c2123-4215-488d-a399-e41d073e0a83
-		level 'model'
-			column: 'model'
-			lineageTag: ea6b0578-d86d-4ad5-96b9-d549c80b2939
 
-	partition 'dim_car' = m
+		level company
+			lineageTag: 3a4c2123-4215-488d-a399-e41d073e0a83
+			column: company
+
+		level model
+			lineageTag: ea6b0578-d86d-4ad5-96b9-d549c80b2939
+			column: model
+
+	partition dim_car = m
 		mode: import
 		source =
 				let
@@ -63,3 +65,4 @@ table 'dim_car'
 				    Typed = Table.TransformColumnTypes(Selected, {{"car_key", Int64.Type}, {"company", type text}, {"model", type text}, {"engine", type text}, {"transmission", type text}, {"color", type text}, {"body_style", type text}})
 				in
 				    Typed
+

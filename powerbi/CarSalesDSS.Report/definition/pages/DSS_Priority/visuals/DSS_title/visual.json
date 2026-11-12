@@ -1,0 +1,37 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
+  "name": "DSS_title",
+  "position": {
+    "x": 20.787561420101966,
+    "y": 0,
+    "z": 11000,
+    "height": 52,
+    "width": 1230,
+    "tabOrder": 11000
+  },
+  "visual": {
+    "visualType": "textbox",
+    "objects": {
+      "general": [
+        {
+          "properties": {
+            "paragraphs": [
+              {
+                "textRuns": [
+                  {
+                    "value": "DSS S5  |  ƯU TIÊN HÃNG XE THEO DỰ BÁO",
+                    "textStyle": {
+                      "fontSize": "25pt",
+                      "fontFamily": "Segoe UI"
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  }
+}

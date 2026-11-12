@@ -1,0 +1,189 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
+  "name": "DSS_scenario",
+  "position": {
+    "x": 25,
+    "y": 223,
+    "z": 1000,
+    "height": 315,
+    "width": 1225,
+    "tabOrder": 1000
+  },
+  "visual": {
+    "visualType": "tableEx",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "fact_demand_forecast"
+                    }
+                  },
+                  "Property": "member"
+                }
+              },
+              "queryRef": "fact_demand_forecast.member",
+              "nativeQueryRef": "member"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_Measures"
+                    }
+                  },
+                  "Property": "DSS S6 Forecast Units"
+                }
+              },
+              "queryRef": "_Measures.DSS S6 Forecast Units",
+              "nativeQueryRef": "DSS S6 Forecast Units"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_Measures"
+                    }
+                  },
+                  "Property": "DSS Order Baseline"
+                }
+              },
+              "queryRef": "_Measures.DSS Order Baseline",
+              "nativeQueryRef": "DSS Order Baseline"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_Measures"
+                    }
+                  },
+                  "Property": "DSS Order Scenario"
+                }
+              },
+              "queryRef": "_Measures.DSS Order Scenario",
+              "nativeQueryRef": "DSS Order Scenario"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_Measures"
+                    }
+                  },
+                  "Property": "DSS Order Delta"
+                }
+              },
+              "queryRef": "_Measures.DSS Order Delta",
+              "nativeQueryRef": "DSS Order Delta"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_Measures"
+                    }
+                  },
+                  "Property": "DSS Revenue Baseline"
+                }
+              },
+              "queryRef": "_Measures.DSS Revenue Baseline",
+              "nativeQueryRef": "DSS Revenue Baseline"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_Measures"
+                    }
+                  },
+                  "Property": "DSS Revenue Scenario"
+                }
+              },
+              "queryRef": "_Measures.DSS Revenue Scenario",
+              "nativeQueryRef": "DSS Revenue Scenario"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_Measures"
+                    }
+                  },
+                  "Property": "DSS Revenue Delta"
+                }
+              },
+              "queryRef": "_Measures.DSS Revenue Delta",
+              "nativeQueryRef": "DSS Revenue Delta"
+            }
+          ]
+        }
+      },
+      "sortDefinition": {
+        "sort": [
+          {
+            "field": {
+              "Measure": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "_Measures"
+                  }
+                },
+                "Property": "DSS Order Scenario"
+              }
+            },
+            "direction": "Descending"
+          }
+        ]
+      }
+    },
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Baseline vs Scenario – cấp company, tương tác với bộ lọc'"
+                }
+              }
+            },
+            "fontSize": {
+              "expr": {
+                "Literal": {
+                  "Value": "11D"
+                }
+              }
+            },
+            "bold": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  }
+}
