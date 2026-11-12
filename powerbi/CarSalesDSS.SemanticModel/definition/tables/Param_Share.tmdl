@@ -1,0 +1,15 @@
+table Param_Share
+	lineageTag: 769755d7-7e75-4fca-92e3-9bfa5b5b27ae
+
+	column Value
+		dataType: int64
+		formatString: 0
+		lineageTag: 894a15cd-cf7d-4c0c-b11e-b97ce37f8bfe
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Value]
+
+	partition Param_Share = calculated
+		mode: import
+		source = GENERATESERIES ( 0, 100, 5 )
+

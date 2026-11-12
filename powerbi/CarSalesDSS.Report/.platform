@@ -1,0 +1,11 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.0.0/schema.json",
+  "metadata": {
+    "type": "Report",
+    "displayName": "CarSalesDSS"
+  },
+  "config": {
+    "version": "2.0",
+    "logicalId": "3e1a97e2-5216-4c30-a009-952405d50ef7"
+  }
+}

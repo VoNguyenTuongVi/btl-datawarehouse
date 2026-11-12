@@ -6,14 +6,15 @@ table 'Demand Change'
 		formatString: 0%
 		lineageTag: 2a68bce4-c130-4a9a-983e-ecbd01631db9
 
-	column 'Value'
+	column Value
 		dataType: double
 		formatString: 0%
+		lineageTag: 13e6a90f-1069-4b51-86dc-f545c9f40206
 		summarizeBy: none
 		isNameInferred
 		sourceColumn: [Value]
-		lineageTag: 13e6a90f-1069-4b51-86dc-f545c9f40206
 
 	partition 'Demand Change' = calculated
 		mode: import
 		source = GENERATESERIES ( -0.3, 0.3, 0.05 )
+

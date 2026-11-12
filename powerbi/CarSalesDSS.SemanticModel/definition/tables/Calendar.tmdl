@@ -1,93 +1,121 @@
 table Calendar
-	dataCategory: Time
 	lineageTag: 502998a4-9a1d-4ca9-b2f7-bbd404dc2466
+	dataCategory: Time
 
-	column 'Date'
+	column Date
 		dataType: dateTime
-		formatString: yyyy-mm-dd
-		summarizeBy: none
 		isKey
+		formatString: yyyy-mm-dd
+		lineageTag: 35a96b04-493d-4add-b252-2f14e563d206
+		summarizeBy: none
 		isNameInferred
 		sourceColumn: [Date]
-		lineageTag: 35a96b04-493d-4add-b252-2f14e563d206
 
-	column 'Year'
+	column Year
 		dataType: int64
 		formatString: 0
+		lineageTag: 0e1a8330-31b8-48e8-b488-59b4feca8b26
 		summarizeBy: none
 		isNameInferred
 		sourceColumn: [Year]
-		lineageTag: 0e1a8330-31b8-48e8-b488-59b4feca8b26
 
-	column 'Quarter'
+	column Quarter
 		dataType: string
+		lineageTag: 613383ad-e442-4412-b514-cc41decb9369
 		summarizeBy: none
 		isNameInferred
 		sourceColumn: [Quarter]
-		lineageTag: 613383ad-e442-4412-b514-cc41decb9369
 
-	column 'MonthNo'
+	column MonthNo
 		dataType: int64
 		isHidden
+		lineageTag: 96ce2239-677a-4632-8b0e-5378ad4fc19e
 		summarizeBy: none
 		isNameInferred
 		sourceColumn: [MonthNo]
-		lineageTag: 96ce2239-677a-4632-8b0e-5378ad4fc19e
 
-	column 'Month'
+	column Month
 		dataType: string
+		lineageTag: ca8f0c1b-ab76-4569-a84e-6082afab0cab
 		summarizeBy: none
-		sortByColumn: MonthNo
 		isNameInferred
 		sourceColumn: [Month]
-		lineageTag: ca8f0c1b-ab76-4569-a84e-6082afab0cab
+		sortByColumn: MonthNo
 
-	column 'YearMonth'
+	column YearMonth
 		dataType: int64
 		formatString: 0
+		lineageTag: 541dfe26-b8d4-4420-b2b5-35baec1fcc19
 		summarizeBy: none
 		isNameInferred
 		sourceColumn: [YearMonth]
-		lineageTag: 541dfe26-b8d4-4420-b2b5-35baec1fcc19
 
-	column 'DateId'
+	column DateId
 		dataType: int64
 		isHidden
+		lineageTag: e65801af-8234-4400-8cb0-3c684f430c71
 		summarizeBy: none
 		isNameInferred
 		sourceColumn: [DateId]
-		lineageTag: e65801af-8234-4400-8cb0-3c684f430c71
 
-	column 'DayOfWeekNo'
+	column DayOfWeekNo
 		dataType: int64
 		isHidden
+		lineageTag: 58cb7fb1-7c8b-4b5e-8fba-9feb9106620c
 		summarizeBy: none
 		isNameInferred
 		sourceColumn: [DayOfWeekNo]
-		lineageTag: 58cb7fb1-7c8b-4b5e-8fba-9feb9106620c
 
-	column 'DayOfWeek'
+	column DayOfWeek
 		dataType: string
+		lineageTag: 0c1d4706-092e-4459-be98-03ae98c1945e
 		summarizeBy: none
-		sortByColumn: DayOfWeekNo
 		isNameInferred
 		sourceColumn: [DayOfWeek]
-		lineageTag: 0c1d4706-092e-4459-be98-03ae98c1945e
+		sortByColumn: DayOfWeekNo
+
+	column 'Has Forecast Data' =
+			
+			VAR MonthStart =
+			    DATE(
+			        YEAR('Calendar'[Date]),
+			        MONTH('Calendar'[Date]),
+			        1
+			    )
+			VAR ForecastRows =
+			    CALCULATE(
+			        COUNTROWS(fact_demand_forecast),
+			        REMOVEFILTERS('Calendar'),
+			        fact_demand_forecast[month_start] = MonthStart,
+			        fact_demand_forecast[level] = "company",
+			        fact_demand_forecast[is_backtest] = FALSE()
+			    )
+			RETURN
+			IF(ForecastRows > 0, 1, 0)
+		formatString: 0
+		lineageTag: 17a5f178-274f-494a-bce6-15b4d1eb31e9
+		summarizeBy: sum
+
+		annotation SummarizationSetBy = Automatic
 
 	hierarchy 'Date Hierarchy'
 		lineageTag: 008b35ee-2e9c-4d26-9bae-5f54cff76e4e
+
 		level Year
-			column: Year
 			lineageTag: 26b88a4b-948e-431a-89a6-a48a4ef0be78
+			column: Year
+
 		level Quarter
-			column: Quarter
 			lineageTag: 7b048017-4bac-4b9a-87bd-ed882b6160be
+			column: Quarter
+
 		level Month
-			column: Month
 			lineageTag: 640b38f5-6ecd-425f-a3a6-2b5b7a7f648e
+			column: Month
+
 		level Date
-			column: Date
 			lineageTag: f8fc4a5c-796d-4dd0-b89b-e786a740ef1a
+			column: Date
 
 	partition Calendar = calculated
 		mode: import
@@ -103,3 +131,4 @@ table Calendar
 				    "DayOfWeek", FORMAT ( [Date], "ddd" ),
 				    "DayOfWeekNo", WEEKDAY ( [Date], 2 )
 				)
+

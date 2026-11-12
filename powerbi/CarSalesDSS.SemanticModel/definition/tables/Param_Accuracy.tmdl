@@ -1,0 +1,15 @@
+table Param_Accuracy
+	lineageTag: 3d4a936e-db78-4ff5-a7d3-ca60ff6c1753
+
+	column Value
+		dataType: int64
+		formatString: 0
+		lineageTag: 455bdd68-219f-4276-b9bb-25ba062aafb4
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Value]
+
+	partition Param_Accuracy = calculated
+		mode: import
+		source = GENERATESERIES ( 0, 100, 5 )
+

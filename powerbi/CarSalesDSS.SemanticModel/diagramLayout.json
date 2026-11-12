@@ -1,0 +1,204 @@
+{
+  "version": "1.1.0",
+  "diagrams": [
+    {
+      "ordinal": 0,
+      "scrollPosition": {
+        "x": 200.43378788267671,
+        "y": 39.333332061767578
+      },
+      "nodes": [
+        {
+          "location": {
+            "x": 1147.632937350962,
+            "y": 266.06761406810557
+          },
+          "nodeIndex": "_Measures",
+          "nodeLineageTag": "54999c59-4f22-48f6-a519-3c36227d3221",
+          "size": {
+            "height": 300,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 629.43378788267671,
+            "y": 256.7133302870954
+          },
+          "nodeIndex": "Calendar",
+          "nodeLineageTag": "502998a4-9a1d-4ca9-b2f7-bbd404dc2466",
+          "size": {
+            "height": 300,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 1431.632937350962,
+            "y": 268.06761406810557
+          },
+          "nodeIndex": "Daily Car Sales",
+          "nodeLineageTag": "cb58a1ef-a3be-4ce7-b338-cf53683e6cc4",
+          "size": {
+            "height": 296,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 1715.632937350962,
+            "y": 304.06761406810557
+          },
+          "nodeIndex": "Demand Change",
+          "nodeLineageTag": "ca30737e-c554-4f3b-932f-44289187851a",
+          "size": {
+            "height": 224,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 50,
+            "y": 59.274066806622272
+          },
+          "nodeIndex": "dim_car",
+          "nodeLineageTag": "40f9c67c-8229-42b2-96c2-7ea929ed2797",
+          "size": {
+            "height": 300,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 110.34594230873302,
+            "y": 558.13522813621125
+          },
+          "nodeIndex": "dim_customer",
+          "nodeLineageTag": "19a69919-0d0e-4d03-b50b-de23485497f6",
+          "size": {
+            "height": 224,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 437.24230511180622,
+            "y": -50
+          },
+          "nodeIndex": "dim_dealer",
+          "nodeLineageTag": "5de6e956-281b-4032-b0f0-70fb432429f6",
+          "size": {
+            "height": 248,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 339.91348548532142,
+            "y": 254.21401417814309
+          },
+          "nodeIndex": "fact_car_sales",
+          "nodeLineageTag": "d380143a-9cf5-45f6-aeee-bcead2fcb962",
+          "size": {
+            "height": 248,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 913.63293735096227,
+            "y": 413.56054405144857
+          },
+          "nodeIndex": "fact_demand_forecast",
+          "nodeLineageTag": "356ec88c-d41b-4794-a066-112fb081107f",
+          "size": {
+            "height": 300,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 1999.632937350962,
+            "y": 316.06761406810557
+          },
+          "nodeIndex": "Param_Accuracy",
+          "nodeLineageTag": "3d4a936e-db78-4ff5-a7d3-ca60ff6c1753",
+          "size": {
+            "height": 200,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 2283.632937350962,
+            "y": 316.06761406810557
+          },
+          "nodeIndex": "Param_Growth",
+          "nodeLineageTag": "30420c1f-50c2-42a5-918c-18153b35fb78",
+          "size": {
+            "height": 200,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 2567.632937350962,
+            "y": 316.06761406810557
+          },
+          "nodeIndex": "Param_Share",
+          "nodeLineageTag": "769755d7-7e75-4fca-92e3-9bfa5b5b27ae",
+          "size": {
+            "height": 200,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 2851.632937350962,
+            "y": 316.06761406810557
+          },
+          "nodeIndex": "Param_Stability",
+          "nodeLineageTag": "9209702c-8008-43d5-8239-3e83bc09210b",
+          "size": {
+            "height": 200,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 3135.632937350962,
+            "y": 304.06761406810557
+          },
+          "nodeIndex": "Safety Factor",
+          "nodeLineageTag": "e695fd15-ef3d-4863-af9b-bad5140fa244",
+          "size": {
+            "height": 224,
+            "width": 234
+          },
+          "zIndex": 0
+        }
+      ],
+      "name": "All tables",
+      "zoomValue": 100,
+      "pinKeyFieldsToTop": false,
+      "showExtraHeaderInfo": false,
+      "hideKeyFieldsWhenCollapsed": false,
+      "tablesLocked": false
+    }
+  ],
+  "selectedDiagram": "All tables",
+  "defaultDiagram": "All tables"
+}

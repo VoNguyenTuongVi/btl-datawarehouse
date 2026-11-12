@@ -1,0 +1,15 @@
+table Param_Growth
+	lineageTag: 30420c1f-50c2-42a5-918c-18153b35fb78
+
+	column Value
+		dataType: int64
+		formatString: 0
+		lineageTag: ef060145-1df7-4f94-8c3f-b4642183ec71
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Value]
+
+	partition Param_Growth = calculated
+		mode: import
+		source = GENERATESERIES ( 0, 100, 5 )
+

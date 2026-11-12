@@ -1,0 +1,15 @@
+table Param_Stability
+	lineageTag: 9209702c-8008-43d5-8239-3e83bc09210b
+
+	column Value
+		dataType: int64
+		formatString: 0
+		lineageTag: 9727e99e-364f-4ce6-aca1-e9e21581f2a1
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Value]
+
+	partition Param_Stability = calculated
+		mode: import
+		source = GENERATESERIES ( 0, 100, 5 )
+

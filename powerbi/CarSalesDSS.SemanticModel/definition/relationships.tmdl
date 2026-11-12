@@ -1,19 +1,30 @@
 relationship 6e1338b8-a993-4f4b-a644-5487a1e21d2e
-	fromColumn: 'fact_car_sales'.'date_id'
-	toColumn: 'Calendar'.'DateId'
+	fromColumn: fact_car_sales.date_id
+	toColumn: Calendar.DateId
 
 relationship 6e5343b0-44a2-48f9-a534-f6614f43f131
-	fromColumn: 'fact_car_sales'.'customer_id'
-	toColumn: 'dim_customer'.'customer_id'
+	fromColumn: fact_car_sales.customer_id
+	toColumn: dim_customer.customer_id
 
 relationship 42f8348b-5279-4450-a494-6a07d8f0dc49
-	fromColumn: 'fact_car_sales'.'car_key'
-	toColumn: 'dim_car'.'car_key'
+	fromColumn: fact_car_sales.car_key
+	toColumn: dim_car.car_key
 
 relationship 76d3f190-e85c-4bdf-9985-ab06528bf559
-	fromColumn: 'fact_car_sales'.'dealer_id'
-	toColumn: 'dim_dealer'.'dealer_id'
+	fromColumn: fact_car_sales.dealer_id
+	toColumn: dim_dealer.dealer_id
 
 relationship d7f6fd04-70d4-4e1c-af7c-816a5bfeb2bc
-	fromColumn: 'fact_demand_forecast'.'month_start'
-	toColumn: 'Calendar'.'Date'
+	fromColumn: fact_demand_forecast.month_start
+	toColumn: Calendar.Date
+
+relationship e9a7cf43-333b-4e4c-aade-5632336c1b94
+	joinOnDateBehavior: datePartOnly
+	fromColumn: 'Daily Car Sales'.Date
+	toColumn: LocalDateTable_fb799d77-d5ca-4fc9-9294-429605a68dbc.Date
+
+relationship 1948fac1-825f-4478-875d-a52716c8322a
+	joinOnDateBehavior: datePartOnly
+	fromColumn: fact_demand_forecast.run_date
+	toColumn: LocalDateTable_f6ba0e40-87ef-4318-985c-63d4a8898165.Date
+
