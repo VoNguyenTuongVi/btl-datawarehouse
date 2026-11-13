@@ -1,5 +1,5 @@
 table 'dim_month'
-	lineageTag: 499ac97c-7c4f-4bbb-87b9-30e638774710
+	lineageTag: 0f3ac5c2-8658-4a6d-adda-9631b6828ee2
 
 	column 'month_start'
 		dataType: dateTime
@@ -7,7 +7,7 @@ table 'dim_month'
 		summarizeBy: none
 		isKey
 		sourceColumn: month_start
-		lineageTag: 554d385e-74f5-48e6-bf21-0eff45313f47
+		lineageTag: bc757fe2-eb5f-4a8e-912f-d57b1a6ab0ef
 
 	column 'year'
 		dataType: int64
@@ -15,74 +15,74 @@ table 'dim_month'
 		isHidden
 		summarizeBy: none
 		sourceColumn: year
-		lineageTag: 933a81c3-f143-4229-916a-291bf56ca6b5
+		lineageTag: 3717c963-407f-493e-94e6-5e88c9470c89
 
 	column 'quarter_no'
 		dataType: int64
 		formatString: 0
 		summarizeBy: none
 		sourceColumn: quarter_no
-		lineageTag: bff6082b-170e-4dfb-a999-3875b46f50c4
+		lineageTag: a1e8d649-d888-4698-ada8-99cbbadeb750
 
 	column 'quarter'
 		dataType: string
 		summarizeBy: none
 		sourceColumn: quarter
-		lineageTag: 746f4eb6-6202-42cb-8188-f03421570889
+		lineageTag: b8397aef-eb20-4996-ba11-83ca34b3970e
 
 	column 'year_quarter'
 		dataType: string
 		summarizeBy: none
 		sourceColumn: year_quarter
-		lineageTag: 7bc94b40-dad8-4f26-9435-045d0977a94a
+		lineageTag: 8b5a0012-00b2-46b0-8610-723338f65465
 
 	column 'month_no'
 		dataType: int64
 		formatString: 0
 		summarizeBy: none
 		sourceColumn: month_no
-		lineageTag: d0ca72c4-518f-463b-ab21-12d8db6496d7
+		lineageTag: ab7ba65a-d2a4-4179-88d3-33d108fefbe9
 
 	column 'month_name'
 		dataType: string
 		summarizeBy: none
 		sortByColumn: 'month_no'
 		sourceColumn: month_name
-		lineageTag: f257e755-c7a4-4f00-8470-43c080532c2b
+		lineageTag: cbdf9f24-d82a-4b4e-b70b-74ea46927e01
 
 	column 'year_month'
 		dataType: int64
 		formatString: 0
 		summarizeBy: none
 		sourceColumn: year_month
-		lineageTag: 6f376ce3-9f08-427c-bf8c-a2d9601db1f1
+		lineageTag: 5ece8644-51f2-430c-af8c-06ce225f4429
 
 	column 'year_month_label'
 		dataType: string
 		summarizeBy: none
 		sourceColumn: year_month_label
-		lineageTag: 4fb93138-3493-48e1-b97d-22c9aafc6905
+		lineageTag: 8b40fe31-2cbd-46b2-aa5d-06a983166eab
 
 	column 'period_type'
 		dataType: string
 		summarizeBy: none
 		sourceColumn: period_type
-		lineageTag: 8fe46157-38cf-43eb-98d2-9d05b7197b5a
+		lineageTag: efcbac7a-170d-45e8-b3ca-82635cbcdd93
 
 	hierarchy 'Thời gian'
-		lineageTag: 6f1ec7a1-2aa9-4292-87b3-e239e0170230
+		lineageTag: b381016e-5062-4428-bf02-531b45e42cf7
 
 		level 'year'
 			column: 'year'
-			lineageTag: 841db03d-5595-4807-929f-3e82ca64e1d6
+			lineageTag: 99c377e4-f0a0-4af8-9119-d114e37a4dca
 
 		level 'year_quarter'
 			column: 'year_quarter'
-			lineageTag: 4447e012-e3b4-427a-8ae3-4e89c1b5684c
+			lineageTag: 240d6665-3f15-4593-a7b8-7d12276eeab8
 
 		level 'year_month_label'
 			column: 'year_month_label'
-			lineageTag: f3ebc5cb-8932-4821-9afb-c85c13b8f1d6
+			lineageTag: 87f3b256-6cc5-475a-8928-f61ee06e3c7c
 
 	partition 'dim_month' = m
 		mode: import

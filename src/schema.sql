@@ -26,16 +26,20 @@ CREATE TABLE IF NOT EXISTS dim_car (
     engine VARCHAR(100),
     transmission VARCHAR(50),
     color VARCHAR(50),
-    body_style VARCHAR(50)
+    body_style VARCHAR(50),
+    cars_sold INT NOT NULL DEFAULT 0     -- Số xe đã bán của cấu hình này (tính từ dữ liệu gốc, xem etl.py)
 );
+-- DB tạo từ phiên bản cũ chưa có cột cars_sold: chạy lại etl.py để nạp số liệu và sắp xếp lại
+ALTER TABLE dim_car ADD COLUMN IF NOT EXISTS cars_sold INT NOT NULL DEFAULT 0;
 
 -- 4. Bảng Dim Dealer
 CREATE TABLE IF NOT EXISTS dim_dealer (
     dealer_id SERIAL PRIMARY KEY,         -- Surrogate Key tự tăng
-    dealer_no VARCHAR(50) NOT NULL,
     dealer_name VARCHAR(255) NOT NULL,
     dealer_region VARCHAR(100)
 );
+-- dealer_no đã bỏ (chỉ có 7 giá trị, suy ra được từ dealer_region); dọn DB tạo từ phiên bản cũ
+ALTER TABLE dim_dealer DROP COLUMN IF EXISTS dealer_no;
 
 -- 5. Bảng Fact Sales
 CREATE TABLE IF NOT EXISTS fact_car_sales (
@@ -54,6 +58,13 @@ CREATE TABLE IF NOT EXISTS fact_car_sales (
 );
 
 -- Nhu cầu tổng hợp theo tháng, hãng và vùng.
+-- Danh sách cấu hình xe xếp theo số xe bán từ cao xuống thấp (thứ tự bền vững, dùng ORDER BY trong view)
+CREATE OR REPLACE VIEW v_dim_car_ranked AS
+SELECT RANK() OVER (ORDER BY cars_sold DESC) AS sold_rank,
+       car_key, company, model, engine, transmission, color, body_style, cars_sold
+FROM dim_car
+ORDER BY cars_sold DESC, car_key;
+
 CREATE OR REPLACE VIEW v_monthly_demand AS
 SELECT d.year * 100 + d.month AS month_id,
        d.year,

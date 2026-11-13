@@ -1,0 +1,36 @@
+table 'car_sales_monthly'
+	lineageTag: 1df9e4b9-3c16-4740-94af-50b1616d749e
+
+	column 'car_key'
+		dataType: int64
+		formatString: 0
+		isHidden
+		summarizeBy: none
+		sourceColumn: car_key
+		lineageTag: d2b083ee-f763-427c-a6bd-37e863ab52db
+
+	column 'month_start'
+		dataType: dateTime
+		formatString: mmm yyyy
+		isHidden
+		summarizeBy: none
+		sourceColumn: month_start
+		lineageTag: dee725bf-d074-47ea-9de6-74302930236f
+
+	column 'cars_sold'
+		dataType: int64
+		formatString: 0
+		summarizeBy: sum
+		sourceColumn: cars_sold
+		lineageTag: e56153a5-90cc-46b9-903b-7b5cd7dbaf45
+
+	partition 'car_sales_monthly' = m
+		mode: import
+		source =
+				let
+				    Source = PostgreSQL.Database(PgServer, PgDatabase),
+				    Data = Source{[Schema = PgSchema, Item = "car_sales_monthly"]}[Data],
+				    Selected = Table.SelectColumns(Data, {"car_key", "month_start", "cars_sold"}),
+				    Typed = Table.TransformColumnTypes(Selected, {{"car_key", Int64.Type}, {"month_start", type date}, {"cars_sold", Int64.Type}})
+				in
+				    Typed

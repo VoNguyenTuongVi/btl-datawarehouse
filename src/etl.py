@@ -55,7 +55,16 @@ print("-> Đã nạp dim_customer!")
 # -------------------------------------------------------------
 # 4. XỬ LÝ & NẠP DIM_CAR
 # -------------------------------------------------------------
-cars = df[['company', 'model', 'engine', 'transmission', 'color', 'body_style']].drop_duplicates().reset_index(drop=True)
+CAR_COLS = ['company', 'model', 'engine', 'transmission', 'color', 'body_style']
+# cars_sold: mỗi dòng gốc xuất hiện 1 lần = bán 1 xe (đếm trên dữ liệu chưa lọc).
+# Cấu hình nào chưa có dòng nào thì cars_sold = 0 (fillna), dù hiện tại mọi cấu hình đều có.
+cars = df[CAR_COLS].drop_duplicates()
+sold = df.groupby(CAR_COLS, dropna=False).size().rename('cars_sold').reset_index()
+cars = cars.merge(sold, on=CAR_COLS, how='left')
+cars['cars_sold'] = cars['cars_sold'].fillna(0).astype(int)
+# Sắp xếp giảm dần theo cars_sold rồi gán car_key theo thứ tự đó, nên ORDER BY car_key
+# cũng cho đúng thứ tự cao -> thấp. Thêm các cột còn lại để thứ tự ổn định giữa các lần chạy.
+cars = cars.sort_values(['cars_sold'] + CAR_COLS, ascending=[False] + [True] * len(CAR_COLS)).reset_index(drop=True)
 cars['car_key'] = cars.index + 1
 cars.to_sql('dim_car', engine, if_exists='append', index=False)
 print("-> Đã nạp dim_car!")
@@ -63,7 +72,7 @@ print("-> Đã nạp dim_car!")
 # -------------------------------------------------------------
 # 5. XỬ LÝ & NẠP DIM_DEALER
 # -------------------------------------------------------------
-dealers = df[['dealer_no', 'dealer_name', 'dealer_region']].drop_duplicates().reset_index(drop=True)
+dealers = df[['dealer_name', 'dealer_region']].drop_duplicates().reset_index(drop=True)
 dealers['dealer_id'] = dealers.index + 1
 dealers.to_sql('dim_dealer', engine, if_exists='append', index=False)
 print("-> Đã nạp dim_dealer!")
@@ -81,7 +90,7 @@ df = df.merge(customers, on=['customer_name', 'gender', 'annual_income', 'phone'
 df = df.merge(cars, on=['company', 'model', 'engine', 'transmission', 'color', 'body_style'], how='left')
 
 # Map dealer_id
-df = df.merge(dealers, on=['dealer_no', 'dealer_name', 'dealer_region'], how='left')
+df = df.merge(dealers, on=['dealer_name', 'dealer_region'], how='left')
 
 # Tạo bảng Fact hoàn chỉnh
 fact_sales = df[['car_id', 'date_id', 'customer_id', 'car_key', 'dealer_id', 'price']].copy()

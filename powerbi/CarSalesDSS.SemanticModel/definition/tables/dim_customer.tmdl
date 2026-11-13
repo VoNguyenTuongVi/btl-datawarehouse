@@ -1,0 +1,34 @@
+table 'dim_customer'
+	lineageTag: fc72e1b6-ec33-4968-9611-d486c8caeb0f
+
+	column 'customer_id'
+		dataType: int64
+		formatString: 0
+		summarizeBy: none
+		isKey
+		sourceColumn: customer_id
+		lineageTag: d0dbb95c-5c7b-4333-81d8-30bba8a50389
+
+	column 'gender'
+		dataType: string
+		summarizeBy: none
+		sourceColumn: gender
+		lineageTag: aafc9324-eae6-4840-abd3-727926332d3b
+
+	column 'annual_income'
+		dataType: int64
+		formatString: 0
+		summarizeBy: none
+		sourceColumn: annual_income
+		lineageTag: 2162e92f-4d03-48c9-9ab4-c3ea7c244d44
+
+	partition 'dim_customer' = m
+		mode: import
+		source =
+				let
+				    Source = PostgreSQL.Database(PgServer, PgDatabase),
+				    Data = Source{[Schema = PgSchemaDw, Item = "dim_customer"]}[Data],
+				    Selected = Table.SelectColumns(Data, {"customer_id", "gender", "annual_income"}),
+				    Typed = Table.TransformColumnTypes(Selected, {{"customer_id", Int64.Type}, {"gender", type text}, {"annual_income", Int64.Type}})
+				in
+				    Typed

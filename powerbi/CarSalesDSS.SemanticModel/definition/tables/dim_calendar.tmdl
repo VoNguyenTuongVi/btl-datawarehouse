@@ -1,0 +1,110 @@
+table 'dim_calendar'
+	lineageTag: c736e519-9851-445c-a88a-860c5f680e9d
+	dataCategory: Time
+
+	column 'date'
+		dataType: dateTime
+		formatString: yyyy-mm-dd
+		summarizeBy: none
+		isKey
+		sourceColumn: date
+		lineageTag: 3c67eb1e-899c-4c1e-befd-05f371485679
+
+	column 'date_id'
+		dataType: int64
+		formatString: 0
+		isHidden
+		summarizeBy: none
+		sourceColumn: date_id
+		lineageTag: 02f43a2b-41a4-4976-b7e3-b83028aefd47
+
+	column 'year'
+		dataType: int64
+		formatString: 0
+		summarizeBy: none
+		sourceColumn: year
+		lineageTag: ca080f58-6b5f-4fc5-93a0-2b40a2d393c5
+
+	column 'quarter_no'
+		dataType: int64
+		formatString: 0
+		summarizeBy: none
+		sourceColumn: quarter_no
+		lineageTag: 5d0e1fb0-02db-4fba-9f70-cee51032b161
+
+	column 'year_quarter'
+		dataType: string
+		summarizeBy: none
+		sourceColumn: year_quarter
+		lineageTag: 66fcc452-d0a2-4539-8292-841ad49534cd
+
+	column 'month_no'
+		dataType: int64
+		formatString: 0
+		summarizeBy: none
+		sourceColumn: month_no
+		lineageTag: 2ca45ae3-f801-4736-9980-1de032011a90
+
+	column 'month_name'
+		dataType: string
+		summarizeBy: none
+		sortByColumn: 'month_no'
+		sourceColumn: month_name
+		lineageTag: f070eb61-e3f9-4dae-81a2-3b6aedb6aea0
+
+	column 'year_month_label'
+		dataType: string
+		summarizeBy: none
+		sourceColumn: year_month_label
+		lineageTag: d4cc9846-067f-48ed-a8df-daf84c7b916f
+
+	column 'day_no'
+		dataType: int64
+		formatString: 0
+		summarizeBy: none
+		sourceColumn: day_no
+		lineageTag: d9fc8269-86c6-49d1-8f1d-4c3d4b6eb93a
+
+	column 'dow_no'
+		dataType: int64
+		formatString: 0
+		summarizeBy: none
+		sourceColumn: dow_no
+		lineageTag: c6f8c23a-6c5f-4a11-8f61-5827c490f270
+
+	column 'day_of_week'
+		dataType: string
+		summarizeBy: none
+		sortByColumn: 'dow_no'
+		sourceColumn: day_of_week
+		lineageTag: 4863dbd0-1d43-45b6-a9a5-f9f68e99d1d0
+
+	hierarchy 'Lịch'
+		lineageTag: 2151e441-d37f-40ed-ac85-288f499dc372
+
+		level 'year'
+			column: 'year'
+			lineageTag: 33826873-18eb-446c-ba32-ca6dec77bc33
+
+		level 'year_quarter'
+			column: 'year_quarter'
+			lineageTag: cea86255-b692-4ba2-871d-24dee19da386
+
+		level 'year_month_label'
+			column: 'year_month_label'
+			lineageTag: 772eae95-6f54-47fe-8fee-9add3a120df3
+
+		level 'date'
+			column: 'date'
+			lineageTag: 03f6dabc-9a6d-4745-9000-ec204661d450
+
+	partition 'dim_calendar' = m
+		mode: import
+		source =
+				let
+				    Source = PostgreSQL.Database(PgServer, PgDatabase),
+				    Data = Source{[Schema = PgSchema, Item = "dim_calendar"]}[Data],
+				    Selected = Table.SelectColumns(Data, {"date", "date_id", "year", "quarter_no", "year_quarter", "month_no", "month_name", "year_month_label", "day_no", "dow_no", "day_of_week"}),
+				    Typed = Table.TransformColumnTypes(Selected, {{"date", type date}, {"date_id", Int64.Type}, {"year", Int64.Type}, {"quarter_no", Int64.Type}, {"year_quarter", type text}, {"month_no", Int64.Type}, {"month_name", type text}, {"year_month_label", type text}, {"day_no", Int64.Type}, {"dow_no", Int64.Type}, {"day_of_week", type text}})
+				in
+				    Typed

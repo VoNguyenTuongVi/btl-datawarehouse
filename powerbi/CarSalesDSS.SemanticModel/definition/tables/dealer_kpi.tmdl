@@ -1,0 +1,47 @@
+table 'dealer_kpi'
+	lineageTag: f6f28369-eedb-4f00-94c5-251014d438c6
+
+	column 'dealer_region'
+		dataType: string
+		summarizeBy: none
+		sourceColumn: dealer_region
+		lineageTag: 09ff5183-a8f9-4586-aeed-7d4475fbe5c5
+
+	column 'dealer_name'
+		dataType: string
+		summarizeBy: none
+		sourceColumn: dealer_name
+		lineageTag: aa3ecf90-2705-4736-be82-762d1d40da07
+
+	column 'month_start'
+		dataType: dateTime
+		formatString: mmm yyyy
+		isHidden
+		summarizeBy: none
+		sourceColumn: month_start
+		lineageTag: d9d0dbfd-0f93-449d-8e86-266cc92d56d3
+
+	column 'orders'
+		dataType: int64
+		formatString: 0
+		summarizeBy: sum
+		sourceColumn: orders
+		lineageTag: 7a9df052-cc28-45ba-92a3-fa4afed9fc55
+
+	column 'revenue'
+		dataType: double
+		formatString: $#,0
+		summarizeBy: sum
+		sourceColumn: revenue
+		lineageTag: 27e2a270-6754-41a5-a342-49bbfd02038d
+
+	partition 'dealer_kpi' = m
+		mode: import
+		source =
+				let
+				    Source = PostgreSQL.Database(PgServer, PgDatabase),
+				    Data = Source{[Schema = PgSchema, Item = "dealer_kpi"]}[Data],
+				    Selected = Table.SelectColumns(Data, {"dealer_region", "dealer_name", "month_start", "orders", "revenue"}),
+				    Typed = Table.TransformColumnTypes(Selected, {{"dealer_region", type text}, {"dealer_name", type text}, {"month_start", type date}, {"orders", Int64.Type}, {"revenue", type number}})
+				in
+				    Typed

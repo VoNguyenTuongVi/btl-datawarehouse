@@ -24,21 +24,24 @@ CREATE TABLE IF NOT EXISTS mart.kpi_parameters (
     main_model      VARCHAR(50) NOT NULL DEFAULT 'sarima',
     target_growth   NUMERIC NOT NULL DEFAULT 0.05,
     wape_threshold  NUMERIC NOT NULL DEFAULT 0.20,
-    bias_threshold  NUMERIC NOT NULL DEFAULT 0.05,
-    safety_factor   NUMERIC NOT NULL DEFAULT 1.0,
-    w_growth        NUMERIC NOT NULL DEFAULT 0.25,
-    w_share         NUMERIC NOT NULL DEFAULT 0.25,
-    w_stability     NUMERIC NOT NULL DEFAULT 0.25,
-    w_accuracy      NUMERIC NOT NULL DEFAULT 0.25,
-    updated_at      TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+    bias_threshold  NUMERIC NOT NULL DEFAULT 0.05
 );
+-- Dọn phần DSS đã bỏ (DB tạo từ phiên bản cũ)
+ALTER TABLE mart.kpi_parameters
+    DROP COLUMN IF EXISTS safety_factor, DROP COLUMN IF EXISTS w_growth, DROP COLUMN IF EXISTS w_share,
+    DROP COLUMN IF EXISTS w_stability, DROP COLUMN IF EXISTS w_accuracy, DROP COLUMN IF EXISTS updated_at;
+DROP TABLE IF EXISTS mart.dim_car CASCADE;   -- dim_car nay nạp thẳng từ DW (schema public)
+DROP TABLE IF EXISTS mart.dss_company_priority;
+DROP TABLE IF EXISTS mart.dss_dealer_allocation;
+DROP TABLE IF EXISTS mart.dss_forecast_plan;
 INSERT INTO mart.kpi_parameters (id) VALUES (1) ON CONFLICT (id) DO NOTHING;
 -- @@END_PARAMETERS (build_marts.py chạy phần trên, ghi tham số, rồi chạy cả file)
 
 -- ---------------------------------------------------------------------
 -- 1. VIEW CƠ SỞ: 1 dòng = 1 xe bán, đã gắn tháng và nhóm thu nhập
 -- ---------------------------------------------------------------------
-CREATE OR REPLACE VIEW mart.v_sales AS
+DROP VIEW IF EXISTS mart.v_sales CASCADE;
+CREATE VIEW mart.v_sales AS
 WITH income_cut AS (
     SELECT percentile_cont(0.25) WITHIN GROUP (ORDER BY annual_income) AS p25,
            percentile_cont(0.50) WITHIN GROUP (ORDER BY annual_income) AS p50,
@@ -102,6 +105,29 @@ SELECT DISTINCT year, year::text AS year_label,
        MIN(period_type) AS period_type   -- 'Dự báo' < 'Thực tế' theo thứ tự chữ
 FROM mart.dim_month GROUP BY year ORDER BY year;
 ALTER TABLE mart.dim_year ADD PRIMARY KEY (year);
+
+-- Bảng lịch liên tục (mỗi ngày 1 dòng, trọn các năm của dim_month) để Power BI dùng làm Date Table
+-- cho time intelligence (SAMEPERIODLASTYEAR, TOTALYTD, DATEADD) trên fact_car_sales.
+DROP TABLE IF EXISTS mart.dim_calendar CASCADE;
+CREATE TABLE mart.dim_calendar AS
+WITH bounds AS (
+    SELECT date_trunc('year', MIN(month_start))::date AS first_day,
+           (date_trunc('year', MAX(month_start)) + INTERVAL '1 year' - INTERVAL '1 day')::date AS last_day
+    FROM mart.dim_month
+)
+SELECT gs::date                                                    AS date,
+       to_char(gs, 'YYYYMMDD')::int                                AS date_id,
+       EXTRACT(YEAR FROM gs)::int                                  AS year,
+       EXTRACT(QUARTER FROM gs)::int                               AS quarter_no,
+       EXTRACT(YEAR FROM gs)::int || '-Q' || EXTRACT(QUARTER FROM gs)::int AS year_quarter,
+       EXTRACT(MONTH FROM gs)::int                                 AS month_no,
+       to_char(gs, 'Mon')                                          AS month_name,
+       to_char(gs, 'YYYY-MM')                                      AS year_month_label,
+       EXTRACT(DAY FROM gs)::int                                   AS day_no,
+       EXTRACT(ISODOW FROM gs)::int                                AS dow_no,
+       to_char(gs, 'Dy')                                           AS day_of_week
+FROM bounds b, generate_series(b.first_day, b.last_day, INTERVAL '1 day') AS gs;
+ALTER TABLE mart.dim_calendar ADD PRIMARY KEY (date);
 
 -- ---------------------------------------------------------------------
 -- 3. KPI THEO THÁNG (D1–D4, D7, D14, D16, mục tiêu) – 1 dòng/tháng
@@ -536,14 +562,8 @@ SELECT DISTINCT series_key, level, level_label, member,
 FROM mart.forecast_series;
 ALTER TABLE mart.dim_forecast_member ADD PRIMARY KEY (series_key);
 
+-- (Đã bỏ bảng dim_forecast_model: Power BI lọc mô hình bằng cột model_name của chính bảng fact)
 DROP TABLE IF EXISTS mart.dim_forecast_model;
-CREATE TABLE mart.dim_forecast_model AS
-SELECT DISTINCT f.model_name,
-       CASE f.model_name WHEN 'sarima' THEN 'SARIMA' WHEN 'holt_winters' THEN 'Holt-Winters'
-            ELSE 'Seasonal naive' END AS model_label,
-       (f.model_name = p.main_model) AS is_main_model
-FROM fact_demand_forecast f CROSS JOIN mart.kpi_parameters p WHERE p.id = 1;
-ALTER TABLE mart.dim_forecast_model ADD PRIMARY KEY (model_name);
 
 -- ---------------------------------------------------------------------
 -- 12. ĐỘ CHÍNH XÁC DỰ BÁO (F2–F8) trên 6 tháng backtest
@@ -564,6 +584,9 @@ s AS (
            SUM(a) AS actual_total, SUM(f) AS forecast_total,
            SUM(ABS(a - f)) AS abs_error_total,
            SUM(f - a) AS error_total,
+           SUM(ABS(a - f) / NULLIF(a, 0))                      AS ape_total,
+           SUM(CASE WHEN a <> 0 THEN 1 ELSE 0 END)             AS n_ape,
+           SUM((a - f) ^ 2)                                    AS sq_error_total,
            SUM(CASE WHEN a BETWEEN lower_80 AND upper_80 THEN 1 ELSE 0 END) AS n_in_interval,
            AVG(ABS(a - f))                                     AS mae,
            SQRT(AVG((a - f) ^ 2))                              AS rmse,
@@ -579,6 +602,7 @@ SELECT s.level,
        s.member, s.level || '|' || s.member AS series_key, s.model_name,
        (s.model_name = p.main_model)                           AS is_main_model,
        s.n_points, s.actual_total, s.forecast_total, s.abs_error_total, s.error_total, s.n_in_interval,
+       s.ape_total, s.n_ape, s.sq_error_total,
        s.mae, s.rmse, s.mape_pct, s.wape_pct,
        1 - s.wape_pct                                          AS accuracy_pct,
        s.bias_pct, s.tracking_signal, s.interval_coverage_pct,
@@ -598,153 +622,68 @@ LEFT JOIN s n
 ORDER BY s.level, s.member, s.wape_pct;
 
 -- ---------------------------------------------------------------------
--- 13. KẾ HOẠCH TỪ DỰ BÁO (S1, S3, S4) – 6 tháng tới, mô hình chính
+-- 13. DEALER_KPI: số đơn của từng đại lý trong từng vùng, theo tháng
+--     (mỗi dòng fact là 1 xe nên số đơn = số xe bán; revenue = tổng giá bán). Lịch dày đủ 24 tháng,
+--     tháng không bán ghi 0.
 -- ---------------------------------------------------------------------
-DROP TABLE IF EXISTS mart.dss_forecast_plan;
-CREATE TABLE mart.dss_forecast_plan AS
-WITH p AS (SELECT * FROM mart.kpi_parameters WHERE id = 1),
-hist AS (   -- thống kê 24 tháng lịch sử cho từng thành viên
-    SELECT level, member,
-           STDDEV_POP(actual_units) / NULLIF(AVG(actual_units), 0) AS demand_cv,
-           AVG(actual_units) AS avg_monthly_units
-    FROM mart.forecast_series
-    WHERE series_type <> 'Dự báo' AND is_main_model
-    GROUP BY level, member
-),
-asp AS (
-    SELECT 'total'::text AS level, 'ALL'::text AS member, SUM(revenue) / SUM(units) AS asp_hist FROM mart.v_sales
-    UNION ALL SELECT 'company', company, SUM(revenue) / SUM(units) FROM mart.v_sales GROUP BY company
-    UNION ALL SELECT 'region', dealer_region, SUM(revenue) / SUM(units) FROM mart.v_sales GROUP BY dealer_region
-),
-py AS (
-    SELECT level, member, month_start, actual_units
-    FROM mart.forecast_series WHERE is_main_model AND series_type <> 'Dự báo'
-),
-acc AS (SELECT level, member, accuracy_pct, status FROM mart.forecast_accuracy WHERE is_main_model)
-SELECT f.month_start, f.level, f.level_label, f.member, f.series_key, f.model_name,
-       f.forecast_units, f.lower_80, f.upper_80,
-       py.actual_units                                          AS units_py,
-       (f.forecast_units - py.actual_units) / NULLIF(py.actual_units, 0) AS forecast_growth_pct,
-       h.demand_cv, h.avg_monthly_units,
-       asp.asp_hist,
-       p.safety_factor,
-       f.forecast_units * (1 + p.safety_factor * COALESCE(h.demand_cv, 0)) AS recommended_order,
-       f.forecast_units * asp.asp_hist                          AS projected_revenue,
-       f.lower_80 * asp.asp_hist                                AS projected_revenue_low,
-       f.upper_80 * asp.asp_hist                                AS projected_revenue_high,
-       acc.accuracy_pct                                         AS backtest_accuracy_pct,
-       acc.status                                               AS backtest_status
-FROM mart.forecast_series f
-CROSS JOIN p
-LEFT JOIN hist h ON h.level = f.level AND h.member = f.member
-LEFT JOIN asp    ON asp.level = f.level AND asp.member = f.member
-LEFT JOIN py     ON py.level = f.level AND py.member = f.member
-                AND py.month_start = (f.month_start - INTERVAL '1 year')::date
-LEFT JOIN acc    ON acc.level = f.level AND acc.member = f.member
-WHERE f.series_type = 'Dự báo' AND f.is_main_model
-ORDER BY f.level, f.member, f.month_start;
-
--- ---------------------------------------------------------------------
--- 14. PHÂN BỔ XE THEO VÙNG / ĐẠI LÝ (S2): dự báo tổng × tỷ trọng 6 tháng cuối
--- ---------------------------------------------------------------------
-DROP TABLE IF EXISTS mart.dss_dealer_allocation;
-CREATE TABLE mart.dss_dealer_allocation AS
-WITH last6 AS (
-    SELECT month_start FROM mart.dim_month WHERE period_type = 'Thực tế'
-    ORDER BY month_start DESC LIMIT 6
-),
-mix AS (
-    SELECT dealer_region, dealer_name,
-           SUM(units) AS units_6m,
-           SUM(revenue) / NULLIF(SUM(units), 0) AS asp_6m
-    FROM mart.v_sales WHERE month_start IN (SELECT month_start FROM last6)
-    GROUP BY dealer_region, dealer_name
-),
-mix2 AS (
-    SELECT mix.*,
-           units_6m / SUM(units_6m) OVER () AS dealer_share_6m,
-           SUM(units_6m) OVER (PARTITION BY dealer_region) / SUM(units_6m) OVER () AS region_share_6m
-    FROM mix
-),
-total_fc AS (
-    SELECT month_start, forecast_units, lower_80, upper_80
-    FROM mart.dss_forecast_plan WHERE level = 'total'
-),
-region_fc AS (
-    SELECT month_start, member AS dealer_region, forecast_units AS region_model_forecast
-    FROM mart.dss_forecast_plan WHERE level = 'region'
+DROP TABLE IF EXISTS mart.dealer_kpi;
+CREATE TABLE mart.dealer_kpi AS
+WITH months AS (SELECT month_start FROM mart.dim_month WHERE period_type = 'Thực tế'),
+dealers AS (SELECT DISTINCT dealer_region, dealer_name FROM dim_dealer),
+sales AS (
+    SELECT dealer_region, dealer_name, month_start, SUM(units)::int AS orders, SUM(revenue) AS revenue
+    FROM mart.v_sales GROUP BY dealer_region, dealer_name, month_start
 )
-SELECT t.month_start, m.dealer_region, m.dealer_name,
-       m.units_6m, m.dealer_share_6m, m.region_share_6m,
-       t.forecast_units                                AS total_forecast_units,
-       t.forecast_units * m.dealer_share_6m            AS allocated_units,
-       t.lower_80 * m.dealer_share_6m                  AS allocated_units_low,
-       t.upper_80 * m.dealer_share_6m                  AS allocated_units_high,
-       t.forecast_units * m.dealer_share_6m * m.asp_6m AS allocated_revenue,
-       r.region_model_forecast
-FROM total_fc t
-CROSS JOIN mix2 m
-LEFT JOIN region_fc r ON r.month_start = t.month_start AND r.dealer_region = m.dealer_region
-ORDER BY t.month_start, m.dealer_region, allocated_units DESC;
+SELECT dl.dealer_region, dl.dealer_name, m.month_start, COALESCE(s.orders, 0) AS orders,
+       COALESCE(s.revenue, 0) AS revenue
+FROM dealers dl
+CROSS JOIN months m
+LEFT JOIN sales s ON s.dealer_region = dl.dealer_region AND s.dealer_name = dl.dealer_name
+                 AND s.month_start = m.month_start
+ORDER BY dl.dealer_region, dl.dealer_name, m.month_start;
 
 -- ---------------------------------------------------------------------
--- 15. ĐIỂM ƯU TIÊN NHẬP HÀNG THEO HÃNG (S5)
---     4 thành phần chuẩn hóa min-max 0–1, trọng số trong kpi_parameters
+-- 14. CAR_SALES_MONTHLY: số xe bán của từng cấu hình xe (dim_car) theo tháng.
+--     Lịch dày đủ 24 tháng, tháng không bán ghi 0.
 -- ---------------------------------------------------------------------
-DROP TABLE IF EXISTS mart.dss_company_priority;
-CREATE TABLE mart.dss_company_priority AS
-WITH p AS (SELECT * FROM mart.kpi_parameters WHERE id = 1),
-base AS (
-    SELECT fp.member AS company,
-           SUM(fp.forecast_units) AS forecast_next_6m,
-           SUM(fp.units_py) AS units_same_6m_py,
-           SUM(fp.forecast_units) / NULLIF(SUM(fp.units_py), 0) - 1 AS forecast_growth_pct,
-           MAX(fp.demand_cv) AS demand_cv,
-           MAX(fp.backtest_accuracy_pct) AS forecast_accuracy_pct,
-           SUM(fp.projected_revenue) AS projected_revenue_6m
-    FROM mart.dss_forecast_plan fp WHERE fp.level = 'company'
-    GROUP BY fp.member
-),
-share AS (
-    SELECT dimension_value AS company, units_share_pct
-    FROM mart.kpi_dimension_summary
-    WHERE dimension_name = 'company' AND year = (SELECT MAX(year) FROM mart.kpi_dimension_summary)
-),
-x AS (
-    SELECT b.*, COALESCE(s.units_share_pct, 0) AS units_share_pct
-    FROM base b LEFT JOIN share s USING (company)
-),
-n AS (
-    SELECT x.*,
-           (forecast_growth_pct - MIN(forecast_growth_pct) OVER ())
-               / NULLIF(MAX(forecast_growth_pct) OVER () - MIN(forecast_growth_pct) OVER (), 0) AS score_growth,
-           (units_share_pct - MIN(units_share_pct) OVER ())
-               / NULLIF(MAX(units_share_pct) OVER () - MIN(units_share_pct) OVER (), 0) AS score_share,
-           1 - (demand_cv - MIN(demand_cv) OVER ())
-               / NULLIF(MAX(demand_cv) OVER () - MIN(demand_cv) OVER (), 0) AS score_stability,
-           (GREATEST(forecast_accuracy_pct, 0) - MIN(GREATEST(forecast_accuracy_pct, 0)) OVER ())
-               / NULLIF(MAX(GREATEST(forecast_accuracy_pct, 0)) OVER ()
-                        - MIN(GREATEST(forecast_accuracy_pct, 0)) OVER (), 0) AS score_accuracy
-    FROM x
-),
-scored AS (
-    SELECT n.*,
-           p.w_growth, p.w_share, p.w_stability, p.w_accuracy,
-           p.w_growth * COALESCE(score_growth, 0) + p.w_share * COALESCE(score_share, 0)
-         + p.w_stability * COALESCE(score_stability, 0) + p.w_accuracy * COALESCE(score_accuracy, 0)
-               AS priority_score
-    FROM n CROSS JOIN p
+DROP TABLE IF EXISTS mart.car_sales_monthly;
+CREATE TABLE mart.car_sales_monthly AS
+WITH months AS (SELECT month_start FROM mart.dim_month WHERE period_type = 'Thực tế'),
+sales AS (
+    SELECT f.car_key, make_date(d.year, d.month, 1) AS month_start, COUNT(*)::int AS cars_sold
+    FROM fact_car_sales f JOIN dim_date d ON f.date_id = d.date_id
+    GROUP BY f.car_key, make_date(d.year, d.month, 1)
 )
-SELECT scored.*,
-       'company|' || company AS series_key,
-       RANK() OVER (ORDER BY priority_score DESC) AS priority_rank,
-       CASE NTILE(3) OVER (ORDER BY priority_score DESC)
-            WHEN 1 THEN 'Ưu tiên cao' WHEN 2 THEN 'Trung bình' ELSE 'Ưu tiên thấp' END AS priority_tier
-FROM scored
-ORDER BY priority_score DESC;
+SELECT c.car_key, m.month_start, COALESCE(s.cars_sold, 0) AS cars_sold
+FROM dim_car c
+CROSS JOIN months m
+LEFT JOIN sales s ON s.car_key = c.car_key AND s.month_start = m.month_start
+ORDER BY c.car_key, m.month_start;
 
 -- ---------------------------------------------------------------------
--- 16. CHẤT LƯỢNG DỮ LIỆU (Q3–Q6). Q1–Q2 (so với CSV) do build_marts.py thêm.
+-- 14b. CAR_SALE_DAILY: số xe bán và doanh thu của từng cấu hình xe (dim_car) theo ngày.
+--      Lịch dày đủ mọi ngày thực tế của mart.dim_calendar (không gồm các ngày dự báo), ngày không bán ghi 0.
+-- ---------------------------------------------------------------------
+DROP TABLE IF EXISTS mart.car_sales_daily;
+CREATE TABLE mart.car_sales_daily AS
+WITH days AS (
+    SELECT c.date, c.date_id
+    FROM mart.dim_calendar c
+    WHERE c.date <= (SELECT MAX(full_date) FROM mart.v_sales)
+),
+sales AS (
+    SELECT f.car_key, f.date_id, COUNT(*)::int AS cars_sold, SUM(f.price)::numeric AS revenue
+    FROM fact_car_sales f GROUP BY f.car_key, f.date_id
+)
+SELECT c.car_key, d.date, COALESCE(s.cars_sold, 0) AS cars_sold, COALESCE(s.revenue, 0) AS revenue
+FROM dim_car c
+CROSS JOIN days d
+LEFT JOIN sales s ON s.car_key = c.car_key AND s.date_id = d.date_id
+ORDER BY c.car_key, d.date;
+CREATE INDEX ON mart.car_sales_daily (car_key);
+
+-- ---------------------------------------------------------------------
+-- 15. CHẤT LƯỢNG DỮ LIỆU (Q3–Q6). Q1–Q2 (so với CSV) do build_marts.py thêm.
 -- ---------------------------------------------------------------------
 DROP TABLE IF EXISTS mart.dq_checks;
 CREATE TABLE mart.dq_checks (
@@ -753,8 +692,7 @@ CREATE TABLE mart.dq_checks (
     metric_value NUMERIC,
     threshold    TEXT,
     passed       BOOLEAN,
-    detail       TEXT,
-    checked_at   TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+    detail       TEXT
 );
 INSERT INTO mart.dq_checks (check_code, check_name, metric_value, threshold, passed, detail)
 SELECT 'Q3', 'Tỷ lệ khóa ngoại mồ côi', orphans::numeric / NULLIF(total, 0), '= 0', orphans = 0,

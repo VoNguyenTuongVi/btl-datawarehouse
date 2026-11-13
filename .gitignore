@@ -4,3 +4,6 @@ __pycache__/
 # Secrets
 .env
 CLAUDE.md
+PLAN.md
+PLAN_DESCRIPTION.md
+HUONG_DAN_POWERBI_TU_DONG.md

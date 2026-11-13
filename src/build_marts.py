@@ -1,15 +1,14 @@
 """
 Tạo lớp mart KPI (schema "mart") trong PostgreSQL cho Power BI.
 
-    1. Ghi tham số (mô hình chính, mục tiêu, ngưỡng, trọng số S5) vào mart.kpi_parameters
+    1. Ghi tham số (mô hình chính, mục tiêu, ngưỡng) vào mart.kpi_parameters
     2. Chạy src/kpi_marts.sql: tạo lại toàn bộ bảng mart.* (một transaction)
     3. Thêm kiểm tra Q1–Q2 (đối chiếu với CSV) vào mart.dq_checks
     4. In số dòng từng bảng
 
 Cách dùng:
     python src/build_marts.py
-    python src/build_marts.py --main-model holt_winters --safety-factor 1.5
-    python src/build_marts.py --weights 0.4 0.3 0.15 0.15   # growth share stability accuracy
+    python src/build_marts.py --main-model holt_winters
 """
 from __future__ import annotations
 
@@ -36,13 +35,7 @@ def main(argv=None) -> int:
     ap.add_argument("--target-growth", type=float, default=0.05)
     ap.add_argument("--wape-threshold", type=float, default=0.20)
     ap.add_argument("--bias-threshold", type=float, default=0.05)
-    ap.add_argument("--safety-factor", type=float, default=1.0, help="hệ số đệm k cho S3")
-    ap.add_argument("--weights", type=float, nargs=4, default=[0.25, 0.25, 0.25, 0.25],
-                    metavar=("GROWTH", "SHARE", "STABILITY", "ACCURACY"), help="trọng số S5")
     args = ap.parse_args(argv)
-
-    if abs(sum(args.weights) - 1) > 1e-6:
-        sys.exit(f"[X] Tổng trọng số S5 phải bằng 1 (đang là {sum(args.weights):.2f}).")
 
     load_env()
     url = os.environ.get("DATABASE_URL", "")
@@ -65,16 +58,12 @@ def main(argv=None) -> int:
             sql = SQL_FILE.read_text(encoding="utf-8")
             # Tạo schema + bảng tham số trước để ghi tham số, rồi mới tính các bảng KPI
             cur.execute(sql.split("-- @@END_PARAMETERS")[0])
-            w = args.weights
             cur.execute(
                 """UPDATE mart.kpi_parameters
                    SET main_model = %s, target_growth = %s, wape_threshold = %s,
-                       bias_threshold = %s, safety_factor = %s,
-                       w_growth = %s, w_share = %s, w_stability = %s, w_accuracy = %s,
-                       updated_at = CURRENT_TIMESTAMP
+                       bias_threshold = %s
                    WHERE id = 1""",
-                (args.main_model, args.target_growth, args.wape_threshold, args.bias_threshold,
-                 args.safety_factor, w[0], w[1], w[2], w[3]),
+                (args.main_model, args.target_growth, args.wape_threshold, args.bias_threshold),
             )
             cur.execute(sql)
             raw.commit()

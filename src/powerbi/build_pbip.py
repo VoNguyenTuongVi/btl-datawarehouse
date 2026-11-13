@@ -1,15 +1,15 @@
 """
 Sinh tự động Semantic Model (TMDL) cho dự án Power BI (PBIP) từ lớp mart KPI.
 
-Power BI chỉ nạp các bảng đã tổng hợp trong schema "mart" của PostgreSQL
-(do src/build_marts.py tạo), không nạp bảng thô dim_* / fact_*:
+Power BI nạp các bảng đã tổng hợp trong schema "mart" và 6 bảng gốc của DW (schema "public")
+(do src/build_marts.py tạo), cùng dim_date, dim_car, dim_dealer,
+fact_car_sales, fact_demand_forecast:
 
-  Chiều dùng chung  dim_year, dim_month, dim_member, dim_forecast_member, dim_forecast_model
+  Chiều dùng chung  dim_year, dim_month, dim_member, dim_forecast_member
+  Đại lý, xe        dealer_kpi, car_sales_monthly
   KPI lịch sử       kpi_monthly_overview, kpi_quarterly, kpi_daily, kpi_weekday,
-                    kpi_monthly_by_dimension, kpi_dimension_summary,
-                    kpi_customer_segment, kpi_annual_summary
+                    kpi_monthly_by_dimension, kpi_dimension_summary, kpi_customer_segment, kpi_annual_summary
   Dự báo            forecast_series, forecast_accuracy
-  Hỗ trợ quyết định dss_forecast_plan, dss_dealer_allocation, dss_company_priority
   Khác              kpi_parameters, dq_checks
 
 Measure chỉ cộng các cột thành phần rồi chia lại (không cộng dồn phần trăm),
@@ -40,10 +40,11 @@ MART_TABLES: dict[str, list[str]] = {
     "dim_year": ["year", "year_label", "period_type"],
     "dim_month": ["month_start", "year", "quarter_no", "quarter", "year_quarter", "month_no",
                   "month_name", "year_month", "year_month_label", "period_type"],
+    "dim_calendar": ["date", "date_id", "year", "quarter_no", "year_quarter", "month_no", "month_name",
+                     "year_month_label", "day_no", "dow_no", "day_of_week"],
     "dim_member": ["member_key", "dimension_name", "dimension_label", "dimension_value",
                    "parent_value", "dimension_order"],
     "dim_forecast_member": ["series_key", "level", "level_label", "member", "level_order"],
-    "dim_forecast_model": ["model_name", "model_label", "is_main_model"],
     "kpi_monthly_overview": [
         "month_start", "year", "units", "revenue", "asp", "units_pm", "revenue_pm", "units_py",
         "revenue_py", "units_mom_pct", "revenue_mom_pct", "units_yoy_pct", "revenue_yoy_pct",
@@ -88,34 +89,49 @@ MART_TABLES: dict[str, list[str]] = {
         "in_interval"],
     "forecast_accuracy": [
         "level", "level_label", "member", "series_key", "model_name", "is_main_model", "n_points",
-        "actual_total", "forecast_total", "abs_error_total", "error_total", "n_in_interval", "mae",
+        "actual_total", "forecast_total", "abs_error_total", "error_total", "n_in_interval",
+        "ape_total", "n_ape", "sq_error_total", "mae",
         "rmse", "mape_pct", "wape_pct", "accuracy_pct", "bias_pct", "tracking_signal",
         "interval_coverage_pct", "naive_wape_pct", "fva_pp", "wape_threshold", "bias_threshold",
         "wape_pass", "bias_pass", "status", "tracking_status", "model_rank"],
-    "dss_forecast_plan": [
-        "month_start", "level", "level_label", "member", "series_key", "model_name",
-        "forecast_units", "lower_80", "upper_80", "units_py", "forecast_growth_pct", "demand_cv",
-        "avg_monthly_units", "asp_hist", "safety_factor", "recommended_order", "projected_revenue",
-        "projected_revenue_low", "projected_revenue_high", "backtest_accuracy_pct",
-        "backtest_status"],
-    "dss_dealer_allocation": [
-        "month_start", "dealer_region", "dealer_name", "units_6m", "dealer_share_6m",
-        "region_share_6m", "total_forecast_units", "allocated_units", "allocated_units_low",
-        "allocated_units_high", "allocated_revenue", "region_model_forecast"],
-    "dss_company_priority": [
-        "company", "series_key", "forecast_next_6m", "units_same_6m_py", "forecast_growth_pct",
-        "demand_cv", "forecast_accuracy_pct", "projected_revenue_6m", "units_share_pct",
-        "score_growth", "score_share", "score_stability", "score_accuracy", "w_growth", "w_share",
-        "w_stability", "w_accuracy", "priority_score", "priority_rank", "priority_tier"],
-    "kpi_parameters": ["main_model", "target_growth", "wape_threshold", "bias_threshold",
-                       "safety_factor", "w_growth", "w_share", "w_stability", "w_accuracy",
-                       "updated_at"],
-    "dq_checks": ["check_code", "check_name", "metric_value", "threshold", "passed", "detail",
-                  "checked_at"],
+    "dealer_kpi": ["dealer_region", "dealer_name", "month_start", "orders", "revenue"],
+    "car_sales_monthly": ["car_key", "month_start", "cars_sold"],
+    "car_sales_daily": ["car_key", "date", "cars_sold", "revenue"],
+    "kpi_parameters": ["main_model", "target_growth", "wape_threshold", "bias_threshold"],
+    "dq_checks": ["check_code", "check_name", "metric_value", "threshold", "passed", "detail"],
 }
 
 # (bảng nhiều, cột) -> (bảng một, cột)
+# Bảng gốc của DW (schema public), nạp nguyên bản để dựng dashboard chi tiết
+DW_TABLES: dict[str, list[str]] = {
+    "dim_customer": ["customer_id", "gender", "annual_income"],
+    "dim_date": ["date_id", "full_date", "day", "month", "quarter", "year", "day_of_week", "month_start"],
+    "dim_car": ["car_key", "company", "model", "engine", "transmission", "color", "body_style", "cars_sold"],
+    "dim_dealer": ["dealer_id", "dealer_name", "dealer_region"],
+    "fact_car_sales": ["car_id", "date_id", "car_key", "dealer_id", "customer_id", "price", "quantity"],
+    "fact_demand_forecast": ["forecast_id", "month_id", "month_start", "level", "member", "model_name",
+                             "forecast_units", "lower_80", "upper_80", "actual_units", "is_backtest"],
+}
+# Cột không có sẵn trong DW, thêm bằng Power Query (bảng -> {cột: biểu thức M})
+DERIVED_COLS = {"dim_date": {"month_start": "Date.StartOfMonth([full_date])"}}
+# Kiểu cột riêng cho từng bảng khi tên cột trùng với bảng mart
+DTYPE_OVERRIDE = {("dim_date", "quarter"): "int64", ("dim_date", "year"): "int64"}
+DW_HIDDEN = {"fact_car_sales": {"date_id", "car_key", "dealer_id", "customer_id"},
+             "fact_demand_forecast": {"forecast_id", "month_id", "month_start"}, "dim_date": {"month_start"}}
+
 RELATIONSHIPS = [
+    (("dealer_kpi", "month_start"), ("dim_month", "month_start")),
+    (("car_sales_monthly", "month_start"), ("dim_month", "month_start")),
+    (("car_sales_monthly", "car_key"), ("dim_car", "car_key")),
+    (("car_sales_daily", "date"), ("dim_calendar", "date")),
+    (("car_sales_daily", "car_key"), ("dim_car", "car_key")),
+    (("fact_car_sales", "date_id"), ("dim_date", "date_id")),
+    (("fact_car_sales", "date_id"), ("dim_calendar", "date_id")),
+    (("fact_car_sales", "car_key"), ("dim_car", "car_key")),
+    (("fact_car_sales", "dealer_id"), ("dim_dealer", "dealer_id")),
+    (("fact_car_sales", "customer_id"), ("dim_customer", "customer_id")),
+    (("dim_date", "month_start"), ("dim_month", "month_start")),
+    (("fact_demand_forecast", "month_start"), ("dim_month", "month_start")),
     (("dim_month", "year"), ("dim_year", "year")),
     (("kpi_monthly_overview", "month_start"), ("dim_month", "month_start")),
     (("kpi_quarterly", "quarter_start"), ("dim_month", "month_start")),
@@ -129,13 +145,7 @@ RELATIONSHIPS = [
     (("kpi_annual_summary", "year"), ("dim_year", "year")),
     (("forecast_series", "month_start"), ("dim_month", "month_start")),
     (("forecast_series", "series_key"), ("dim_forecast_member", "series_key")),
-    (("forecast_series", "model_name"), ("dim_forecast_model", "model_name")),
     (("forecast_accuracy", "series_key"), ("dim_forecast_member", "series_key")),
-    (("forecast_accuracy", "model_name"), ("dim_forecast_model", "model_name")),
-    (("dss_forecast_plan", "month_start"), ("dim_month", "month_start")),
-    (("dss_forecast_plan", "series_key"), ("dim_forecast_member", "series_key")),
-    (("dss_dealer_allocation", "month_start"), ("dim_month", "month_start")),
-    (("dss_company_priority", "series_key"), ("dim_forecast_member", "series_key")),
 ]
 
 # Cột trùng thông tin với bảng chiều -> ẩn, để người dựng visual dùng cột của bảng chiều
@@ -147,11 +157,11 @@ HIDE_EXTRA = {
     "kpi_dimension_summary": {"dimension_name", "dimension_label", "dimension_value", "parent_value", "period"},
     "forecast_series": {"level", "level_label", "member", "is_main_model"},
     "forecast_accuracy": {"level", "level_label", "member", "is_main_model"},
-    "dss_forecast_plan": {"level", "level_label", "member", "model_name"},
-    "dss_company_priority": set(),
     "kpi_customer_segment": {"sum_income", "sum_price_to_income"},
+    "dim_calendar": {"date_id"},
     "dim_member": {"member_key", "dimension_order"},
     "dim_forecast_member": {"series_key", "level_order"},
+    **DW_HIDDEN,
     "kpi_monthly_overview": {"year"},
     "kpi_daily": {"year"},
     "kpi_quarterly": {"year"},
@@ -163,6 +173,8 @@ SORT_BY = {
     ("dim_forecast_member", "level_label"): "level_order",
     ("kpi_weekday", "day_of_week"): "dow_no",
     ("kpi_daily", "day_of_week"): "dow_no",
+    ("dim_calendar", "month_name"): "month_no",
+    ("dim_calendar", "day_of_week"): "dow_no",
     ("kpi_customer_segment", "income_band"): "income_quartile",
 }
 
@@ -170,6 +182,10 @@ HIERARCHIES = {
     "dim_month": [("Thời gian", ["year", "year_quarter", "year_month_label"])],
     "dim_member": [("Phân tích", ["dimension_label", "dimension_value"])],
     "dim_forecast_member": [("Chuỗi dự báo", ["level_label", "member"])],
+    "dim_calendar": [("Lịch", ["year", "year_quarter", "year_month_label", "date"])],
+    "dim_date": [("Date", ["year", "quarter", "month", "full_date"])],
+    "dim_car": [("Product", ["company", "model"])],
+    "dim_dealer": [("Geography", ["dealer_region", "dealer_name"])],
 }
 
 TEXT_COLS = {
@@ -178,17 +194,18 @@ TEXT_COLS = {
     "series_key", "level", "level_label", "member", "model_name", "model_label",
     "units_target_status", "revenue_target_status", "day_of_week", "period", "income_band",
     "gender", "peak_month", "low_month", "series_type", "status", "tracking_status",
-    "backtest_status", "dealer_region", "dealer_name", "company", "priority_tier", "main_model",
-    "check_code", "check_name", "threshold", "detail", "mover_group",
+    "backtest_status", "dealer_region", "dealer_name", "company", "model", "engine", "transmission", "color", "body_style", "main_model",
+    "car_id", "check_code", "check_name", "threshold", "detail", "mover_group",
 }
-BOOL_COLS = {"is_main_model", "in_interval", "wape_pass", "bias_pass", "passed"}
-DATE_COLS = {"month_start", "quarter_start", "full_date", "updated_at", "checked_at"}
+BOOL_COLS = {"is_backtest", "is_main_model", "in_interval", "wape_pass", "bias_pass", "passed"}
+DATE_COLS = {"date", "month_start", "quarter_start", "full_date"}
 INT_COLS = {
-    "year", "quarter_no", "month_no", "year_month", "dimension_order", "level_order", "quarter",
-    "dow_no", "income_quartile", "income_min", "income_max", "active_dealers", "selling_days",
+    "year", "orders", "date_id", "car_key", "dealer_id", "day", "month", "price",
+    "quantity", "customer_id", "annual_income", "forecast_id", "month_id", "cars_sold", "quarter_no", "month_no", "year_month", "dimension_order", "level_order", "quarter",
+    "dow_no", "day_no", "income_quartile", "income_min", "income_max", "active_dealers", "selling_days",
     "dealers_growing", "dealers_compared", "n_companies", "n_models", "n_dealers", "n_points",
     "n_in_interval", "active_months", "rank_units", "rank_revenue", "rank_in_month",
-    "model_rank", "priority_rank",
+    "model_rank",
 }
 # Cột cộng được giữa các dòng (còn lại là tỷ lệ / chỉ số: không tự cộng)
 ADDITIVE = re.compile(
@@ -196,16 +213,18 @@ ADDITIVE = re.compile(
     r"units_yoy_delta|actual_units|forecast_units|lower_80|upper_80|forecast_error|"
     r"recommended_order|projected_revenue.*|allocated_.*|units_6m|forecast_next_6m|"
     r"units_same_6m_py|actual_total|forecast_total|abs_error_total|error_total|n_in_interval|"
-    r"n_points|selling_days|dealers_growing|dealers_compared|sum_income|sum_price_to_income)$")
+    r"n_points|sum_income|sum_price_to_income|orders|price|quantity|cars_sold|selling_days|dealers_growing|dealers_compared)$")
 
 M_TYPES = {"int64": "Int64.Type", "string": "type text", "dateTime": "type date",
            "double": "type number", "boolean": "type logical"}
-TIMESTAMP_COLS = {"updated_at", "checked_at"}
+TIMESTAMP_COLS: set[str] = set()   # hiện không còn cột thời điểm nào
 
 
 def col_spec(table: str, col: str) -> dict:
     """Suy kiểu, định dạng, cách gộp và ẩn/hiện từ tên cột."""
-    if col in TEXT_COLS:
+    if (table, col) in DTYPE_OVERRIDE:
+        dtype, fmt = DTYPE_OVERRIDE[(table, col)], "0"
+    elif col in TEXT_COLS:
         dtype, fmt = "string", None
     elif col in BOOL_COLS:
         dtype, fmt = "boolean", None
@@ -218,16 +237,15 @@ def col_spec(table: str, col: str) -> dict:
     else:
         dtype = "double"
         if col.endswith("_pct") or col.startswith(("w_", "score_")) or col in {
-                "target_growth", "wape_threshold", "bias_threshold", "dealer_share_6m",
-                "region_share_6m", "metric_value"}:
+                "target_growth", "wape_threshold", "bias_threshold", "metric_value"}:
             fmt = "0.0%"
         elif col.endswith("_pp"):
             fmt = "+0.0%;-0.0%;0.0%"
-        elif "revenue" in col or col.startswith("asp") or col == "avg_income":
+        elif "revenue" in col or col.startswith("asp") or col in {"price", "avg_income", "annual_income"}:
             fmt = "$#,0"
         elif col in {"seasonality_index", "seasonality_index_2y", "weekday_index", "demand_cv",
-                     "hhi_company", "price_to_income", "tracking_signal", "priority_score",
-                     "safety_factor"}:
+                     "hhi_company", "price_to_income", "tracking_signal",
+                     }:
             fmt = "0.000"
         elif col in {"mae", "rmse", "units_per_dealer", "avg_units_per_day", "avg_monthly_units",
                      "units_per_dealer_month"}:
@@ -251,19 +269,20 @@ GREEN, RED = "#2E7D32", "#C62828"
 def build_measures():
     """Trả về list (tên, DAX, formatString, displayFolder, mô tả)."""
     PCT, PP, INT, USD, DEC = "0.0%", "+0.0%;-0.0%;0.0%", "#,0", "$#,0", "0.000"
-    F1, F2, F3, F4, F5, F6, F7 = ("1. Tổng quan", "2. Theo chiều phân tích", "3. Khách hàng & ngày",
-                                  "4. Dự báo", "5. Hỗ trợ quyết định", "6. Mục tiêu & ngưỡng",
-                                  "7. Chất lượng dữ liệu")
+    F1, F2, F3, F4, F6, F7, F8 = ("1. Tổng quan", "2. Theo chiều phân tích", "3. Khách hàng & ngày",
+                                  "4. Dự báo", "5. Mục tiêu & ngưỡng", "6. Chất lượng dữ liệu",
+                                  "7. Theo fact (chia theo xe/đại lý/khách)")
     O, D = "kpi_monthly_overview", "kpi_monthly_by_dimension"
-    FS, FA, PL = "forecast_series", "forecast_accuracy", "dss_forecast_plan"
+    G = "HASONEVALUE ( dim_member[dimension_label] )"   # chặn cộng dồn nhiều chiều (gấp 10 lần)
+    FS, FA = "forecast_series", "forecast_accuracy"
 
-    def comparable(table: str, value: str, base: str) -> str:
+    def comparable(table: str, value: str, base: str, guard: str | None = None) -> str:
         """Tăng trưởng chỉ trên các tháng có kỳ so sánh (tránh lẫn tháng chưa có năm trước)."""
         return (
             f"VAR _t = FILTER ( {table}, NOT ISBLANK ( {table}[{base}] ) )\n"
             f"VAR _cur = SUMX ( _t, {table}[{value}] )\n"
             f"VAR _base = SUMX ( _t, {table}[{base}] )\n"
-            "RETURN DIVIDE ( _cur - _base, _base )"
+            + (f"RETURN IF ( {guard}, DIVIDE ( _cur - _base, _base ) )" if guard else "RETURN DIVIDE ( _cur - _base, _base )")
         )
 
     def level_default(expr: str, level: str) -> str:
@@ -277,21 +296,19 @@ def build_measures():
             ")"
         )
 
-    def main_model(expr: str) -> str:
-        """Chưa chọn mô hình thì dùng mô hình chính (đặt trong build_marts.py)."""
+    def main_model(expr: str, table: str) -> str:
+        """Chưa chọn mô hình (cột model_name của bảng fact) thì dùng mô hình chính (đặt trong build_marts.py)."""
         return (
             "IF (\n"
-            "    ISFILTERED ( dim_forecast_model[model_name] ) || ISFILTERED ( dim_forecast_model[model_label] ),\n"
+            f"    ISFILTERED ( {table}[model_name] ),\n"
             f"    {expr},\n"
-            f"    CALCULATE ( {expr}, dim_forecast_model[is_main_model] = TRUE () )\n"
+            f"    CALCULATE ( {expr}, {table}[is_main_model] = TRUE () )\n"
             ")"
         )
 
     def last_month(table: str, col: str) -> str:
         return (f"VAR _m = MAX ( {table}[month_start] )\n"
                 f"RETURN CALCULATE ( SUM ( {table}[{col}] ), {table}[month_start] = _m )")
-
-    whatif = "( 1 + [Demand Change Value] )"
 
     return [
         # ---------- 1. Tổng quan (kpi_monthly_overview) ----------
@@ -317,21 +334,58 @@ def build_measures():
          f"VAR _p = CALCULATE ( SUM ( {O}[revenue_ytd_py] ), {O}[month_start] = _m )\n"
          "RETURN DIVIDE ( _c - _p, _p )", PCT, F1, "D4"),
         ("Seasonality Index", f"AVERAGE ( {O}[seasonality_index_2y] )", DEC, F1,
-         "D7 – 1,0 = tháng trung bình; trung bình 2 năm"),
+         "D7 – 1,0 = tháng trung bình; trung bình 2 năm (gộp nhiều tháng thì lấy AVERAGE)"),
         ("Auto Share %", f"DIVIDE ( SUM ( {O}[auto_units] ), [Units] )", PCT, F1, "D14"),
         ("Dealers Growing %", f"DIVIDE ( SUM ( {O}[dealers_growing] ), SUM ( {O}[dealers_compared] ) )",
          PCT, F1, "D16 – % đại lý tăng so cùng kỳ"),
-        ("Units per Dealer", f"AVERAGE ( {O}[units_per_dealer] )", "#,0.0", F1, "D16 – xe/đại lý/tháng"),
+        ("Units per Dealer", f"DIVIDE ( SUM ( {O}[units] ), SUM ( {O}[active_dealers] ) )", "#,0.0", F1, "D16 – xe/đại lý/tháng (tính lại từ tổng xe / tổng đại lý hoạt động)"),
 
         # ---------- 2. Theo chiều (kpi_monthly_by_dimension + dim_member) ----------
-        ("Dim Units", f"SUM ( {D}[units] )", INT, F2,
-         "Sản lượng theo chiều đang chọn ở dim_member[dimension_label]"),
-        ("Dim Revenue", f"SUM ( {D}[revenue] )", USD, F2, None),
+        ("Dim Units", f"IF ( {G}, SUM ( {D}[units] ) )", INT, F2,
+         "Sản lượng theo chiều đang chọn ở dim_member[dimension_label]; trống nếu chưa chọn đúng 1 chiều"),
+        ("Cars Sold (All Time)", "SUM ( dim_car[cars_sold] )", INT, F2, "Tổng số xe đã bán của cấu hình xe cả giai đoạn (dim_car); KHÔNG đổi theo slicer thời gian, dùng Cars Sold Monthly nếu cần theo tháng"),
+        ("Dealer Orders", "SUM ( dealer_kpi[orders] )", INT, F2, "Ý tưởng 3 – số đơn của đại lý theo tháng (dealer_kpi)"),
+        ("Dealer Revenue", "SUM ( dealer_kpi[revenue] )", USD, F2, "Ý tưởng 3 – doanh thu của đại lý theo tháng (dealer_kpi)"),
+        ("Cars Sold Monthly", "SUM ( car_sales_monthly[cars_sold] )", INT, F2, "Ý tưởng 1 – số xe bán của cấu hình xe theo tháng"),
+        ("Cars Sold Daily", "SUM ( car_sales_daily[cars_sold] )", INT, F2,
+         "Ý tưởng 6 – số xe bán của cấu hình xe theo ngày (car_sales_daily, nối dim_calendar)"),
+        ("Cars Revenue Daily", "SUM ( car_sales_daily[revenue] )", USD, F2, "Ý tưởng 6 – doanh thu của cấu hình xe theo ngày"),
+        ("Fact Units", "SUM ( fact_car_sales[quantity] )", INT, F2, "Số xe bán tính trực tiếp từ fact_car_sales"),
+        ("Fact Revenue", "SUM ( fact_car_sales[price] )", USD, F2, "Doanh thu tính trực tiếp từ fact_car_sales"),
+
+        # ---------- 7. Time intelligence trên fact_car_sales (chia được theo dim_car, dim_dealer, dim_customer) ----------
+        ("Fact ASP", "DIVIDE ( [Fact Revenue], [Fact Units] )", USD, F8, "D3 trên fact"),
+        ("Fact Units PY", "CALCULATE ( [Fact Units], SAMEPERIODLASTYEAR ( dim_calendar[date] ) )", INT, F8,
+         "Sản lượng cùng kỳ năm trước (fact); trống nếu kỳ trước không có dữ liệu"),
+        ("Fact Revenue PY", "CALCULATE ( [Fact Revenue], SAMEPERIODLASTYEAR ( dim_calendar[date] ) )", USD, F8, None),
+        ("Fact Units YoY %",
+         "VAR _py = [Fact Units PY]\nRETURN IF ( NOT ISBLANK ( _py ), DIVIDE ( [Fact Units] - _py, _py ) )",
+         PCT, F8, "D4 – so cùng kỳ (fact)"),
+        ("Fact Revenue YoY %",
+         "VAR _py = [Fact Revenue PY]\nRETURN IF ( NOT ISBLANK ( _py ), DIVIDE ( [Fact Revenue] - _py, _py ) )",
+         PCT, F8, "D4 – so cùng kỳ (fact)"),
+        ("Fact Units PM", "CALCULATE ( [Fact Units], DATEADD ( dim_calendar[date], -1, MONTH ) )", INT, F8,
+         "Sản lượng tháng trước (fact)"),
+        ("Fact Revenue PM", "CALCULATE ( [Fact Revenue], DATEADD ( dim_calendar[date], -1, MONTH ) )", USD, F8, None),
+        ("Fact Units MoM %",
+         "VAR _pm = [Fact Units PM]\nRETURN IF ( NOT ISBLANK ( _pm ), DIVIDE ( [Fact Units] - _pm, _pm ) )",
+         PCT, F8, "D4 – so tháng trước (fact)"),
+        ("Fact Revenue MoM %",
+         "VAR _pm = [Fact Revenue PM]\nRETURN IF ( NOT ISBLANK ( _pm ), DIVIDE ( [Fact Revenue] - _pm, _pm ) )",
+         PCT, F8, "D4 – so tháng trước (fact)"),
+        ("Fact Units YTD", "TOTALYTD ( [Fact Units], dim_calendar[date] )", INT, F8, "D4 – lũy kế từ đầu năm (fact)"),
+        ("Fact Revenue YTD", "TOTALYTD ( [Fact Revenue], dim_calendar[date] )", USD, F8, None),
+        ("Fact Units YTD PY", "CALCULATE ( [Fact Units YTD], SAMEPERIODLASTYEAR ( dim_calendar[date] ) )", INT, F8,
+         "Lũy kế cùng kỳ năm trước (fact)"),
+        ("Fact Units YTD YoY %",
+         "VAR _py = [Fact Units YTD PY]\nRETURN IF ( NOT ISBLANK ( _py ), DIVIDE ( [Fact Units YTD] - _py, _py ) )",
+         PCT, F8, "D4 – lũy kế so cùng kỳ (fact)"),
+        ("Dim Revenue", f"IF ( {G}, SUM ( {D}[revenue] ) )", USD, F2, None),
         ("Dim ASP", "DIVIDE ( [Dim Revenue], [Dim Units] )", USD, F2, None),
-        ("Dim Units PY", f"SUM ( {D}[units_py] )", INT, F2, None),
-        ("Dim Units YoY %", comparable(D, "units", "units_py"), PCT, F2, "D12–D17"),
-        ("Dim Revenue YoY %", comparable(D, "revenue", "revenue_py"), PCT, F2, "D12–D17"),
-        ("Dim Units YoY Delta", f"SUM ( {D}[units_yoy_delta] )", "+#,0;-#,0;0", F2,
+        ("Dim Units PY", f"IF ( {G}, SUM ( {D}[units_py] ) )", INT, F2, None),
+        ("Dim Units YoY %", comparable(D, "units", "units_py", guard=G), PCT, F2, "D12–D17"),
+        ("Dim Revenue YoY %", comparable(D, "revenue", "revenue_py", guard=G), PCT, F2, "D12–D17"),
+        ("Dim Units YoY Delta", f"IF ( {G}, SUM ( {D}[units_yoy_delta] ) )", "+#,0;-#,0;0", F2,
          "D13 – chênh lệch xe so cùng kỳ"),
         ("Dim Units Share %",
          "DIVIDE (\n"
@@ -366,45 +420,40 @@ def build_measures():
         ("Actual Units",
          level_default(f"DIVIDE ( SUM ( {FS}[actual_units] ), DISTINCTCOUNT ( {FS}[model_name] ) )", "total"),
          INT, F4, "Thực tế trên trục dự báo (mặc định cấp tổng)"),
-        ("Forecast Units", level_default(main_model(f"SUM ( {FS}[forecast_units] )"), "total"), INT, F4,
+        ("Forecast Units", level_default(main_model(f"SUM ( {FS}[forecast_units] )", FS), "total"), INT, F4,
          "F1 – mặc định mô hình chính, cấp tổng"),
-        ("Forecast Lower 80", level_default(main_model(f"SUM ( {FS}[lower_80] )"), "total"), INT, F4, None),
-        ("Forecast Upper 80", level_default(main_model(f"SUM ( {FS}[upper_80] )"), "total"), INT, F4, None),
+        ("Forecast Lower 80", level_default(main_model(f"SUM ( {FS}[lower_80] )", FS), "total"), INT, F4, None),
+        ("Forecast Upper 80", level_default(main_model(f"SUM ( {FS}[upper_80] )", FS), "total"), INT, F4, None),
         ("WAPE %",
-         level_default(main_model(f"DIVIDE ( SUM ( {FA}[abs_error_total] ), SUM ( {FA}[actual_total] ) )"), "company"),
+         level_default(main_model(f"DIVIDE ( SUM ( {FA}[abs_error_total] ), SUM ( {FA}[actual_total] ) )", FA), "company"),
          PCT, F4, "F3 – mặc định cấp hãng, mô hình chính"),
         ("Forecast Accuracy %", "IF ( NOT ISBLANK ( [WAPE %] ), 1 - [WAPE %] )", PCT, F4, "F3"),
         ("Bias %",
-         level_default(main_model(f"DIVIDE ( SUM ( {FA}[error_total] ), SUM ( {FA}[actual_total] ) )"), "company"),
+         level_default(main_model(f"DIVIDE ( SUM ( {FA}[error_total] ), SUM ( {FA}[actual_total] ) )", FA), "company"),
          PP, F4, "F5 – dương là dự báo dư"),
-        ("MAE", level_default(main_model(f"DIVIDE ( SUM ( {FA}[abs_error_total] ), SUM ( {FA}[n_points] ) )"), "company"),
+        ("MAE", level_default(main_model(f"DIVIDE ( SUM ( {FA}[abs_error_total] ), SUM ( {FA}[n_points] ) )", FA), "company"),
          "#,0.0", F4, "F4"),
+        ("MAPE %",
+         level_default(main_model(f"DIVIDE ( SUM ( {FA}[ape_total] ), SUM ( {FA}[n_ape] ) )", FA), "company"),
+         PCT, F4, "F2 – trung bình sai số phần trăm, tính lại từ tổng"),
+        ("RMSE",
+         level_default(main_model(f"SQRT ( DIVIDE ( SUM ( {FA}[sq_error_total] ), SUM ( {FA}[n_points] ) ) )", FA), "company"),
+         "#,0.0", F4, "F4"),
+        ("Tracking Signal",
+         "DIVIDE ( -1 * " + level_default(main_model(f"SUM ( {FA}[error_total] )", FA), "company") + ", [MAE] )",
+         "0.00", F4, "F6 – |TS| > 4 là cảnh báo"),
+        ("Tracking Status",
+         "IF ( ISBLANK ( [Tracking Signal] ), BLANK (), IF ( ABS ( [Tracking Signal] ) > 4, \"Cảnh báo\", \"Ổn định\" ) )",
+         None, F4, "F6"),
         ("Interval Coverage %",
-         level_default(main_model(f"DIVIDE ( SUM ( {FA}[n_in_interval] ), SUM ( {FA}[n_points] ) )"), "company"),
+         level_default(main_model(f"DIVIDE ( SUM ( {FA}[n_in_interval] ), SUM ( {FA}[n_points] ) )", FA), "company"),
          PCT, F4, "F8 – mục tiêu ≈ 80%"),
         ("Naive WAPE %",
-         "CALCULATE ( [WAPE %], dim_forecast_model[model_name] = \"seasonal_naive\" )", PCT, F4, None),
+         "CALCULATE ( [WAPE %], forecast_accuracy[model_name] = \"seasonal_naive\" )", PCT, F4, None),
         ("FVA", "IF ( NOT ISBLANK ( [WAPE %] ), [Naive WAPE %] - [WAPE %] )", PP, F4,
          "F7 – dương là tốt hơn seasonal naive"),
 
-        # ---------- 5. Hỗ trợ quyết định ----------
-        ("Plan Forecast Units", level_default(f"SUM ( {PL}[forecast_units] )", "total"), INT, F5,
-         "F1 6 tháng tới, mô hình chính"),
-        ("Plan Units PY", level_default(f"SUM ( {PL}[units_py] )", "total"), INT, F5, None),
-        ("Forecast Growth %", "DIVIDE ( [Plan Forecast Units] - [Plan Units PY], [Plan Units PY] )",
-         PCT, F5, "S1"),
-        ("Recommended Order",
-         level_default(f"SUMX ( {PL}, {PL}[forecast_units] * {whatif} * ( 1 + [Safety Factor Value] * {PL}[demand_cv] ) )", "total"),
-         INT, F5, "S3, S6 – theo thanh trượt What-if"),
-        ("Projected Revenue",
-         level_default(f"SUMX ( {PL}, {PL}[forecast_units] * {whatif} * {PL}[asp_hist] )", "total"),
-         USD, F5, "S4, S6"),
-        ("Allocated Units", f"SUM ( dss_dealer_allocation[allocated_units] ) * {whatif}", INT, F5, "S2"),
-        ("Allocated Revenue", f"SUM ( dss_dealer_allocation[allocated_revenue] ) * {whatif}", USD, F5, "S2"),
-        ("Priority Score", "AVERAGE ( dss_company_priority[priority_score] )", DEC, F5, "S5"),
-        ("Priority Rank", "MIN ( dss_company_priority[priority_rank] )", "0", F5, "S5"),
-
-        # ---------- 6. Mục tiêu & ngưỡng ----------
+        # ---------- 5. Mục tiêu & ngưỡng ----------
         ("Target Growth", "MAX ( kpi_parameters[target_growth] )", PCT, F6, None),
         ("WAPE Threshold", "MAX ( kpi_parameters[wape_threshold] )", PCT, F6, None),
         ("Bias Threshold", "MAX ( kpi_parameters[bias_threshold] )", PCT, F6, None),
@@ -437,7 +486,7 @@ def build_measures():
          "    IF ( [WAPE %] <= [WAPE Threshold] && ABS ( [Bias %] ) <= [Bias Threshold], \"Đạt\", \"Không đạt\" )\n"
          ")", None, F6, "Đạt khi WAPE và |Bias| cùng trong ngưỡng"),
 
-        # ---------- 7. Chất lượng dữ liệu ----------
+        # ---------- 6. Chất lượng dữ liệu ----------
         ("DQ Checks Passed", "COUNTROWS ( FILTER ( dq_checks, dq_checks[passed] = TRUE () ) )", "0", F7, None),
         ("DQ Pass Rate", "DIVIDE ( [DQ Checks Passed], COUNTROWS ( dq_checks ) )", PCT, F7, "Q1–Q6"),
     ]
@@ -489,8 +538,11 @@ def column_block(name, dtype, summarize="none", hidden=False, source=None, fmt=N
     return "\n".join(out) + "\n"
 
 
-def mart_table_tmdl(table: str, cols: list[str]) -> str:
-    parts = [f"table {q(table)}", f"\tlineageTag: {tag()}", ""]
+def mart_table_tmdl(table: str, cols: list[str], schema_param: str = "PgSchema") -> str:
+    parts = [f"table {q(table)}", f"\tlineageTag: {tag()}"]
+    if table == "dim_calendar":
+        parts.append("\tdataCategory: Time")   # đánh dấu Date Table
+    parts.append("")
     specs = {c: col_spec(table, c) for c in cols}
     for c in cols:
         s = specs[c]
@@ -504,35 +556,23 @@ def mart_table_tmdl(table: str, cols: list[str]) -> str:
         parts += [f"\thierarchy {q(hname)}", f"\t\tlineageTag: {tag()}", ""]
         for lv in levels:
             parts += [f"\t\tlevel {q(lv)}", f"\t\t\tcolumn: {q(lv)}", f"\t\t\tlineageTag: {tag()}", ""]
-    col_list = ", ".join(f'"{c}"' for c in cols)
+    derived = DERIVED_COLS.get(table, {})
+    col_list = ", ".join(f'"{c}"' for c in cols if c not in derived)
     type_list = ", ".join(
         f'{{"{c}", {"type datetime" if c in TIMESTAMP_COLS else M_TYPES[specs[c]["dtype"]]}}}' for c in cols)
     m = (
         "let\n"
         "    Source = PostgreSQL.Database(PgServer, PgDatabase),\n"
-        f"    Data = Source{{[Schema = PgSchema, Item = \"{table}\"]}}[Data],\n"
+        f"    Data = Source{{[Schema = {schema_param}, Item = \"{table}\"]}}[Data],\n"
         f"    Selected = Table.SelectColumns(Data, {{{col_list}}}),\n"
-        f"    Typed = Table.TransformColumnTypes(Selected, {{{type_list}}})\n"
+        + "".join(f'    Added{i} = Table.AddColumn({"Selected" if i == 0 else f"Added{i - 1}"}, "{c}", each {e}),\n'
+                  for i, (c, e) in enumerate(derived.items()))
+        + f"    Typed = Table.TransformColumnTypes({f'Added{len(derived) - 1}' if derived else 'Selected'}, {{{type_list}}})\n"
         "in\n"
         "    Typed"
     )
     parts += [f"\tpartition {q(table)} = m", "\t\tmode: import", "\t\tsource =", indent(m, 4), ""]
     return "\n".join(parts)
-
-
-def whatif_tmdl(table: str, start: float, end: float, step: float, default: float, fmt: str) -> str:
-    return "\n".join([
-        f"table {q(table)}",
-        f"\tlineageTag: {tag()}",
-        "",
-        measure_block(f"{table} Value", f"SELECTEDVALUE ( {q(table)}[Value], {default} )", fmt,
-                      None, "Tham số What-if (S6)"),
-        column_block("Value", "double", "none", source="[Value]", fmt=fmt, extra=["isNameInferred"]),
-        f"\tpartition {q(table)} = calculated",
-        "\t\tmode: import",
-        f"\t\tsource = GENERATESERIES ( {start}, {end}, {step} )",
-        "",
-    ])
 
 
 def measures_tmdl(measures) -> str:
@@ -545,12 +585,13 @@ def measures_tmdl(measures) -> str:
     return "\n".join(parts)
 
 
-def expressions_tmdl(server: str, database: str, schema: str) -> str:
+def expressions_tmdl(server: str, database: str, schema: str, dw_schema: str = "public") -> str:
     def param(name, value):
         return (f'expression {name} = "{value}" meta [IsParameterQuery=true, Type="Text", '
                 f'IsParameterQueryRequired=true]\n\tlineageTag: {tag()}\n\n'
                 f'\tannotation PBI_ResultType = Text\n')
-    return "\n".join([param("PgServer", server), param("PgDatabase", database), param("PgSchema", schema)])
+    return "\n".join([param("PgServer", server), param("PgDatabase", database), param("PgSchema", schema),
+                      param("PgSchemaDw", dw_schema)])
 
 
 def relationships_tmdl() -> str:
@@ -637,14 +678,13 @@ def build(args) -> Path:
 
     measures = build_measures()
     tables = {t: mart_table_tmdl(t, cols) for t, cols in MART_TABLES.items()}
-    tables["Demand Change"] = whatif_tmdl("Demand Change", -0.3, 0.3, 0.05, 0, "+0%;-0%;0%")
-    tables["Safety Factor"] = whatif_tmdl("Safety Factor", 0, 2, 0.1, 1, "0.0")
+    tables.update({t: mart_table_tmdl(t, cols, "PgSchemaDw") for t, cols in DW_TABLES.items()})
     tables["_Measures"] = measures_tmdl(measures)
 
     for t, text in tables.items():
         write(def_dir / "tables" / f"{t}.tmdl", text)
     write(def_dir / "model.tmdl", model_tmdl())
-    write(def_dir / "expressions.tmdl", expressions_tmdl(args.server, args.database, args.schema))
+    write(def_dir / "expressions.tmdl", expressions_tmdl(args.server, args.database, args.schema, args.dw_schema))
     write(def_dir / "relationships.tmdl", relationships_tmdl())
 
     gi = out_dir / ".gitignore"
@@ -654,7 +694,7 @@ def build(args) -> Path:
     report_dir = out_dir / f"{args.name}.Report"
     pbip = out_dir / f"{args.name}.pbip"
     print(f"-> Đã sinh semantic model: {sm_dir}")
-    print(f"   {len(MART_TABLES)} bảng mart + 3 bảng phụ, {len(RELATIONSHIPS)} quan hệ, {len(measures)} measure")
+    print(f"   {len(MART_TABLES)} bảng mart + {len(DW_TABLES)} bảng DW + 1 bảng measure, {len(RELATIONSHIPS)} quan hệ, {len(measures)} measure")
     if not report_dir.exists():
         write_blank_report(out_dir, args.name)
         print(f"-> Chưa có report, đã tạo report trống: {report_dir}")
@@ -672,6 +712,7 @@ def main(argv=None) -> int:
     ap.add_argument("--server", default=env_server or "localhost:5432")
     ap.add_argument("--database", default=env_db or "car_sales_dw")
     ap.add_argument("--schema", default="mart", help="schema chứa các bảng KPI")
+    ap.add_argument("--dw-schema", default="public", help="schema chứa các bảng gốc của DW")
     build(ap.parse_args(argv))
     return 0
 

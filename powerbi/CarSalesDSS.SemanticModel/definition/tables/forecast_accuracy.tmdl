@@ -1,204 +1,224 @@
 table 'forecast_accuracy'
-	lineageTag: fcffb8f6-498b-4044-9e1b-63cceb52be89
+	lineageTag: f7134ac7-d6fb-4877-bd76-4a3e99cc0a03
 
 	column 'level'
 		dataType: string
 		isHidden
 		summarizeBy: none
 		sourceColumn: level
-		lineageTag: ca0d86a3-7039-4fe5-b70d-c2d9093088f0
+		lineageTag: 9c181539-022b-45bd-8f98-dc18300e2bf9
 
 	column 'level_label'
 		dataType: string
 		isHidden
 		summarizeBy: none
 		sourceColumn: level_label
-		lineageTag: e038f9d5-bb72-4f7e-bda2-d09b1836907c
+		lineageTag: c2ff3a2d-c325-4358-ad5d-53e5b1bc519e
 
 	column 'member'
 		dataType: string
 		isHidden
 		summarizeBy: none
 		sourceColumn: member
-		lineageTag: 58df9b70-6262-46e7-8868-e16dcd911cef
+		lineageTag: 9f577a5b-ba54-4b17-8095-0c80c246a3c1
 
 	column 'series_key'
 		dataType: string
 		isHidden
 		summarizeBy: none
 		sourceColumn: series_key
-		lineageTag: b16ef76b-e243-4567-ba86-b5ce484abca2
+		lineageTag: 0e621458-d245-4a3e-b4de-57cf3f6c5897
 
 	column 'model_name'
 		dataType: string
-		isHidden
 		summarizeBy: none
 		sourceColumn: model_name
-		lineageTag: 0213d48a-0c09-4f40-9828-29888664c2c1
+		lineageTag: 85f01c52-7253-4f64-a166-332a0f6c8073
 
 	column 'is_main_model'
 		dataType: boolean
 		isHidden
 		summarizeBy: none
 		sourceColumn: is_main_model
-		lineageTag: 459200d9-5609-4f6d-a2f5-dd1a06f8e6e7
+		lineageTag: df920825-02d4-479d-8c15-58154b193443
 
 	column 'n_points'
 		dataType: int64
 		formatString: 0
 		summarizeBy: sum
 		sourceColumn: n_points
-		lineageTag: 5701682c-8954-4089-82e3-cc611f958308
+		lineageTag: 9c333aa4-b7e8-4457-b562-03e29a1a50f1
 
 	column 'actual_total'
 		dataType: double
 		formatString: #,0
 		summarizeBy: sum
 		sourceColumn: actual_total
-		lineageTag: f70874ed-01f1-43b3-a5b8-6208ca3f04f9
+		lineageTag: b4280fd7-2e6d-4744-9e60-3a744ad318a1
 
 	column 'forecast_total'
 		dataType: double
 		formatString: #,0
 		summarizeBy: sum
 		sourceColumn: forecast_total
-		lineageTag: fe27ea66-5067-41b8-b1b3-1a75cab2051a
+		lineageTag: e6b76d74-9566-4959-acb9-3d0d4376a874
 
 	column 'abs_error_total'
 		dataType: double
 		formatString: #,0
 		summarizeBy: sum
 		sourceColumn: abs_error_total
-		lineageTag: 5ba01c03-dfbe-403e-aabb-767ef72ab906
+		lineageTag: 7f007798-7e32-426f-b59d-6737a63db95f
 
 	column 'error_total'
 		dataType: double
 		formatString: #,0
 		summarizeBy: sum
 		sourceColumn: error_total
-		lineageTag: 7d0e2632-4c83-4f02-a995-942277099287
+		lineageTag: 7d1f3654-bf59-4411-9b62-1a7d9e2d59fb
 
 	column 'n_in_interval'
 		dataType: int64
 		formatString: 0
 		summarizeBy: sum
 		sourceColumn: n_in_interval
-		lineageTag: 4ff0ac71-387d-4868-9034-7ec829d0eae1
+		lineageTag: d4ee8f24-48ad-44e5-bbbe-84c40d17f9be
+
+	column 'ape_total'
+		dataType: double
+		formatString: #,0
+		summarizeBy: none
+		sourceColumn: ape_total
+		lineageTag: a288a244-42fd-4cb1-adf4-3da8ef43543d
+
+	column 'n_ape'
+		dataType: double
+		formatString: #,0
+		summarizeBy: none
+		sourceColumn: n_ape
+		lineageTag: 734a8873-f12a-4c28-9338-f474e4fcf654
+
+	column 'sq_error_total'
+		dataType: double
+		formatString: #,0
+		summarizeBy: none
+		sourceColumn: sq_error_total
+		lineageTag: f7d38453-88a8-428d-bd38-912e6c599f48
 
 	column 'mae'
 		dataType: double
 		formatString: #,0.0
 		summarizeBy: none
 		sourceColumn: mae
-		lineageTag: d67c10a7-ad75-4f0d-acee-2f4601bc7a1e
+		lineageTag: 9f217f43-a467-474d-a5cb-25a65f4ffd7a
 
 	column 'rmse'
 		dataType: double
 		formatString: #,0.0
 		summarizeBy: none
 		sourceColumn: rmse
-		lineageTag: 93a30b64-1478-4d79-857d-526ec75f06ae
+		lineageTag: 43497786-1fbb-48fe-b342-059dc0c3a44a
 
 	column 'mape_pct'
 		dataType: double
 		formatString: 0.0%
 		summarizeBy: none
 		sourceColumn: mape_pct
-		lineageTag: ced3ceb5-a7b8-489e-99cb-85c8fe051c9c
+		lineageTag: f81e956a-27f0-4ede-a349-1721b85e6c8b
 
 	column 'wape_pct'
 		dataType: double
 		formatString: 0.0%
 		summarizeBy: none
 		sourceColumn: wape_pct
-		lineageTag: 367fd716-1810-4052-babc-678b45f26ef8
+		lineageTag: b30d2d27-24c4-4479-90db-1a80a784d978
 
 	column 'accuracy_pct'
 		dataType: double
 		formatString: 0.0%
 		summarizeBy: none
 		sourceColumn: accuracy_pct
-		lineageTag: b9a4b48f-ed78-4cab-af2f-f6b75732f559
+		lineageTag: fe7a74af-0712-4edf-adbd-6c5899d469fe
 
 	column 'bias_pct'
 		dataType: double
 		formatString: 0.0%
 		summarizeBy: none
 		sourceColumn: bias_pct
-		lineageTag: 55fda24f-241b-4e04-99ef-e60c704d097a
+		lineageTag: 60cb97b6-769f-4635-8abe-deedb4d30d74
 
 	column 'tracking_signal'
 		dataType: double
 		formatString: 0.000
 		summarizeBy: none
 		sourceColumn: tracking_signal
-		lineageTag: 8b7f787b-bb5f-4e3e-b820-798e4102705b
+		lineageTag: aa4244be-a516-4e5c-bf1f-e14b19ff1501
 
 	column 'interval_coverage_pct'
 		dataType: double
 		formatString: 0.0%
 		summarizeBy: none
 		sourceColumn: interval_coverage_pct
-		lineageTag: 41aab58c-6565-46d0-b4b2-04ac7df11bff
+		lineageTag: 3b5548af-e906-4d75-9125-4cbf3a409a32
 
 	column 'naive_wape_pct'
 		dataType: double
 		formatString: 0.0%
 		summarizeBy: none
 		sourceColumn: naive_wape_pct
-		lineageTag: ca1454df-6d32-4013-beb6-910d21368e06
+		lineageTag: eb986158-615d-4664-b625-d18d244a98ff
 
 	column 'fva_pp'
 		dataType: double
 		formatString: +0.0%;-0.0%;0.0%
 		summarizeBy: none
 		sourceColumn: fva_pp
-		lineageTag: 7960cd25-8e66-4dc2-84a8-7daf95a0e54f
+		lineageTag: dc49bc7a-69c2-4b81-a8ec-120b9c2ea3bf
 
 	column 'wape_threshold'
 		dataType: double
 		formatString: 0.0%
 		summarizeBy: none
 		sourceColumn: wape_threshold
-		lineageTag: af30eff4-4c81-423b-bb43-97182b45e1ed
+		lineageTag: 749ef4d0-ff95-4ac3-9b0c-de831337447c
 
 	column 'bias_threshold'
 		dataType: double
 		formatString: 0.0%
 		summarizeBy: none
 		sourceColumn: bias_threshold
-		lineageTag: 9ba82d1a-d6c4-428b-b44e-eb6b1a091865
+		lineageTag: af91618f-2216-4cab-8f54-36ab6ed899d8
 
 	column 'wape_pass'
 		dataType: boolean
 		summarizeBy: none
 		sourceColumn: wape_pass
-		lineageTag: 86c3d093-5d2e-44f9-a675-a42cc36988ec
+		lineageTag: 5cd85e38-06bc-40e3-942b-9f34c190d10f
 
 	column 'bias_pass'
 		dataType: boolean
 		summarizeBy: none
 		sourceColumn: bias_pass
-		lineageTag: 51194a7c-131a-4687-92b2-6d4edd792411
+		lineageTag: 65b9fa41-9a4e-44d8-8d28-9f9010ffc4ce
 
 	column 'status'
 		dataType: string
 		summarizeBy: none
 		sourceColumn: status
-		lineageTag: c8ca59be-aef8-44c0-b8f7-42eec104e3c2
+		lineageTag: 45151b93-63fd-4cc4-a9e4-10ce95498119
 
 	column 'tracking_status'
 		dataType: string
 		summarizeBy: none
 		sourceColumn: tracking_status
-		lineageTag: 2dc9b0ee-0ed8-42e7-8618-1fc0b102b78c
+		lineageTag: 22491097-1c58-4013-a764-eacc91bc6367
 
 	column 'model_rank'
 		dataType: int64
 		formatString: 0
 		summarizeBy: none
 		sourceColumn: model_rank
-		lineageTag: 7942561a-5725-4d55-9e4d-fd55e4b1b491
+		lineageTag: 2bd73561-b2da-413a-9de6-987576646217
 
 	partition 'forecast_accuracy' = m
 		mode: import
@@ -206,7 +226,7 @@ table 'forecast_accuracy'
 				let
 				    Source = PostgreSQL.Database(PgServer, PgDatabase),
 				    Data = Source{[Schema = PgSchema, Item = "forecast_accuracy"]}[Data],
-				    Selected = Table.SelectColumns(Data, {"level", "level_label", "member", "series_key", "model_name", "is_main_model", "n_points", "actual_total", "forecast_total", "abs_error_total", "error_total", "n_in_interval", "mae", "rmse", "mape_pct", "wape_pct", "accuracy_pct", "bias_pct", "tracking_signal", "interval_coverage_pct", "naive_wape_pct", "fva_pp", "wape_threshold", "bias_threshold", "wape_pass", "bias_pass", "status", "tracking_status", "model_rank"}),
-				    Typed = Table.TransformColumnTypes(Selected, {{"level", type text}, {"level_label", type text}, {"member", type text}, {"series_key", type text}, {"model_name", type text}, {"is_main_model", type logical}, {"n_points", Int64.Type}, {"actual_total", type number}, {"forecast_total", type number}, {"abs_error_total", type number}, {"error_total", type number}, {"n_in_interval", Int64.Type}, {"mae", type number}, {"rmse", type number}, {"mape_pct", type number}, {"wape_pct", type number}, {"accuracy_pct", type number}, {"bias_pct", type number}, {"tracking_signal", type number}, {"interval_coverage_pct", type number}, {"naive_wape_pct", type number}, {"fva_pp", type number}, {"wape_threshold", type number}, {"bias_threshold", type number}, {"wape_pass", type logical}, {"bias_pass", type logical}, {"status", type text}, {"tracking_status", type text}, {"model_rank", Int64.Type}})
+				    Selected = Table.SelectColumns(Data, {"level", "level_label", "member", "series_key", "model_name", "is_main_model", "n_points", "actual_total", "forecast_total", "abs_error_total", "error_total", "n_in_interval", "ape_total", "n_ape", "sq_error_total", "mae", "rmse", "mape_pct", "wape_pct", "accuracy_pct", "bias_pct", "tracking_signal", "interval_coverage_pct", "naive_wape_pct", "fva_pp", "wape_threshold", "bias_threshold", "wape_pass", "bias_pass", "status", "tracking_status", "model_rank"}),
+				    Typed = Table.TransformColumnTypes(Selected, {{"level", type text}, {"level_label", type text}, {"member", type text}, {"series_key", type text}, {"model_name", type text}, {"is_main_model", type logical}, {"n_points", Int64.Type}, {"actual_total", type number}, {"forecast_total", type number}, {"abs_error_total", type number}, {"error_total", type number}, {"n_in_interval", Int64.Type}, {"ape_total", type number}, {"n_ape", type number}, {"sq_error_total", type number}, {"mae", type number}, {"rmse", type number}, {"mape_pct", type number}, {"wape_pct", type number}, {"accuracy_pct", type number}, {"bias_pct", type number}, {"tracking_signal", type number}, {"interval_coverage_pct", type number}, {"naive_wape_pct", type number}, {"fva_pp", type number}, {"wape_threshold", type number}, {"bias_threshold", type number}, {"wape_pass", type logical}, {"bias_pass", type logical}, {"status", type text}, {"tracking_status", type text}, {"model_rank", Int64.Type}})
 				in
 				    Typed

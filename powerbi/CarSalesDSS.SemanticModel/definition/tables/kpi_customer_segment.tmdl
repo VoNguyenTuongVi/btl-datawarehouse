@@ -1,11 +1,11 @@
 table 'kpi_customer_segment'
-	lineageTag: 940dc273-e153-4685-8e47-8435ec54c51e
+	lineageTag: 79703b36-eab1-472c-9928-4c86f6fcb437
 
 	column 'period'
 		dataType: string
 		summarizeBy: none
 		sourceColumn: period
-		lineageTag: 77502668-7ddf-405d-94e3-09fc99831d07
+		lineageTag: 5c87714e-c33f-4977-ae51-e9f252444465
 
 	column 'year'
 		dataType: int64
@@ -13,69 +13,69 @@ table 'kpi_customer_segment'
 		isHidden
 		summarizeBy: none
 		sourceColumn: year
-		lineageTag: 966b79dc-0271-48e5-bb49-7b5eb0040c0f
+		lineageTag: 2078c1e3-c54c-4ee7-816d-9f93f7114eaa
 
 	column 'income_quartile'
 		dataType: int64
 		formatString: 0
 		summarizeBy: none
 		sourceColumn: income_quartile
-		lineageTag: 67b9bb23-dfae-44ef-aa2b-e665b0d94e7d
+		lineageTag: 54f72eb4-5ae9-477b-8df6-9e0b8d16a9ec
 
 	column 'income_band'
 		dataType: string
 		summarizeBy: none
 		sortByColumn: 'income_quartile'
 		sourceColumn: income_band
-		lineageTag: ea783157-62c9-4286-badf-b491145a66df
+		lineageTag: ffc1e9eb-0386-4b93-8455-278251258172
 
 	column 'income_min'
 		dataType: int64
 		formatString: $#,0
 		summarizeBy: none
 		sourceColumn: income_min
-		lineageTag: 0961c8bd-18b2-4fe9-b92a-bf080a467b1b
+		lineageTag: 12857963-7080-4613-a403-050155e86aee
 
 	column 'income_max'
 		dataType: int64
 		formatString: $#,0
 		summarizeBy: none
 		sourceColumn: income_max
-		lineageTag: 198c418e-37bb-4e12-a39f-9c0065d35d62
+		lineageTag: ea78e70c-1da0-4718-81eb-7498acd15e9d
 
 	column 'gender'
 		dataType: string
 		summarizeBy: none
 		sourceColumn: gender
-		lineageTag: b1fe27ce-277a-40a9-a9da-5c28b9c5abeb
+		lineageTag: b3810fe9-d82c-4f6d-8214-a9305d70e4e4
 
 	column 'units'
 		dataType: double
 		formatString: #,0
 		summarizeBy: sum
 		sourceColumn: units
-		lineageTag: a93b6bd3-3109-45ee-b5a9-e6f779782dbc
+		lineageTag: c966f912-3f86-4ae6-866f-ddeab3ffc21d
 
 	column 'revenue'
 		dataType: double
 		formatString: $#,0
 		summarizeBy: sum
 		sourceColumn: revenue
-		lineageTag: 89da7805-6882-4afb-a806-ce04e6fdd713
+		lineageTag: cb658058-ac0c-4795-b77f-53a1f59c8ce8
 
 	column 'asp'
 		dataType: double
 		formatString: $#,0
 		summarizeBy: none
 		sourceColumn: asp
-		lineageTag: 618cc571-7c52-4147-be82-5f3d80e2b87e
+		lineageTag: dea006a1-13f9-4a64-a379-17c373a97ff2
 
 	column 'avg_income'
 		dataType: double
 		formatString: $#,0
 		summarizeBy: none
 		sourceColumn: avg_income
-		lineageTag: 0d749211-61b7-49d3-82d1-94442e761baf
+		lineageTag: 0dd502f9-57a2-42e9-98b3-1faffec4e7cc
 
 	column 'sum_income'
 		dataType: double
@@ -83,7 +83,7 @@ table 'kpi_customer_segment'
 		isHidden
 		summarizeBy: sum
 		sourceColumn: sum_income
-		lineageTag: b2532f32-ed27-4845-a0aa-b22f8be3b1a6
+		lineageTag: 7a44dc0e-edc8-4c38-9603-9c1844694ff5
 
 	column 'sum_price_to_income'
 		dataType: double
@@ -91,21 +91,21 @@ table 'kpi_customer_segment'
 		isHidden
 		summarizeBy: sum
 		sourceColumn: sum_price_to_income
-		lineageTag: d0984ece-eb0c-4bea-a62b-c14c41742374
+		lineageTag: d41954fe-bd03-4c4c-b6da-194b34a28a4e
 
 	column 'price_to_income'
 		dataType: double
 		formatString: 0.000
 		summarizeBy: none
 		sourceColumn: price_to_income
-		lineageTag: a9953ae6-ba4c-42a4-8995-b30b7fe01bd4
+		lineageTag: 5b08d9fd-8a46-4008-bdf0-7df457c97a9e
 
 	column 'units_share_pct'
 		dataType: double
 		formatString: 0.0%
 		summarizeBy: none
 		sourceColumn: units_share_pct
-		lineageTag: 5b0cad26-bdcd-46f3-a560-f1cde9cb6fba
+		lineageTag: 9de9f780-446c-4aad-9a94-364f47e51e21
 
 	partition 'kpi_customer_segment' = m
 		mode: import

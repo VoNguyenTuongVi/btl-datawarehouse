@@ -93,10 +93,6 @@ def step_forecast() -> None:
 
 def step_marts(args) -> None:
     cmd = [sys.executable, str(SRC / "build_marts.py"), "--main-model", args.main_model]
-    if args.safety_factor is not None:
-        cmd += ["--safety-factor", str(args.safety_factor)]
-    if args.weights:
-        cmd += ["--weights", *map(str, args.weights)]
     run(cmd)
 
 
@@ -145,9 +141,6 @@ def main() -> None:
     ap.add_argument("--only", nargs="+", choices=STEPS, help="chỉ chạy các bước này")
     ap.add_argument("--skip", nargs="+", choices=STEPS, default=[], help="bỏ qua các bước này")
     ap.add_argument("--main-model", default="sarima", choices=["sarima", "holt_winters", "seasonal_naive"])
-    ap.add_argument("--safety-factor", type=float, help="hệ số đệm k cho S3 (mặc định 1.0)")
-    ap.add_argument("--weights", type=float, nargs=4, metavar=("GROWTH", "SHARE", "STABILITY", "ACCURACY"),
-                    help="trọng số S5, tổng = 1")
     ap.add_argument("--no-open", action="store_true", help="không mở Power BI Desktop")
     ap.add_argument("--no-refresh", action="store_true", help="mở Power BI nhưng không tự refresh")
     ap.add_argument("--refresh-timeout", type=int, default=180)

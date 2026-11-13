@@ -1,0 +1,44 @@
+table 'dim_dealer'
+	lineageTag: a80d7a72-666f-4e38-9ef7-008fadc9bec3
+
+	column 'dealer_id'
+		dataType: int64
+		formatString: 0
+		summarizeBy: none
+		isKey
+		sourceColumn: dealer_id
+		lineageTag: db8c13b6-de0a-4f53-a987-b5bee90d683c
+
+	column 'dealer_name'
+		dataType: string
+		summarizeBy: none
+		sourceColumn: dealer_name
+		lineageTag: 7113b4d4-c034-4633-b212-80f05550d82b
+
+	column 'dealer_region'
+		dataType: string
+		summarizeBy: none
+		sourceColumn: dealer_region
+		lineageTag: 90d25e8e-e020-498d-9ba5-d6398ee385d8
+
+	hierarchy 'Geography'
+		lineageTag: e0aba747-820f-4975-a6f5-19e1204c2ec6
+
+		level 'dealer_region'
+			column: 'dealer_region'
+			lineageTag: 2c02bb7a-5297-4c50-a977-f3fd8bf34582
+
+		level 'dealer_name'
+			column: 'dealer_name'
+			lineageTag: 1cbe57f6-4d8e-4568-b94e-691bd64125f9
+
+	partition 'dim_dealer' = m
+		mode: import
+		source =
+				let
+				    Source = PostgreSQL.Database(PgServer, PgDatabase),
+				    Data = Source{[Schema = PgSchemaDw, Item = "dim_dealer"]}[Data],
+				    Selected = Table.SelectColumns(Data, {"dealer_id", "dealer_name", "dealer_region"}),
+				    Typed = Table.TransformColumnTypes(Selected, {{"dealer_id", Int64.Type}, {"dealer_name", type text}, {"dealer_region", type text}})
+				in
+				    Typed

@@ -1,34 +1,34 @@
 table _Measures
-	lineageTag: 355ed847-9ceb-4583-90cb-aa75461dfcb4
+	lineageTag: 79934795-b4e1-4fd5-80af-1589b86d8759
 
 	/// D1 – Sản lượng bán
 	measure 'Units' = SUM ( kpi_monthly_overview[units] )
 		formatString: #,0
 		displayFolder: 1. Tổng quan
-		lineageTag: c89ab25a-501f-4f65-891b-0d7e4be3b06a
+		lineageTag: 33b47264-fc46-4f95-9644-8d54535b0457
 
 	/// D2 – Doanh thu
 	measure 'Revenue' = SUM ( kpi_monthly_overview[revenue] )
 		formatString: $#,0
 		displayFolder: 1. Tổng quan
-		lineageTag: 65a40d27-2efe-4213-ab79-70054bed4324
+		lineageTag: d6cb4a53-c927-4fc6-a4a4-58110419c96e
 
 	/// D3 – Giá bán bình quân
 	measure 'ASP' = DIVIDE ( [Revenue], [Units] )
 		formatString: $#,0
 		displayFolder: 1. Tổng quan
-		lineageTag: 6328b204-51f7-4119-b1b2-c16961f335ca
+		lineageTag: 9c383eda-9d87-44c2-bd37-ae0769de0193
 
 	/// Sản lượng cùng kỳ năm trước
 	measure 'Units PY' = SUM ( kpi_monthly_overview[units_py] )
 		formatString: #,0
 		displayFolder: 1. Tổng quan
-		lineageTag: a0bd2376-a548-46b1-bfc2-e0f3eb42d993
+		lineageTag: beb7ec18-3a9b-47d2-aa59-6ebc225d8d81
 
 	measure 'Revenue PY' = SUM ( kpi_monthly_overview[revenue_py] )
 		formatString: $#,0
 		displayFolder: 1. Tổng quan
-		lineageTag: fb27ac6d-991a-4632-a8de-4106413c85af
+		lineageTag: 053a1e85-a315-43c7-ad3a-a9d80e573aca
 
 	/// D4 – so cùng kỳ
 	measure 'Units YoY %' =
@@ -38,7 +38,7 @@ table _Measures
 			RETURN DIVIDE ( _cur - _base, _base )
 		formatString: 0.0%
 		displayFolder: 1. Tổng quan
-		lineageTag: 5728ac15-45de-4853-b465-c59b08f6db99
+		lineageTag: e616bbd0-5b18-4594-8a11-7c0cefa21f10
 
 	/// D4 – so cùng kỳ
 	measure 'Revenue YoY %' =
@@ -48,7 +48,7 @@ table _Measures
 			RETURN DIVIDE ( _cur - _base, _base )
 		formatString: 0.0%
 		displayFolder: 1. Tổng quan
-		lineageTag: a92e16e1-86c4-47af-816c-48259fc18208
+		lineageTag: 4c32e2f8-83f9-445e-a54b-56ec16927d99
 
 	/// D4 – so tháng trước
 	measure 'Units MoM %' =
@@ -58,7 +58,7 @@ table _Measures
 			RETURN DIVIDE ( _cur - _base, _base )
 		formatString: 0.0%
 		displayFolder: 1. Tổng quan
-		lineageTag: f49f2958-215c-47e4-81ba-e41aa36a7991
+		lineageTag: 35fc5f8a-e2b2-490e-adcf-83a5c16b970a
 
 	/// D4
 	measure 'Revenue MoM %' =
@@ -68,7 +68,7 @@ table _Measures
 			RETURN DIVIDE ( _cur - _base, _base )
 		formatString: 0.0%
 		displayFolder: 1. Tổng quan
-		lineageTag: efe3e918-23fe-4ab7-a619-070ca6968474
+		lineageTag: 186ad9c1-56a7-4a79-8c46-81f4f0288bf6
 
 	/// D4 – lũy kế đến tháng cuối đang chọn
 	measure 'Units YTD' =
@@ -76,14 +76,14 @@ table _Measures
 			RETURN CALCULATE ( SUM ( kpi_monthly_overview[units_ytd] ), kpi_monthly_overview[month_start] = _m )
 		formatString: #,0
 		displayFolder: 1. Tổng quan
-		lineageTag: 7fa1c53f-60e0-476a-ae36-e48768ca5a64
+		lineageTag: fba08011-4cfc-4861-8efd-d389274f0218
 
 	measure 'Revenue YTD' =
 			VAR _m = MAX ( kpi_monthly_overview[month_start] )
 			RETURN CALCULATE ( SUM ( kpi_monthly_overview[revenue_ytd] ), kpi_monthly_overview[month_start] = _m )
 		formatString: $#,0
 		displayFolder: 1. Tổng quan
-		lineageTag: efd335d3-f316-4e39-8000-fa933b3e79ba
+		lineageTag: aec58bd0-b5a6-470e-ba6a-99eb5e9bfe1e
 
 	/// D4
 	measure 'Units YTD YoY %' =
@@ -93,7 +93,7 @@ table _Measures
 			RETURN DIVIDE ( _c - _p, _p )
 		formatString: 0.0%
 		displayFolder: 1. Tổng quan
-		lineageTag: 8f9be064-a71e-464f-a300-1922f05be8c1
+		lineageTag: 7a380411-6535-41a5-8542-2a4c51820576
 
 	/// D4
 	measure 'Revenue YTD YoY %' =
@@ -103,78 +103,211 @@ table _Measures
 			RETURN DIVIDE ( _c - _p, _p )
 		formatString: 0.0%
 		displayFolder: 1. Tổng quan
-		lineageTag: ff03da35-5e23-458c-8b40-6226dd08112b
+		lineageTag: 4a1e2923-0c3e-41f5-a762-61ca27e692c7
 
-	/// D7 – 1,0 = tháng trung bình; trung bình 2 năm
+	/// D7 – 1,0 = tháng trung bình; trung bình 2 năm (gộp nhiều tháng thì lấy AVERAGE)
 	measure 'Seasonality Index' = AVERAGE ( kpi_monthly_overview[seasonality_index_2y] )
 		formatString: 0.000
 		displayFolder: 1. Tổng quan
-		lineageTag: fddb732b-b98a-43b6-9591-6214847992d9
+		lineageTag: 2854613d-3296-4529-81af-fa6b322960fe
 
 	/// D14
 	measure 'Auto Share %' = DIVIDE ( SUM ( kpi_monthly_overview[auto_units] ), [Units] )
 		formatString: 0.0%
 		displayFolder: 1. Tổng quan
-		lineageTag: 22157001-8152-4c19-9746-4482a40f6481
+		lineageTag: e7c73cbd-301f-4b7c-9186-7fcba1e6bdaa
 
 	/// D16 – % đại lý tăng so cùng kỳ
 	measure 'Dealers Growing %' = DIVIDE ( SUM ( kpi_monthly_overview[dealers_growing] ), SUM ( kpi_monthly_overview[dealers_compared] ) )
 		formatString: 0.0%
 		displayFolder: 1. Tổng quan
-		lineageTag: 6f0184e8-e8cc-4585-b86a-fa8ce73ea6d9
+		lineageTag: 76a3430d-a72e-4faf-bb6b-de25080e7d5f
 
-	/// D16 – xe/đại lý/tháng
-	measure 'Units per Dealer' = AVERAGE ( kpi_monthly_overview[units_per_dealer] )
+	/// D16 – xe/đại lý/tháng (tính lại từ tổng xe / tổng đại lý hoạt động)
+	measure 'Units per Dealer' = DIVIDE ( SUM ( kpi_monthly_overview[units] ), SUM ( kpi_monthly_overview[active_dealers] ) )
 		formatString: #,0.0
 		displayFolder: 1. Tổng quan
-		lineageTag: c8143671-4dbc-48a4-816a-00ce92d41232
+		lineageTag: 3eb24c6f-39e9-4b3a-9d04-a6a2f9ce982f
 
-	/// Sản lượng theo chiều đang chọn ở dim_member[dimension_label]
-	measure 'Dim Units' = SUM ( kpi_monthly_by_dimension[units] )
+	/// Sản lượng theo chiều đang chọn ở dim_member[dimension_label]; trống nếu chưa chọn đúng 1 chiều
+	measure 'Dim Units' = IF ( HASONEVALUE ( dim_member[dimension_label] ), SUM ( kpi_monthly_by_dimension[units] ) )
 		formatString: #,0
 		displayFolder: 2. Theo chiều phân tích
-		lineageTag: 043d6fdc-be85-4381-9618-84f972c75a10
+		lineageTag: 2101982d-107d-491b-a56d-0140d98baf2a
 
-	measure 'Dim Revenue' = SUM ( kpi_monthly_by_dimension[revenue] )
+	/// Tổng số xe đã bán của cấu hình xe cả giai đoạn (dim_car); KHÔNG đổi theo slicer thời gian, dùng Cars Sold Monthly nếu cần theo tháng
+	measure 'Cars Sold (All Time)' = SUM ( dim_car[cars_sold] )
+		formatString: #,0
+		displayFolder: 2. Theo chiều phân tích
+		lineageTag: bded66d3-4193-43c9-8769-d16c7a0ad4bf
+
+	/// Ý tưởng 3 – số đơn của đại lý theo tháng (dealer_kpi)
+	measure 'Dealer Orders' = SUM ( dealer_kpi[orders] )
+		formatString: #,0
+		displayFolder: 2. Theo chiều phân tích
+		lineageTag: 6b1314c4-d8c2-4eca-b5fe-bf3c46a2bb77
+
+	/// Ý tưởng 3 – doanh thu của đại lý theo tháng (dealer_kpi)
+	measure 'Dealer Revenue' = SUM ( dealer_kpi[revenue] )
 		formatString: $#,0
 		displayFolder: 2. Theo chiều phân tích
-		lineageTag: 38b2fc46-650b-462b-b591-3cad76826c4d
+		lineageTag: 2d3d0a5e-c3b5-4d69-b0ee-477356404b12
+
+	/// Ý tưởng 1 – số xe bán của cấu hình xe theo tháng
+	measure 'Cars Sold Monthly' = SUM ( car_sales_monthly[cars_sold] )
+		formatString: #,0
+		displayFolder: 2. Theo chiều phân tích
+		lineageTag: 0c204c33-f42e-46e0-883b-2993e22264f0
+
+	/// Ý tưởng 6 – số xe bán của cấu hình xe theo ngày (car_sales_daily, nối dim_calendar)
+	measure 'Cars Sold Daily' = SUM ( car_sales_daily[cars_sold] )
+		formatString: #,0
+		displayFolder: 2. Theo chiều phân tích
+		lineageTag: e1a4614a-0d47-43c2-b13a-b77ea0a44996
+
+	/// Ý tưởng 6 – doanh thu của cấu hình xe theo ngày
+	measure 'Cars Revenue Daily' = SUM ( car_sales_daily[revenue] )
+		formatString: $#,0
+		displayFolder: 2. Theo chiều phân tích
+		lineageTag: 64c726a2-f34f-4904-a7b9-f89b7839d878
+
+	/// Số xe bán tính trực tiếp từ fact_car_sales
+	measure 'Fact Units' = SUM ( fact_car_sales[quantity] )
+		formatString: #,0
+		displayFolder: 2. Theo chiều phân tích
+		lineageTag: cb1c79d2-b322-4d7c-ae63-d0ac2d465de2
+
+	/// Doanh thu tính trực tiếp từ fact_car_sales
+	measure 'Fact Revenue' = SUM ( fact_car_sales[price] )
+		formatString: $#,0
+		displayFolder: 2. Theo chiều phân tích
+		lineageTag: 7600645a-2254-493c-9d47-e0d4cbb7190b
+
+	/// D3 trên fact
+	measure 'Fact ASP' = DIVIDE ( [Fact Revenue], [Fact Units] )
+		formatString: $#,0
+		displayFolder: 7. Theo fact (chia theo xe/đại lý/khách)
+		lineageTag: ea963d51-c2ea-49ff-81fe-9f8546a30dc2
+
+	/// Sản lượng cùng kỳ năm trước (fact); trống nếu kỳ trước không có dữ liệu
+	measure 'Fact Units PY' = CALCULATE ( [Fact Units], SAMEPERIODLASTYEAR ( dim_calendar[date] ) )
+		formatString: #,0
+		displayFolder: 7. Theo fact (chia theo xe/đại lý/khách)
+		lineageTag: 1346ee67-9073-440f-994b-4008b7375483
+
+	measure 'Fact Revenue PY' = CALCULATE ( [Fact Revenue], SAMEPERIODLASTYEAR ( dim_calendar[date] ) )
+		formatString: $#,0
+		displayFolder: 7. Theo fact (chia theo xe/đại lý/khách)
+		lineageTag: d65099eb-33cd-4d85-b50c-e5ae455b56a5
+
+	/// D4 – so cùng kỳ (fact)
+	measure 'Fact Units YoY %' =
+			VAR _py = [Fact Units PY]
+			RETURN IF ( NOT ISBLANK ( _py ), DIVIDE ( [Fact Units] - _py, _py ) )
+		formatString: 0.0%
+		displayFolder: 7. Theo fact (chia theo xe/đại lý/khách)
+		lineageTag: 380e8e3b-89ca-4180-9b3c-1797f1ebf20c
+
+	/// D4 – so cùng kỳ (fact)
+	measure 'Fact Revenue YoY %' =
+			VAR _py = [Fact Revenue PY]
+			RETURN IF ( NOT ISBLANK ( _py ), DIVIDE ( [Fact Revenue] - _py, _py ) )
+		formatString: 0.0%
+		displayFolder: 7. Theo fact (chia theo xe/đại lý/khách)
+		lineageTag: 9f10dba0-64d6-4f77-b1e9-8258ae6cb18e
+
+	/// Sản lượng tháng trước (fact)
+	measure 'Fact Units PM' = CALCULATE ( [Fact Units], DATEADD ( dim_calendar[date], -1, MONTH ) )
+		formatString: #,0
+		displayFolder: 7. Theo fact (chia theo xe/đại lý/khách)
+		lineageTag: 4126e525-9a8d-4b31-ae76-80e8f29e5ba1
+
+	measure 'Fact Revenue PM' = CALCULATE ( [Fact Revenue], DATEADD ( dim_calendar[date], -1, MONTH ) )
+		formatString: $#,0
+		displayFolder: 7. Theo fact (chia theo xe/đại lý/khách)
+		lineageTag: 5b0b855d-e632-4bf2-ad35-b8d03b4d9180
+
+	/// D4 – so tháng trước (fact)
+	measure 'Fact Units MoM %' =
+			VAR _pm = [Fact Units PM]
+			RETURN IF ( NOT ISBLANK ( _pm ), DIVIDE ( [Fact Units] - _pm, _pm ) )
+		formatString: 0.0%
+		displayFolder: 7. Theo fact (chia theo xe/đại lý/khách)
+		lineageTag: e8aa6045-76c7-4685-b7f5-775316f3feb1
+
+	/// D4 – so tháng trước (fact)
+	measure 'Fact Revenue MoM %' =
+			VAR _pm = [Fact Revenue PM]
+			RETURN IF ( NOT ISBLANK ( _pm ), DIVIDE ( [Fact Revenue] - _pm, _pm ) )
+		formatString: 0.0%
+		displayFolder: 7. Theo fact (chia theo xe/đại lý/khách)
+		lineageTag: 987497c5-98df-4555-afaa-85263df09948
+
+	/// D4 – lũy kế từ đầu năm (fact)
+	measure 'Fact Units YTD' = TOTALYTD ( [Fact Units], dim_calendar[date] )
+		formatString: #,0
+		displayFolder: 7. Theo fact (chia theo xe/đại lý/khách)
+		lineageTag: 2584f71f-cd1a-4501-81ee-104d84dfb81e
+
+	measure 'Fact Revenue YTD' = TOTALYTD ( [Fact Revenue], dim_calendar[date] )
+		formatString: $#,0
+		displayFolder: 7. Theo fact (chia theo xe/đại lý/khách)
+		lineageTag: 73ebb9ce-069e-4084-90f7-00c81f013ccb
+
+	/// Lũy kế cùng kỳ năm trước (fact)
+	measure 'Fact Units YTD PY' = CALCULATE ( [Fact Units YTD], SAMEPERIODLASTYEAR ( dim_calendar[date] ) )
+		formatString: #,0
+		displayFolder: 7. Theo fact (chia theo xe/đại lý/khách)
+		lineageTag: ef7b3f02-ae85-4c6e-bef2-7056fe327c87
+
+	/// D4 – lũy kế so cùng kỳ (fact)
+	measure 'Fact Units YTD YoY %' =
+			VAR _py = [Fact Units YTD PY]
+			RETURN IF ( NOT ISBLANK ( _py ), DIVIDE ( [Fact Units YTD] - _py, _py ) )
+		formatString: 0.0%
+		displayFolder: 7. Theo fact (chia theo xe/đại lý/khách)
+		lineageTag: 4341728e-7de0-4717-9edf-4fc8ca34b1d1
+
+	measure 'Dim Revenue' = IF ( HASONEVALUE ( dim_member[dimension_label] ), SUM ( kpi_monthly_by_dimension[revenue] ) )
+		formatString: $#,0
+		displayFolder: 2. Theo chiều phân tích
+		lineageTag: 11ba6d54-e3e6-4142-855b-9f7c9108ebb7
 
 	measure 'Dim ASP' = DIVIDE ( [Dim Revenue], [Dim Units] )
 		formatString: $#,0
 		displayFolder: 2. Theo chiều phân tích
-		lineageTag: 23aacdeb-f4af-4516-9da8-327957e312f7
+		lineageTag: a1d29960-ed18-4903-b270-746b9021ad22
 
-	measure 'Dim Units PY' = SUM ( kpi_monthly_by_dimension[units_py] )
+	measure 'Dim Units PY' = IF ( HASONEVALUE ( dim_member[dimension_label] ), SUM ( kpi_monthly_by_dimension[units_py] ) )
 		formatString: #,0
 		displayFolder: 2. Theo chiều phân tích
-		lineageTag: 56e4d94a-0ce6-431e-a006-dc2b52c9f036
+		lineageTag: fec6b754-9e3f-43b3-a69a-86ecb1255de6
 
 	/// D12–D17
 	measure 'Dim Units YoY %' =
 			VAR _t = FILTER ( kpi_monthly_by_dimension, NOT ISBLANK ( kpi_monthly_by_dimension[units_py] ) )
 			VAR _cur = SUMX ( _t, kpi_monthly_by_dimension[units] )
 			VAR _base = SUMX ( _t, kpi_monthly_by_dimension[units_py] )
-			RETURN DIVIDE ( _cur - _base, _base )
+			RETURN IF ( HASONEVALUE ( dim_member[dimension_label] ), DIVIDE ( _cur - _base, _base ) )
 		formatString: 0.0%
 		displayFolder: 2. Theo chiều phân tích
-		lineageTag: a4beb498-1f2e-4f37-8fe3-f6a27113000b
+		lineageTag: 84f4b91e-72ef-4a6b-9cc4-3cf69f4b2ca3
 
 	/// D12–D17
 	measure 'Dim Revenue YoY %' =
 			VAR _t = FILTER ( kpi_monthly_by_dimension, NOT ISBLANK ( kpi_monthly_by_dimension[revenue_py] ) )
 			VAR _cur = SUMX ( _t, kpi_monthly_by_dimension[revenue] )
 			VAR _base = SUMX ( _t, kpi_monthly_by_dimension[revenue_py] )
-			RETURN DIVIDE ( _cur - _base, _base )
+			RETURN IF ( HASONEVALUE ( dim_member[dimension_label] ), DIVIDE ( _cur - _base, _base ) )
 		formatString: 0.0%
 		displayFolder: 2. Theo chiều phân tích
-		lineageTag: bc497a8b-d011-405b-9fae-89127a2afe1a
+		lineageTag: 9046293d-5486-4fd9-b9d8-752529dc943f
 
 	/// D13 – chênh lệch xe so cùng kỳ
-	measure 'Dim Units YoY Delta' = SUM ( kpi_monthly_by_dimension[units_yoy_delta] )
+	measure 'Dim Units YoY Delta' = IF ( HASONEVALUE ( dim_member[dimension_label] ), SUM ( kpi_monthly_by_dimension[units_yoy_delta] ) )
 		formatString: +#,0;-#,0;0
 		displayFolder: 2. Theo chiều phân tích
-		lineageTag: 1b483646-88c6-4014-86da-6be9e17fa595
+		lineageTag: 03444181-d9d0-4450-b39d-f7ff3b515d13
 
 	/// D5, D6, D12–D17 – tỷ trọng trong chiều đang chọn
 	measure 'Dim Units Share %' =
@@ -184,56 +317,56 @@ table _Measures
 			)
 		formatString: 0.0%
 		displayFolder: 2. Theo chiều phân tích
-		lineageTag: f44495f5-4222-4cd1-bcd3-b37888af16ef
+		lineageTag: a316abe9-7f67-46d7-96e8-500a1004a2c0
 
 	/// D16 – xếp hạng theo sản lượng
 	measure 'Dim Rank' = IF ( NOT ISBLANK ( [Dim Units] ), RANKX ( ALLSELECTED ( dim_member[dimension_value] ), [Dim Units] ) )
 		formatString: 0
 		displayFolder: 2. Theo chiều phân tích
-		lineageTag: bb25bee2-ec30-4ae7-b13e-20ea3a0eb2c6
+		lineageTag: 5d537d43-9e25-4198-a156-d4175ce9ca9c
 
 	/// D11, D17
 	measure 'Segment Units' = SUM ( kpi_customer_segment[units] )
 		formatString: #,0
 		displayFolder: 3. Khách hàng & ngày
-		lineageTag: 714ce2fb-5617-4073-af92-d17ddea35f16
+		lineageTag: 8d744fc6-eb70-42f3-8c4c-d71bd2d6afa5
 
 	measure 'Segment Revenue' = SUM ( kpi_customer_segment[revenue] )
 		formatString: $#,0
 		displayFolder: 3. Khách hàng & ngày
-		lineageTag: 05b41dde-b902-41c9-a270-09d603a6ff60
+		lineageTag: ece341fc-48c4-4b8c-8deb-be168f4ea8ca
 
 	measure 'Segment ASP' = DIVIDE ( [Segment Revenue], [Segment Units] )
 		formatString: $#,0
 		displayFolder: 3. Khách hàng & ngày
-		lineageTag: 21bdfff8-7a54-4f5b-bd70-2ff4d0b073ad
+		lineageTag: bdeeb3de-daa5-4e64-be6e-c09aa684347a
 
 	measure 'Segment Avg Income' = DIVIDE ( SUM ( kpi_customer_segment[sum_income] ), [Segment Units] )
 		formatString: $#,0
 		displayFolder: 3. Khách hàng & ngày
-		lineageTag: c2319c82-3552-4193-a061-bcda2636d9c0
+		lineageTag: 09b388de-ac0c-4a71-97d3-091d333c1b8f
 
 	/// D11 – giá xe / thu nhập năm
 	measure 'Price to Income' = DIVIDE ( SUM ( kpi_customer_segment[sum_price_to_income] ), [Segment Units] )
 		formatString: 0.00
 		displayFolder: 3. Khách hàng & ngày
-		lineageTag: bef92d2e-9ec4-4390-a42a-97f2903350e5
+		lineageTag: f2cb317c-c2ca-4c85-ace5-d0fc21b22b65
 
 	measure 'Segment Share %' = DIVIDE ( [Segment Units], CALCULATE ( [Segment Units], ALLSELECTED ( kpi_customer_segment[income_band], kpi_customer_segment[gender] ) ) )
 		formatString: 0.0%
 		displayFolder: 3. Khách hàng & ngày
-		lineageTag: ad8e7a81-0a3d-4cd7-9719-aa31067627c6
+		lineageTag: 575c1ba8-f915-4cce-930d-ee8afecf0399
 
 	/// D1 theo ngày
 	measure 'Daily Units' = SUM ( kpi_daily[units] )
 		formatString: #,0
 		displayFolder: 3. Khách hàng & ngày
-		lineageTag: 60deb6a5-3bf9-4467-a400-d95751cab50f
+		lineageTag: 00e025e5-4745-462d-baf8-d5811bd5f561
 
 	measure 'Daily Revenue' = SUM ( kpi_daily[revenue] )
 		formatString: $#,0
 		displayFolder: 3. Khách hàng & ngày
-		lineageTag: 7b9fac7a-e417-4e62-b683-fe805fd2934e
+		lineageTag: 4c52792c-cdd8-4b4a-a601-af755e7b2324
 
 	/// D8 – 1,0 = ngày trung bình
 	measure 'Weekday Index' =
@@ -244,7 +377,7 @@ table _Measures
 			)
 		formatString: 0.000
 		displayFolder: 3. Khách hàng & ngày
-		lineageTag: 7ffa8d44-3a1a-4c0a-bdaf-c435cabd8633
+		lineageTag: 8b04efaa-e6fc-4a9f-ba0b-056385860277
 
 	/// Thực tế trên trục dự báo (mặc định cấp tổng)
 	measure 'Actual Units' =
@@ -256,7 +389,7 @@ table _Measures
 			)
 		formatString: #,0
 		displayFolder: 4. Dự báo
-		lineageTag: e9e5377c-a59f-4101-9dab-cbdf93c8c4a3
+		lineageTag: db22455b-24af-4d04-af2c-21fa12ce7035
 
 	/// F1 – mặc định mô hình chính, cấp tổng
 	measure 'Forecast Units' =
@@ -264,57 +397,57 @@ table _Measures
 			    ISFILTERED ( dim_forecast_member[level] ) || ISFILTERED ( dim_forecast_member[level_label] )
 			        || ISFILTERED ( dim_forecast_member[member] ),
 			    IF (
-			    ISFILTERED ( dim_forecast_model[model_name] ) || ISFILTERED ( dim_forecast_model[model_label] ),
+			    ISFILTERED ( forecast_series[model_name] ),
 			    SUM ( forecast_series[forecast_units] ),
-			    CALCULATE ( SUM ( forecast_series[forecast_units] ), dim_forecast_model[is_main_model] = TRUE () )
+			    CALCULATE ( SUM ( forecast_series[forecast_units] ), forecast_series[is_main_model] = TRUE () )
 			),
 			    CALCULATE ( IF (
-			    ISFILTERED ( dim_forecast_model[model_name] ) || ISFILTERED ( dim_forecast_model[model_label] ),
+			    ISFILTERED ( forecast_series[model_name] ),
 			    SUM ( forecast_series[forecast_units] ),
-			    CALCULATE ( SUM ( forecast_series[forecast_units] ), dim_forecast_model[is_main_model] = TRUE () )
+			    CALCULATE ( SUM ( forecast_series[forecast_units] ), forecast_series[is_main_model] = TRUE () )
 			), dim_forecast_member[level] = "total" )
 			)
 		formatString: #,0
 		displayFolder: 4. Dự báo
-		lineageTag: c6d0a9da-ccec-4683-8ff9-049e47dead24
+		lineageTag: cdf7e840-2d3d-40a0-854c-41df502d7e7e
 
 	measure 'Forecast Lower 80' =
 			IF (
 			    ISFILTERED ( dim_forecast_member[level] ) || ISFILTERED ( dim_forecast_member[level_label] )
 			        || ISFILTERED ( dim_forecast_member[member] ),
 			    IF (
-			    ISFILTERED ( dim_forecast_model[model_name] ) || ISFILTERED ( dim_forecast_model[model_label] ),
+			    ISFILTERED ( forecast_series[model_name] ),
 			    SUM ( forecast_series[lower_80] ),
-			    CALCULATE ( SUM ( forecast_series[lower_80] ), dim_forecast_model[is_main_model] = TRUE () )
+			    CALCULATE ( SUM ( forecast_series[lower_80] ), forecast_series[is_main_model] = TRUE () )
 			),
 			    CALCULATE ( IF (
-			    ISFILTERED ( dim_forecast_model[model_name] ) || ISFILTERED ( dim_forecast_model[model_label] ),
+			    ISFILTERED ( forecast_series[model_name] ),
 			    SUM ( forecast_series[lower_80] ),
-			    CALCULATE ( SUM ( forecast_series[lower_80] ), dim_forecast_model[is_main_model] = TRUE () )
+			    CALCULATE ( SUM ( forecast_series[lower_80] ), forecast_series[is_main_model] = TRUE () )
 			), dim_forecast_member[level] = "total" )
 			)
 		formatString: #,0
 		displayFolder: 4. Dự báo
-		lineageTag: 2a9e97d6-986c-421c-9384-b0ecb23a1a57
+		lineageTag: db2b70f3-0ce6-41df-a789-c0fa24ffd5ef
 
 	measure 'Forecast Upper 80' =
 			IF (
 			    ISFILTERED ( dim_forecast_member[level] ) || ISFILTERED ( dim_forecast_member[level_label] )
 			        || ISFILTERED ( dim_forecast_member[member] ),
 			    IF (
-			    ISFILTERED ( dim_forecast_model[model_name] ) || ISFILTERED ( dim_forecast_model[model_label] ),
+			    ISFILTERED ( forecast_series[model_name] ),
 			    SUM ( forecast_series[upper_80] ),
-			    CALCULATE ( SUM ( forecast_series[upper_80] ), dim_forecast_model[is_main_model] = TRUE () )
+			    CALCULATE ( SUM ( forecast_series[upper_80] ), forecast_series[is_main_model] = TRUE () )
 			),
 			    CALCULATE ( IF (
-			    ISFILTERED ( dim_forecast_model[model_name] ) || ISFILTERED ( dim_forecast_model[model_label] ),
+			    ISFILTERED ( forecast_series[model_name] ),
 			    SUM ( forecast_series[upper_80] ),
-			    CALCULATE ( SUM ( forecast_series[upper_80] ), dim_forecast_model[is_main_model] = TRUE () )
+			    CALCULATE ( SUM ( forecast_series[upper_80] ), forecast_series[is_main_model] = TRUE () )
 			), dim_forecast_member[level] = "total" )
 			)
 		formatString: #,0
 		displayFolder: 4. Dự báo
-		lineageTag: 7ee4684b-980a-48b6-89d2-9f6516e7539d
+		lineageTag: 65f2b9f1-043c-48a2-83fa-702b01881c96
 
 	/// F3 – mặc định cấp hãng, mô hình chính
 	measure 'WAPE %' =
@@ -322,25 +455,25 @@ table _Measures
 			    ISFILTERED ( dim_forecast_member[level] ) || ISFILTERED ( dim_forecast_member[level_label] )
 			        || ISFILTERED ( dim_forecast_member[member] ),
 			    IF (
-			    ISFILTERED ( dim_forecast_model[model_name] ) || ISFILTERED ( dim_forecast_model[model_label] ),
+			    ISFILTERED ( forecast_accuracy[model_name] ),
 			    DIVIDE ( SUM ( forecast_accuracy[abs_error_total] ), SUM ( forecast_accuracy[actual_total] ) ),
-			    CALCULATE ( DIVIDE ( SUM ( forecast_accuracy[abs_error_total] ), SUM ( forecast_accuracy[actual_total] ) ), dim_forecast_model[is_main_model] = TRUE () )
+			    CALCULATE ( DIVIDE ( SUM ( forecast_accuracy[abs_error_total] ), SUM ( forecast_accuracy[actual_total] ) ), forecast_accuracy[is_main_model] = TRUE () )
 			),
 			    CALCULATE ( IF (
-			    ISFILTERED ( dim_forecast_model[model_name] ) || ISFILTERED ( dim_forecast_model[model_label] ),
+			    ISFILTERED ( forecast_accuracy[model_name] ),
 			    DIVIDE ( SUM ( forecast_accuracy[abs_error_total] ), SUM ( forecast_accuracy[actual_total] ) ),
-			    CALCULATE ( DIVIDE ( SUM ( forecast_accuracy[abs_error_total] ), SUM ( forecast_accuracy[actual_total] ) ), dim_forecast_model[is_main_model] = TRUE () )
+			    CALCULATE ( DIVIDE ( SUM ( forecast_accuracy[abs_error_total] ), SUM ( forecast_accuracy[actual_total] ) ), forecast_accuracy[is_main_model] = TRUE () )
 			), dim_forecast_member[level] = "company" )
 			)
 		formatString: 0.0%
 		displayFolder: 4. Dự báo
-		lineageTag: 2548129a-7450-4cb1-a7f6-5e1d2a2d1af5
+		lineageTag: 8fbc52d8-7526-419a-b109-9d2f6864343e
 
 	/// F3
 	measure 'Forecast Accuracy %' = IF ( NOT ISBLANK ( [WAPE %] ), 1 - [WAPE %] )
 		formatString: 0.0%
 		displayFolder: 4. Dự báo
-		lineageTag: f630f835-355b-4a6e-b183-9d16cc3ae429
+		lineageTag: bf5ad4b4-a20d-46c7-8e4c-df33598eeda7
 
 	/// F5 – dương là dự báo dư
 	measure 'Bias %' =
@@ -348,19 +481,19 @@ table _Measures
 			    ISFILTERED ( dim_forecast_member[level] ) || ISFILTERED ( dim_forecast_member[level_label] )
 			        || ISFILTERED ( dim_forecast_member[member] ),
 			    IF (
-			    ISFILTERED ( dim_forecast_model[model_name] ) || ISFILTERED ( dim_forecast_model[model_label] ),
+			    ISFILTERED ( forecast_accuracy[model_name] ),
 			    DIVIDE ( SUM ( forecast_accuracy[error_total] ), SUM ( forecast_accuracy[actual_total] ) ),
-			    CALCULATE ( DIVIDE ( SUM ( forecast_accuracy[error_total] ), SUM ( forecast_accuracy[actual_total] ) ), dim_forecast_model[is_main_model] = TRUE () )
+			    CALCULATE ( DIVIDE ( SUM ( forecast_accuracy[error_total] ), SUM ( forecast_accuracy[actual_total] ) ), forecast_accuracy[is_main_model] = TRUE () )
 			),
 			    CALCULATE ( IF (
-			    ISFILTERED ( dim_forecast_model[model_name] ) || ISFILTERED ( dim_forecast_model[model_label] ),
+			    ISFILTERED ( forecast_accuracy[model_name] ),
 			    DIVIDE ( SUM ( forecast_accuracy[error_total] ), SUM ( forecast_accuracy[actual_total] ) ),
-			    CALCULATE ( DIVIDE ( SUM ( forecast_accuracy[error_total] ), SUM ( forecast_accuracy[actual_total] ) ), dim_forecast_model[is_main_model] = TRUE () )
+			    CALCULATE ( DIVIDE ( SUM ( forecast_accuracy[error_total] ), SUM ( forecast_accuracy[actual_total] ) ), forecast_accuracy[is_main_model] = TRUE () )
 			), dim_forecast_member[level] = "company" )
 			)
 		formatString: +0.0%;-0.0%;0.0%
 		displayFolder: 4. Dự báo
-		lineageTag: 98ba560d-029c-42df-b594-b876a0fa1064
+		lineageTag: daafb4ff-81bd-48a9-9e17-e7d56f93fde5
 
 	/// F4
 	measure 'MAE' =
@@ -368,19 +501,84 @@ table _Measures
 			    ISFILTERED ( dim_forecast_member[level] ) || ISFILTERED ( dim_forecast_member[level_label] )
 			        || ISFILTERED ( dim_forecast_member[member] ),
 			    IF (
-			    ISFILTERED ( dim_forecast_model[model_name] ) || ISFILTERED ( dim_forecast_model[model_label] ),
+			    ISFILTERED ( forecast_accuracy[model_name] ),
 			    DIVIDE ( SUM ( forecast_accuracy[abs_error_total] ), SUM ( forecast_accuracy[n_points] ) ),
-			    CALCULATE ( DIVIDE ( SUM ( forecast_accuracy[abs_error_total] ), SUM ( forecast_accuracy[n_points] ) ), dim_forecast_model[is_main_model] = TRUE () )
+			    CALCULATE ( DIVIDE ( SUM ( forecast_accuracy[abs_error_total] ), SUM ( forecast_accuracy[n_points] ) ), forecast_accuracy[is_main_model] = TRUE () )
 			),
 			    CALCULATE ( IF (
-			    ISFILTERED ( dim_forecast_model[model_name] ) || ISFILTERED ( dim_forecast_model[model_label] ),
+			    ISFILTERED ( forecast_accuracy[model_name] ),
 			    DIVIDE ( SUM ( forecast_accuracy[abs_error_total] ), SUM ( forecast_accuracy[n_points] ) ),
-			    CALCULATE ( DIVIDE ( SUM ( forecast_accuracy[abs_error_total] ), SUM ( forecast_accuracy[n_points] ) ), dim_forecast_model[is_main_model] = TRUE () )
+			    CALCULATE ( DIVIDE ( SUM ( forecast_accuracy[abs_error_total] ), SUM ( forecast_accuracy[n_points] ) ), forecast_accuracy[is_main_model] = TRUE () )
 			), dim_forecast_member[level] = "company" )
 			)
 		formatString: #,0.0
 		displayFolder: 4. Dự báo
-		lineageTag: 790e2584-131e-48aa-87a1-fbc66a8f29d4
+		lineageTag: 9da88b77-f886-45eb-9e87-20d597cbb0c4
+
+	/// F2 – trung bình sai số phần trăm, tính lại từ tổng
+	measure 'MAPE %' =
+			IF (
+			    ISFILTERED ( dim_forecast_member[level] ) || ISFILTERED ( dim_forecast_member[level_label] )
+			        || ISFILTERED ( dim_forecast_member[member] ),
+			    IF (
+			    ISFILTERED ( forecast_accuracy[model_name] ),
+			    DIVIDE ( SUM ( forecast_accuracy[ape_total] ), SUM ( forecast_accuracy[n_ape] ) ),
+			    CALCULATE ( DIVIDE ( SUM ( forecast_accuracy[ape_total] ), SUM ( forecast_accuracy[n_ape] ) ), forecast_accuracy[is_main_model] = TRUE () )
+			),
+			    CALCULATE ( IF (
+			    ISFILTERED ( forecast_accuracy[model_name] ),
+			    DIVIDE ( SUM ( forecast_accuracy[ape_total] ), SUM ( forecast_accuracy[n_ape] ) ),
+			    CALCULATE ( DIVIDE ( SUM ( forecast_accuracy[ape_total] ), SUM ( forecast_accuracy[n_ape] ) ), forecast_accuracy[is_main_model] = TRUE () )
+			), dim_forecast_member[level] = "company" )
+			)
+		formatString: 0.0%
+		displayFolder: 4. Dự báo
+		lineageTag: ef49852e-9626-44b6-923a-fc1f58316237
+
+	/// F4
+	measure 'RMSE' =
+			IF (
+			    ISFILTERED ( dim_forecast_member[level] ) || ISFILTERED ( dim_forecast_member[level_label] )
+			        || ISFILTERED ( dim_forecast_member[member] ),
+			    IF (
+			    ISFILTERED ( forecast_accuracy[model_name] ),
+			    SQRT ( DIVIDE ( SUM ( forecast_accuracy[sq_error_total] ), SUM ( forecast_accuracy[n_points] ) ) ),
+			    CALCULATE ( SQRT ( DIVIDE ( SUM ( forecast_accuracy[sq_error_total] ), SUM ( forecast_accuracy[n_points] ) ) ), forecast_accuracy[is_main_model] = TRUE () )
+			),
+			    CALCULATE ( IF (
+			    ISFILTERED ( forecast_accuracy[model_name] ),
+			    SQRT ( DIVIDE ( SUM ( forecast_accuracy[sq_error_total] ), SUM ( forecast_accuracy[n_points] ) ) ),
+			    CALCULATE ( SQRT ( DIVIDE ( SUM ( forecast_accuracy[sq_error_total] ), SUM ( forecast_accuracy[n_points] ) ) ), forecast_accuracy[is_main_model] = TRUE () )
+			), dim_forecast_member[level] = "company" )
+			)
+		formatString: #,0.0
+		displayFolder: 4. Dự báo
+		lineageTag: 7a8894c3-83d7-47e0-995d-1cc49d75af22
+
+	/// F6 – |TS| > 4 là cảnh báo
+	measure 'Tracking Signal' =
+			DIVIDE ( -1 * IF (
+			    ISFILTERED ( dim_forecast_member[level] ) || ISFILTERED ( dim_forecast_member[level_label] )
+			        || ISFILTERED ( dim_forecast_member[member] ),
+			    IF (
+			    ISFILTERED ( forecast_accuracy[model_name] ),
+			    SUM ( forecast_accuracy[error_total] ),
+			    CALCULATE ( SUM ( forecast_accuracy[error_total] ), forecast_accuracy[is_main_model] = TRUE () )
+			),
+			    CALCULATE ( IF (
+			    ISFILTERED ( forecast_accuracy[model_name] ),
+			    SUM ( forecast_accuracy[error_total] ),
+			    CALCULATE ( SUM ( forecast_accuracy[error_total] ), forecast_accuracy[is_main_model] = TRUE () )
+			), dim_forecast_member[level] = "company" )
+			), [MAE] )
+		formatString: 0.00
+		displayFolder: 4. Dự báo
+		lineageTag: 45fede1c-3d77-4f5f-9d1f-d36e0970bc1a
+
+	/// F6
+	measure 'Tracking Status' = IF ( ISBLANK ( [Tracking Signal] ), BLANK (), IF ( ABS ( [Tracking Signal] ) > 4, "Cảnh báo", "Ổn định" ) )
+		displayFolder: 4. Dự báo
+		lineageTag: f93a7abd-8a80-47e6-99e9-0f1d9a31512e
 
 	/// F8 – mục tiêu ≈ 80%
 	measure 'Interval Coverage %' =
@@ -388,163 +586,86 @@ table _Measures
 			    ISFILTERED ( dim_forecast_member[level] ) || ISFILTERED ( dim_forecast_member[level_label] )
 			        || ISFILTERED ( dim_forecast_member[member] ),
 			    IF (
-			    ISFILTERED ( dim_forecast_model[model_name] ) || ISFILTERED ( dim_forecast_model[model_label] ),
+			    ISFILTERED ( forecast_accuracy[model_name] ),
 			    DIVIDE ( SUM ( forecast_accuracy[n_in_interval] ), SUM ( forecast_accuracy[n_points] ) ),
-			    CALCULATE ( DIVIDE ( SUM ( forecast_accuracy[n_in_interval] ), SUM ( forecast_accuracy[n_points] ) ), dim_forecast_model[is_main_model] = TRUE () )
+			    CALCULATE ( DIVIDE ( SUM ( forecast_accuracy[n_in_interval] ), SUM ( forecast_accuracy[n_points] ) ), forecast_accuracy[is_main_model] = TRUE () )
 			),
 			    CALCULATE ( IF (
-			    ISFILTERED ( dim_forecast_model[model_name] ) || ISFILTERED ( dim_forecast_model[model_label] ),
+			    ISFILTERED ( forecast_accuracy[model_name] ),
 			    DIVIDE ( SUM ( forecast_accuracy[n_in_interval] ), SUM ( forecast_accuracy[n_points] ) ),
-			    CALCULATE ( DIVIDE ( SUM ( forecast_accuracy[n_in_interval] ), SUM ( forecast_accuracy[n_points] ) ), dim_forecast_model[is_main_model] = TRUE () )
+			    CALCULATE ( DIVIDE ( SUM ( forecast_accuracy[n_in_interval] ), SUM ( forecast_accuracy[n_points] ) ), forecast_accuracy[is_main_model] = TRUE () )
 			), dim_forecast_member[level] = "company" )
 			)
 		formatString: 0.0%
 		displayFolder: 4. Dự báo
-		lineageTag: 5a66f062-bdab-4fc7-9ecb-374ae8bcadec
+		lineageTag: 40162723-cc8d-46d9-aaf7-693cb8a49557
 
-	measure 'Naive WAPE %' = CALCULATE ( [WAPE %], dim_forecast_model[model_name] = "seasonal_naive" )
+	measure 'Naive WAPE %' = CALCULATE ( [WAPE %], forecast_accuracy[model_name] = "seasonal_naive" )
 		formatString: 0.0%
 		displayFolder: 4. Dự báo
-		lineageTag: a67b1914-bac9-471a-bca6-9bead56df8c2
+		lineageTag: 5643e794-c609-439a-acb3-b0b3aba98bec
 
 	/// F7 – dương là tốt hơn seasonal naive
 	measure 'FVA' = IF ( NOT ISBLANK ( [WAPE %] ), [Naive WAPE %] - [WAPE %] )
 		formatString: +0.0%;-0.0%;0.0%
 		displayFolder: 4. Dự báo
-		lineageTag: a62e4866-9806-4db3-93e8-93b9b36335d6
-
-	/// F1 6 tháng tới, mô hình chính
-	measure 'Plan Forecast Units' =
-			IF (
-			    ISFILTERED ( dim_forecast_member[level] ) || ISFILTERED ( dim_forecast_member[level_label] )
-			        || ISFILTERED ( dim_forecast_member[member] ),
-			    SUM ( dss_forecast_plan[forecast_units] ),
-			    CALCULATE ( SUM ( dss_forecast_plan[forecast_units] ), dim_forecast_member[level] = "total" )
-			)
-		formatString: #,0
-		displayFolder: 5. Hỗ trợ quyết định
-		lineageTag: 804201c4-f101-4252-ae5b-4577b41ceebc
-
-	measure 'Plan Units PY' =
-			IF (
-			    ISFILTERED ( dim_forecast_member[level] ) || ISFILTERED ( dim_forecast_member[level_label] )
-			        || ISFILTERED ( dim_forecast_member[member] ),
-			    SUM ( dss_forecast_plan[units_py] ),
-			    CALCULATE ( SUM ( dss_forecast_plan[units_py] ), dim_forecast_member[level] = "total" )
-			)
-		formatString: #,0
-		displayFolder: 5. Hỗ trợ quyết định
-		lineageTag: 5d4b4938-591c-47ed-8d1a-9f044fd04920
-
-	/// S1
-	measure 'Forecast Growth %' = DIVIDE ( [Plan Forecast Units] - [Plan Units PY], [Plan Units PY] )
-		formatString: 0.0%
-		displayFolder: 5. Hỗ trợ quyết định
-		lineageTag: df0a6f21-0b3d-4172-a222-d9710f9fd2a5
-
-	/// S3, S6 – theo thanh trượt What-if
-	measure 'Recommended Order' =
-			IF (
-			    ISFILTERED ( dim_forecast_member[level] ) || ISFILTERED ( dim_forecast_member[level_label] )
-			        || ISFILTERED ( dim_forecast_member[member] ),
-			    SUMX ( dss_forecast_plan, dss_forecast_plan[forecast_units] * ( 1 + [Demand Change Value] ) * ( 1 + [Safety Factor Value] * dss_forecast_plan[demand_cv] ) ),
-			    CALCULATE ( SUMX ( dss_forecast_plan, dss_forecast_plan[forecast_units] * ( 1 + [Demand Change Value] ) * ( 1 + [Safety Factor Value] * dss_forecast_plan[demand_cv] ) ), dim_forecast_member[level] = "total" )
-			)
-		formatString: #,0
-		displayFolder: 5. Hỗ trợ quyết định
-		lineageTag: 89adf1f3-9c18-4d23-ac98-b7c3f103994a
-
-	/// S4, S6
-	measure 'Projected Revenue' =
-			IF (
-			    ISFILTERED ( dim_forecast_member[level] ) || ISFILTERED ( dim_forecast_member[level_label] )
-			        || ISFILTERED ( dim_forecast_member[member] ),
-			    SUMX ( dss_forecast_plan, dss_forecast_plan[forecast_units] * ( 1 + [Demand Change Value] ) * dss_forecast_plan[asp_hist] ),
-			    CALCULATE ( SUMX ( dss_forecast_plan, dss_forecast_plan[forecast_units] * ( 1 + [Demand Change Value] ) * dss_forecast_plan[asp_hist] ), dim_forecast_member[level] = "total" )
-			)
-		formatString: $#,0
-		displayFolder: 5. Hỗ trợ quyết định
-		lineageTag: b5aebb90-e257-404b-9453-f1195007db3b
-
-	/// S2
-	measure 'Allocated Units' = SUM ( dss_dealer_allocation[allocated_units] ) * ( 1 + [Demand Change Value] )
-		formatString: #,0
-		displayFolder: 5. Hỗ trợ quyết định
-		lineageTag: 24969457-bac8-4dda-8600-0a2f06eeab23
-
-	/// S2
-	measure 'Allocated Revenue' = SUM ( dss_dealer_allocation[allocated_revenue] ) * ( 1 + [Demand Change Value] )
-		formatString: $#,0
-		displayFolder: 5. Hỗ trợ quyết định
-		lineageTag: 710e8370-6fc6-4bea-be41-eca938abece0
-
-	/// S5
-	measure 'Priority Score' = AVERAGE ( dss_company_priority[priority_score] )
-		formatString: 0.000
-		displayFolder: 5. Hỗ trợ quyết định
-		lineageTag: 0ad5e8bd-904a-46f5-8b30-842f47afba70
-
-	/// S5
-	measure 'Priority Rank' = MIN ( dss_company_priority[priority_rank] )
-		formatString: 0
-		displayFolder: 5. Hỗ trợ quyết định
-		lineageTag: 19505b38-bd28-4f44-ae30-85c1417d8082
+		lineageTag: 43ee584a-ee69-4232-ac25-8c97b45045e6
 
 	measure 'Target Growth' = MAX ( kpi_parameters[target_growth] )
 		formatString: 0.0%
-		displayFolder: 6. Mục tiêu & ngưỡng
-		lineageTag: c0dc970a-0641-428a-bb8c-0069106d8e56
+		displayFolder: 5. Mục tiêu & ngưỡng
+		lineageTag: 78fcabd2-087f-4afc-8996-1e77c486a223
 
 	measure 'WAPE Threshold' = MAX ( kpi_parameters[wape_threshold] )
 		formatString: 0.0%
-		displayFolder: 6. Mục tiêu & ngưỡng
-		lineageTag: b6226d5e-0027-4dd7-8856-25d5294f9759
+		displayFolder: 5. Mục tiêu & ngưỡng
+		lineageTag: 4ddbc0fb-dc97-4eb9-a052-913ebc558d11
 
 	measure 'Bias Threshold' = MAX ( kpi_parameters[bias_threshold] )
 		formatString: 0.0%
-		displayFolder: 6. Mục tiêu & ngưỡng
-		lineageTag: a8d04a95-206b-41c1-800e-7fea1222e216
+		displayFolder: 5. Mục tiêu & ngưỡng
+		lineageTag: b126c486-487c-4deb-94ef-630c739112bd
 
 	measure 'Target Units' = SUMX ( FILTER ( kpi_monthly_overview, NOT ISBLANK ( kpi_monthly_overview[target_units] ) ), kpi_monthly_overview[target_units] )
 		formatString: #,0
-		displayFolder: 6. Mục tiêu & ngưỡng
-		lineageTag: dbe7922c-eb55-45ed-b16a-fd59e72aaff1
+		displayFolder: 5. Mục tiêu & ngưỡng
+		lineageTag: c6abd19d-58ed-45b8-8263-36e9a66e1f90
 
 	measure 'Target Revenue' = SUMX ( FILTER ( kpi_monthly_overview, NOT ISBLANK ( kpi_monthly_overview[target_revenue] ) ), kpi_monthly_overview[target_revenue] )
 		formatString: $#,0
-		displayFolder: 6. Mục tiêu & ngưỡng
-		lineageTag: 6e5b7ed2-ee41-4cc6-a858-4284d24774ef
+		displayFolder: 5. Mục tiêu & ngưỡng
+		lineageTag: b16467d3-8e89-4872-a6e1-1120527db0cc
 
 	measure 'Units vs Target %' =
 			VAR _a = SUMX ( FILTER ( kpi_monthly_overview, NOT ISBLANK ( kpi_monthly_overview[target_units] ) ), kpi_monthly_overview[units] )
 			RETURN DIVIDE ( _a, [Target Units] ) - 1
 		formatString: +0.0%;-0.0%;0.0%
-		displayFolder: 6. Mục tiêu & ngưỡng
-		lineageTag: 2a74c1b4-abe7-4f08-a316-99b91818e8dd
+		displayFolder: 5. Mục tiêu & ngưỡng
+		lineageTag: e25fd19f-7e61-48f6-9e2b-8f65011db9a6
 
 	measure 'Revenue vs Target %' =
 			VAR _a = SUMX ( FILTER ( kpi_monthly_overview, NOT ISBLANK ( kpi_monthly_overview[target_revenue] ) ), kpi_monthly_overview[revenue] )
 			RETURN DIVIDE ( _a, [Target Revenue] ) - 1
 		formatString: +0.0%;-0.0%;0.0%
-		displayFolder: 6. Mục tiêu & ngưỡng
-		lineageTag: 54665c23-0df8-419f-a795-5f21e5afa3a1
+		displayFolder: 5. Mục tiêu & ngưỡng
+		lineageTag: 9b1534e1-d7a5-447f-b659-b6fa02aeee1e
 
 	/// Conditional formatting > Field value
 	measure 'Units Target Color' = IF ( ISBLANK ( [Units vs Target %] ), BLANK (), IF ( [Units vs Target %] >= 0, "#2E7D32", "#C62828" ) )
-		displayFolder: 6. Mục tiêu & ngưỡng
-		lineageTag: 4a456f85-e0fe-46b8-90c1-73a7fa37cf72
+		displayFolder: 5. Mục tiêu & ngưỡng
+		lineageTag: 12a4c42c-1d3e-4149-9afb-0bef2bf220b4
 
 	measure 'Revenue Target Color' = IF ( ISBLANK ( [Revenue vs Target %] ), BLANK (), IF ( [Revenue vs Target %] >= 0, "#2E7D32", "#C62828" ) )
-		displayFolder: 6. Mục tiêu & ngưỡng
-		lineageTag: 082bf763-30ab-4cea-aa65-48dec04002fc
+		displayFolder: 5. Mục tiêu & ngưỡng
+		lineageTag: f6d17e62-792d-4044-bb3c-6817e7655bc2
 
 	measure 'WAPE Color' = IF ( ISBLANK ( [WAPE %] ), BLANK (), IF ( [WAPE %] <= [WAPE Threshold], "#2E7D32", "#C62828" ) )
-		displayFolder: 6. Mục tiêu & ngưỡng
-		lineageTag: e5e3b9ec-f69e-4d85-84b9-1f6a9bcad001
+		displayFolder: 5. Mục tiêu & ngưỡng
+		lineageTag: d906287b-1a16-4063-9713-e947dce01adb
 
 	measure 'Bias Color' = IF ( ISBLANK ( [Bias %] ), BLANK (), IF ( ABS ( [Bias %] ) <= [Bias Threshold], "#2E7D32", "#C62828" ) )
-		displayFolder: 6. Mục tiêu & ngưỡng
-		lineageTag: 52e529a9-d3eb-4c3c-8008-7814ed22973d
+		displayFolder: 5. Mục tiêu & ngưỡng
+		lineageTag: 0e0b3c97-1cfe-44e2-ac95-0d2ba6ecb66a
 
 	/// Đạt khi WAPE và |Bias| cùng trong ngưỡng
 	measure 'Forecast Status' =
@@ -553,19 +674,19 @@ table _Measures
 			    BLANK (),
 			    IF ( [WAPE %] <= [WAPE Threshold] && ABS ( [Bias %] ) <= [Bias Threshold], "Đạt", "Không đạt" )
 			)
-		displayFolder: 6. Mục tiêu & ngưỡng
-		lineageTag: 2091cbe3-d278-4ea5-bbd1-1dcfce717d7c
+		displayFolder: 5. Mục tiêu & ngưỡng
+		lineageTag: fdf36f63-ee76-4130-8cc6-61784523cebd
 
 	measure 'DQ Checks Passed' = COUNTROWS ( FILTER ( dq_checks, dq_checks[passed] = TRUE () ) )
 		formatString: 0
-		displayFolder: 7. Chất lượng dữ liệu
-		lineageTag: 1637d6a1-1497-4081-ab7b-98241d084ff7
+		displayFolder: 6. Chất lượng dữ liệu
+		lineageTag: 4b70ebee-993b-456c-b4d8-9a8f11fa1f96
 
 	/// Q1–Q6
 	measure 'DQ Pass Rate' = DIVIDE ( [DQ Checks Passed], COUNTROWS ( dq_checks ) )
 		formatString: 0.0%
-		displayFolder: 7. Chất lượng dữ liệu
-		lineageTag: b65b6a37-1995-4583-8a75-3b2023a11bf4
+		displayFolder: 6. Chất lượng dữ liệu
+		lineageTag: 9db3f22e-3c0b-47c4-a366-ac2be85b6f3b
 
 	column 'Value'
 		dataType: int64
@@ -573,7 +694,7 @@ table _Measures
 		summarizeBy: none
 		isNameInferred
 		sourceColumn: [Value]
-		lineageTag: 831755eb-5f18-4380-b4db-aae2934df42c
+		lineageTag: a9d82603-2faf-42dc-8bd6-dd77bc060996
 
 	partition _Measures = calculated
 		mode: import

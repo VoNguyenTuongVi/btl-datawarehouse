@@ -1,0 +1,90 @@
+table 'dim_date'
+	lineageTag: a88e55e3-18c4-46f3-9c89-9c684fa64be0
+
+	column 'date_id'
+		dataType: int64
+		formatString: 0
+		summarizeBy: none
+		isKey
+		sourceColumn: date_id
+		lineageTag: 85b7987a-d5ca-49ea-bf64-ed6513c4c3d7
+
+	column 'full_date'
+		dataType: dateTime
+		formatString: yyyy-mm-dd
+		summarizeBy: none
+		sourceColumn: full_date
+		lineageTag: 0b774a8f-21c7-4738-96e3-b3ca86e0365f
+
+	column 'day'
+		dataType: int64
+		formatString: 0
+		summarizeBy: none
+		sourceColumn: day
+		lineageTag: c34140ed-6204-4777-8c7b-f9256bf1a171
+
+	column 'month'
+		dataType: int64
+		formatString: 0
+		summarizeBy: none
+		sourceColumn: month
+		lineageTag: 5d43daeb-7c38-459d-a7e6-1be03ce4a0e3
+
+	column 'quarter'
+		dataType: int64
+		formatString: 0
+		summarizeBy: none
+		sourceColumn: quarter
+		lineageTag: d8456b6f-2694-4e6c-82d9-fe3cf371a7ee
+
+	column 'year'
+		dataType: int64
+		formatString: 0
+		summarizeBy: none
+		sourceColumn: year
+		lineageTag: 71952f0b-adfd-4190-be77-783e84547f34
+
+	column 'day_of_week'
+		dataType: string
+		summarizeBy: none
+		sourceColumn: day_of_week
+		lineageTag: cf23b3f1-b96f-4c8e-8fe3-91310a0565cc
+
+	column 'month_start'
+		dataType: dateTime
+		formatString: mmm yyyy
+		isHidden
+		summarizeBy: none
+		sourceColumn: month_start
+		lineageTag: 2087d48d-1d94-4edd-bdc2-d2009e1db6ad
+
+	hierarchy 'Date'
+		lineageTag: d6877e53-8684-4a41-af82-b2af8f7212ca
+
+		level 'year'
+			column: 'year'
+			lineageTag: 48ce59bd-4ac0-4e66-8783-8d00914f58b3
+
+		level 'quarter'
+			column: 'quarter'
+			lineageTag: e4f7510d-c9c2-4dc2-b107-7a689bf94d87
+
+		level 'month'
+			column: 'month'
+			lineageTag: d46d16ca-4f6f-4eef-ae4c-0668f2d64c3e
+
+		level 'full_date'
+			column: 'full_date'
+			lineageTag: fdc0b736-cbc9-435a-b09e-3e12ad9604de
+
+	partition 'dim_date' = m
+		mode: import
+		source =
+				let
+				    Source = PostgreSQL.Database(PgServer, PgDatabase),
+				    Data = Source{[Schema = PgSchemaDw, Item = "dim_date"]}[Data],
+				    Selected = Table.SelectColumns(Data, {"date_id", "full_date", "day", "month", "quarter", "year", "day_of_week"}),
+				    Added0 = Table.AddColumn(Selected, "month_start", each Date.StartOfMonth([full_date])),
+				    Typed = Table.TransformColumnTypes(Added0, {{"date_id", Int64.Type}, {"full_date", type date}, {"day", Int64.Type}, {"month", Int64.Type}, {"quarter", Int64.Type}, {"year", Int64.Type}, {"day_of_week", type text}, {"month_start", type date}})
+				in
+				    Typed

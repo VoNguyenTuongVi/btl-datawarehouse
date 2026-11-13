@@ -1,74 +1,32 @@
 table 'kpi_parameters'
-	lineageTag: 29d89213-a80d-4290-b8aa-3235aefd2721
+	lineageTag: 9a7ddf78-0606-48d9-ba18-2c839381c3db
 
 	column 'main_model'
 		dataType: string
 		summarizeBy: none
 		sourceColumn: main_model
-		lineageTag: 44f6396d-7b7c-4c69-b24d-751617524dee
+		lineageTag: f1f6170d-75bb-4207-8b84-014b31fdeacd
 
 	column 'target_growth'
 		dataType: double
 		formatString: 0.0%
 		summarizeBy: none
 		sourceColumn: target_growth
-		lineageTag: 881f0d43-9a1d-4bbf-83d4-e123c289c306
+		lineageTag: 43493986-90f7-4d20-86bd-b29a0e06a787
 
 	column 'wape_threshold'
 		dataType: double
 		formatString: 0.0%
 		summarizeBy: none
 		sourceColumn: wape_threshold
-		lineageTag: 968a0cb2-351f-4095-bd97-68987bc94aab
+		lineageTag: b5e3a2c2-b02c-458d-be84-aa95663492da
 
 	column 'bias_threshold'
 		dataType: double
 		formatString: 0.0%
 		summarizeBy: none
 		sourceColumn: bias_threshold
-		lineageTag: de48c402-c453-4cc3-ae92-65ffc9f8fe5f
-
-	column 'safety_factor'
-		dataType: double
-		formatString: 0.000
-		summarizeBy: none
-		sourceColumn: safety_factor
-		lineageTag: ddf9b9fd-00a4-4ddf-bfc5-a6f8808c549c
-
-	column 'w_growth'
-		dataType: double
-		formatString: 0.0%
-		summarizeBy: none
-		sourceColumn: w_growth
-		lineageTag: 6a1463fd-a95a-4ec8-826f-252cc24e0448
-
-	column 'w_share'
-		dataType: double
-		formatString: 0.0%
-		summarizeBy: none
-		sourceColumn: w_share
-		lineageTag: 65ce71e6-aa90-491a-963d-8b1dfd6e509f
-
-	column 'w_stability'
-		dataType: double
-		formatString: 0.0%
-		summarizeBy: none
-		sourceColumn: w_stability
-		lineageTag: 63ea318f-9f62-4663-b130-05496a281896
-
-	column 'w_accuracy'
-		dataType: double
-		formatString: 0.0%
-		summarizeBy: none
-		sourceColumn: w_accuracy
-		lineageTag: 2fc839c7-7da2-4491-bc15-fd220625ad5a
-
-	column 'updated_at'
-		dataType: dateTime
-		formatString: yyyy-mm-dd hh:nn
-		summarizeBy: none
-		sourceColumn: updated_at
-		lineageTag: 5e96bcc6-3836-46ca-b425-4c47fffd2989
+		lineageTag: aef57479-7913-4e52-96e8-9ab044e800db
 
 	partition 'kpi_parameters' = m
 		mode: import
@@ -76,7 +34,7 @@ table 'kpi_parameters'
 				let
 				    Source = PostgreSQL.Database(PgServer, PgDatabase),
 				    Data = Source{[Schema = PgSchema, Item = "kpi_parameters"]}[Data],
-				    Selected = Table.SelectColumns(Data, {"main_model", "target_growth", "wape_threshold", "bias_threshold", "safety_factor", "w_growth", "w_share", "w_stability", "w_accuracy", "updated_at"}),
-				    Typed = Table.TransformColumnTypes(Selected, {{"main_model", type text}, {"target_growth", type number}, {"wape_threshold", type number}, {"bias_threshold", type number}, {"safety_factor", type number}, {"w_growth", type number}, {"w_share", type number}, {"w_stability", type number}, {"w_accuracy", type number}, {"updated_at", type datetime}})
+				    Selected = Table.SelectColumns(Data, {"main_model", "target_growth", "wape_threshold", "bias_threshold"}),
+				    Typed = Table.TransformColumnTypes(Selected, {{"main_model", type text}, {"target_growth", type number}, {"wape_threshold", type number}, {"bias_threshold", type number}})
 				in
 				    Typed

@@ -1,0 +1,75 @@
+table 'dim_car'
+	lineageTag: eda74829-b00b-48fc-bf69-9da3474627d1
+
+	column 'car_key'
+		dataType: int64
+		formatString: 0
+		summarizeBy: none
+		isKey
+		sourceColumn: car_key
+		lineageTag: 1cd2e7b6-7c08-4442-baf6-082baf85fde3
+
+	column 'company'
+		dataType: string
+		summarizeBy: none
+		sourceColumn: company
+		lineageTag: 622e40f2-5b43-4c97-9049-c561c73829ca
+
+	column 'model'
+		dataType: string
+		summarizeBy: none
+		sourceColumn: model
+		lineageTag: e59fc7e6-ee9b-4b6e-ac2b-46cb3a957d63
+
+	column 'engine'
+		dataType: string
+		summarizeBy: none
+		sourceColumn: engine
+		lineageTag: 3670b6ea-64e7-4a34-a7a4-c7db70d0096c
+
+	column 'transmission'
+		dataType: string
+		summarizeBy: none
+		sourceColumn: transmission
+		lineageTag: c05513f5-844b-460f-b132-3afd7e350986
+
+	column 'color'
+		dataType: string
+		summarizeBy: none
+		sourceColumn: color
+		lineageTag: 230f7faa-ef26-4609-9be9-941e026e89da
+
+	column 'body_style'
+		dataType: string
+		summarizeBy: none
+		sourceColumn: body_style
+		lineageTag: 9508b243-f9c9-4757-a283-8291678c15e2
+
+	column 'cars_sold'
+		dataType: int64
+		formatString: 0
+		summarizeBy: none
+		sourceColumn: cars_sold
+		lineageTag: ac62a08d-975f-4951-87c5-252c2c175fc9
+
+	hierarchy 'Product'
+		lineageTag: 04b1e1f4-8aae-47c4-bf2e-aedcb725c2cc
+
+		level 'company'
+			column: 'company'
+			lineageTag: c9c6588c-4611-4807-aee7-7a4d82021c7f
+
+		level 'model'
+			column: 'model'
+			lineageTag: 5fe27103-d94c-4526-aa67-e2cdd360abd6
+
+	partition 'dim_car' = m
+		mode: import
+		source =
+				let
+				    Source = PostgreSQL.Database(PgServer, PgDatabase),
+				    Data = Source{[Schema = PgSchemaDw, Item = "dim_car"]}[Data],
+				    Selected = Table.SelectColumns(Data, {"car_key", "company", "model", "engine", "transmission", "color", "body_style", "cars_sold"}),
+				    Typed = Table.TransformColumnTypes(Selected, {{"car_key", Int64.Type}, {"company", type text}, {"model", type text}, {"engine", type text}, {"transmission", type text}, {"color", type text}, {"body_style", type text}, {"cars_sold", Int64.Type}})
+				in
+				    Typed

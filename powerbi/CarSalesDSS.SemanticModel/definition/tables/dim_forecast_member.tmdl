@@ -1,5 +1,5 @@
 table 'dim_forecast_member'
-	lineageTag: 4c872b8a-0d73-47f1-ac01-21f9d07b1619
+	lineageTag: fe1fbded-4d56-49ed-b33f-cc590668ca2e
 
 	column 'series_key'
 		dataType: string
@@ -7,26 +7,26 @@ table 'dim_forecast_member'
 		summarizeBy: none
 		isKey
 		sourceColumn: series_key
-		lineageTag: 9e0f37b9-33f1-43dc-8b53-2618bbe14d3d
+		lineageTag: 5cfdf94f-4dd8-4dc8-9494-7b7cf3641b6c
 
 	column 'level'
 		dataType: string
 		summarizeBy: none
 		sourceColumn: level
-		lineageTag: 1b93a761-2316-4d3a-8d35-93ecbacef241
+		lineageTag: b840feaf-f13a-4b5d-89a8-a573c42c0fe4
 
 	column 'level_label'
 		dataType: string
 		summarizeBy: none
 		sortByColumn: 'level_order'
 		sourceColumn: level_label
-		lineageTag: 71614459-3271-4727-a1a2-233691695e9c
+		lineageTag: 4590cdbd-c63e-444d-9a40-07fc329a0d60
 
 	column 'member'
 		dataType: string
 		summarizeBy: none
 		sourceColumn: member
-		lineageTag: 522b9b2e-b23c-4f45-ab8f-53eb2259057c
+		lineageTag: b41534e4-7616-4f92-8fa3-be831067a206
 
 	column 'level_order'
 		dataType: int64
@@ -34,18 +34,18 @@ table 'dim_forecast_member'
 		isHidden
 		summarizeBy: none
 		sourceColumn: level_order
-		lineageTag: 789be8f4-014a-4c46-8f19-1db41f545717
+		lineageTag: 412ca989-2a73-4ff1-bf19-a3c01761493a
 
 	hierarchy 'Chuỗi dự báo'
-		lineageTag: 61070c75-cea7-4f16-b338-112072b38bdb
+		lineageTag: c97df6b7-b0a3-4d60-9f63-6cbffdddd598
 
 		level 'level_label'
 			column: 'level_label'
-			lineageTag: c1d73a11-5be3-40c1-9f37-c5c3b3822f1b
+			lineageTag: 562d3900-3018-49ef-93f8-6b0f9b07384a
 
 		level 'member'
 			column: 'member'
-			lineageTag: 9f8ad606-1b36-4c90-a778-11f7c37f4f9a
+			lineageTag: e8febbc1-b0c9-4a87-a785-14ae62319315
 
 	partition 'dim_forecast_member' = m
 		mode: import

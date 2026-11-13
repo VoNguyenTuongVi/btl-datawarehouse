@@ -99,5 +99,28 @@ print(
 )
 assert months_with_sales >= 24, "LỖI: Cần ít nhất 24 tháng lịch sử cho dự báo mùa vụ!"
 
+# Test 7: cars_sold của dim_car khớp fact và được sắp từ cao xuống thấp theo car_key
+car_sold = pd.read_sql(
+    text(
+        """
+        SELECT d.car_key, d.cars_sold, COUNT(f.car_id) AS fact_cnt
+        FROM dim_car d
+        LEFT JOIN fact_car_sales f ON f.car_key = d.car_key
+        GROUP BY d.car_key, d.cars_sold
+        ORDER BY d.car_key
+        """
+    ),
+    engine,
+)
+sold_mismatch = int((car_sold['cars_sold'] != car_sold['fact_cnt']).sum())
+sold_sorted = bool(car_sold['cars_sold'].is_monotonic_decreasing)
+print(
+    f"[7] dim_car.cars_sold - tổng: {int(car_sold['cars_sold'].sum())} | "
+    f"dòng lệch fact: {sold_mismatch} | đã xếp giảm dần: {sold_sorted}"
+)
+assert car_sold['cars_sold'].sum() == db_fact_count, "LỖI: Tổng cars_sold khác số dòng fact!"
+assert sold_mismatch == 0, "LỖI: cars_sold lệch so với fact_car_sales!"
+assert sold_sorted, "LỖI: dim_car không xếp theo cars_sold giảm dần!"
+
 print("\n=> TẤT CẢ CÁC KIỂM TRA CHẤT LƯỢNG ĐỀU ĐẠT!")
 engine.dispose()
