@@ -1,0 +1,66 @@
+// 9 testcase theo mục 5.6.2, hình 12-22 của Nhóm6_L01_Report.pdf.
+// Mở PBIP -> Refresh -> DAX query view -> dán toàn bộ -> Run.
+// Kết quả 1: chín testcase. Kết quả 2: bốn lựa chọn Chevrolet ở Bảng 11.
+// PASS/FAIL lấy từ measure kiểm thử thật; SKIP là chưa đủ dữ liệu.
+DEFINE
+    VAR _Month = 202401
+    VAR _Model = "sarima"
+    VAR _S5 = CALCULATETABLE(
+        SUMMARIZECOLUMNS(dim_car[company],
+            "__Growth", [TC S5 01 Status], "__Normalized", [TC S5 02 Status]),
+        TREATAS({_Month}, dim_month[year_month]),
+        TREATAS({_Model}, fact_demand_forecast[model_name]))
+    VAR _Mixed = CALCULATE([TC S5 03 Status],
+        TREATAS({50}, Param_Growth[Value]), TREATAS({25}, Param_Share[Value]),
+        TREATAS({25}, Param_Stability[Value]), TREATAS({25}, Param_Accuracy[Value]))
+    VAR _Zero = CALCULATE([TC S5 04 Status],
+        TREATAS({0}, Param_Growth[Value]), TREATAS({0}, Param_Share[Value]),
+        TREATAS({0}, Param_Stability[Value]), TREATAS({0}, Param_Accuracy[Value]))
+    VAR _S6 = CALCULATETABLE(
+        SUMMARIZECOLUMNS(fact_demand_forecast[member],
+            "__Baseline", CALCULATE([TC S6 01 Status], FILTER(ALL('Demand Change'[Value]), ABS('Demand Change'[Value] - (0)) <= 0.000001), FILTER(ALL('Safety Factor'[Value]), ABS('Safety Factor'[Value] - (1)) <= 0.000001)),
+            "__Increase", CALCULATE([TC S6 02 Status], FILTER(ALL('Demand Change'[Value]), ABS('Demand Change'[Value] - (0.2)) <= 0.000001), FILTER(ALL('Safety Factor'[Value]), ABS('Safety Factor'[Value] - (1)) <= 0.000001)),
+            "__Decrease", CALCULATE([TC S6 03 Status], FILTER(ALL('Demand Change'[Value]), ABS('Demand Change'[Value] - (-0.2)) <= 0.000001), FILTER(ALL('Safety Factor'[Value]), ABS('Safety Factor'[Value] - (1)) <= 0.000001)),
+            "__Safety", CALCULATE([TC S6 04 Status], FILTER(ALL('Demand Change'[Value]), ABS('Demand Change'[Value] - (0)) <= 0.000001), FILTER(ALL('Safety Factor'[Value]), ABS('Safety Factor'[Value] - (2)) <= 0.000001))),
+        TREATAS({_Month}, dim_month[year_month]),
+        TREATAS({_Model}, fact_demand_forecast[model_name]),
+        fact_demand_forecast[level] = "company", fact_demand_forecast[is_backtest] = FALSE())
+    VAR _Selections = DATATABLE("__Month", INTEGER, "__Model", STRING,
+        {{202401, "sarima"}, {202402, "sarima"}, {202401, "holt_winters"}, {202402, "holt_winters"}})
+    VAR _FilterRows = ADDCOLUMNS(_Selections,
+        "__Actual",
+            VAR m = [__Month]
+            VAR mdl = [__Model]
+            RETURN CALCULATE([DSS S6 Forecast Units],
+                TREATAS({m}, dim_month[year_month]), TREATAS({mdl}, fact_demand_forecast[model_name]),
+                TREATAS({"Chevrolet"}, fact_demand_forecast[member]), fact_demand_forecast[level] = "company"),
+        "__Expected",
+            VAR m = [__Month]
+            VAR mdl = [__Model]
+            RETURN CALCULATE([TC S6 05 Expected Forecast],
+                TREATAS({m}, dim_month[year_month]), TREATAS({mdl}, fact_demand_forecast[model_name]),
+                TREATAS({"Chevrolet"}, fact_demand_forecast[member]), fact_demand_forecast[level] = "company"),
+        "__Status",
+            VAR m = [__Month]
+            VAR mdl = [__Model]
+            RETURN CALCULATE([TC S6 05 Status],
+                TREATAS({m}, dim_month[year_month]), TREATAS({mdl}, fact_demand_forecast[model_name]),
+                TREATAS({"Chevrolet"}, fact_demand_forecast[member]), fact_demand_forecast[level] = "company",
+                FILTER(ALL('Demand Change'[Value]), ABS('Demand Change'[Value] - (0)) <= 0.000001), FILTER(ALL('Safety Factor'[Value]), ABS('Safety Factor'[Value] - (2)) <= 0.000001)))
+EVALUATE
+UNION(
+    ROW("TestCase", "TC-S5-01", "Mo ta", "Growth so voi cung ky", "Ket qua", IF(COUNTROWS(FILTER(_S5, [__Growth] = "FAIL")) > 0, "FAIL", IF(COUNTROWS(FILTER(_S5, [__Growth] = "PASS")) > 0, "PASS", "SKIP"))),
+    ROW("TestCase", "TC-S5-02", "Mo ta", "Diem chuan hoa trong [0,1]", "Ket qua", IF(COUNTROWS(FILTER(_S5, [__Normalized] = "FAIL")) > 0, "FAIL", IF(COUNTROWS(FILTER(_S5, [__Normalized] = "PASS")) > 0, "PASS", "SKIP"))),
+    ROW("TestCase", "TC-S5-03", "Mo ta", "Trong so 50/25/25/25", "Ket qua", _Mixed),
+    ROW("TestCase", "TC-S5-04", "Mo ta", "Tong trong so bang 0", "Ket qua", _Zero),
+    ROW("TestCase", "TC-S6-01", "Mo ta", "Baseline: d=0, k=1", "Ket qua", IF(COUNTROWS(FILTER(_S6, [__Baseline] = "FAIL")) > 0, "FAIL", IF(COUNTROWS(FILTER(_S6, [__Baseline] = "PASS")) > 0, "PASS", "SKIP"))),
+    ROW("TestCase", "TC-S6-02", "Mo ta", "Nhu cau tang 20%", "Ket qua", IF(COUNTROWS(FILTER(_S6, [__Increase] = "FAIL")) > 0, "FAIL", IF(COUNTROWS(FILTER(_S6, [__Increase] = "PASS")) > 0, "PASS", "SKIP"))),
+    ROW("TestCase", "TC-S6-03", "Mo ta", "Nhu cau giam 20%", "Ket qua", IF(COUNTROWS(FILTER(_S6, [__Decrease] = "FAIL")) > 0, "FAIL", IF(COUNTROWS(FILTER(_S6, [__Decrease] = "PASS")) > 0, "PASS", "SKIP"))),
+    ROW("TestCase", "TC-S6-04", "Mo ta", "Tang du phong: d=0, k=2", "Ket qua", IF(COUNTROWS(FILTER(_S6, [__Safety] = "FAIL")) > 0, "FAIL", IF(COUNTROWS(FILTER(_S6, [__Safety] = "PASS")) > 0, "PASS", "SKIP"))),
+    ROW("TestCase", "TC-S6-05", "Mo ta", "Doi thang/model, doi soat fact", "Ket qua", IF(COUNTROWS(FILTER(_FilterRows, [__Status] = "FAIL")) > 0, "FAIL", IF(COUNTROWS(FILTER(_FilterRows, [__Status] = "PASS")) = 4, "PASS", "SKIP")))
+)
+ORDER BY [TestCase]
+
+EVALUATE
+    _FilterRows
+ORDER BY [__Month], [__Model]

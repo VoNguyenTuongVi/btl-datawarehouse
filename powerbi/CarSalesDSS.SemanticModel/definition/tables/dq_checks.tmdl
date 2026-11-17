@@ -1,42 +1,42 @@
 table 'dq_checks'
-	lineageTag: 0e5d6815-6b9b-4317-8b01-f087c710fc50
+	lineageTag: 44504837-f82e-49d3-9b13-ae318227517a
 
 	column 'check_code'
 		dataType: string
 		summarizeBy: none
 		sourceColumn: check_code
-		lineageTag: 15a250db-7bd9-482c-85ef-0f80991539d6
+		lineageTag: 6dfb1e65-82f6-403c-a5c0-a81e76f20721
 
 	column 'check_name'
 		dataType: string
 		summarizeBy: none
 		sourceColumn: check_name
-		lineageTag: b9e79163-0f8c-4313-9dc9-86df8bcbc2ad
+		lineageTag: c6798f7f-ed77-405e-a0f0-c09e7c4b9ec3
 
 	column 'metric_value'
 		dataType: double
 		formatString: 0.0%
 		summarizeBy: none
 		sourceColumn: metric_value
-		lineageTag: 22c5754e-0c75-47a3-a714-b705a6538a78
+		lineageTag: 828d0558-beb5-4fc9-b1cd-1b09b9e9168b
 
 	column 'threshold'
 		dataType: string
 		summarizeBy: none
 		sourceColumn: threshold
-		lineageTag: 14125801-173e-4cff-bae9-eb735d808e39
+		lineageTag: 4c5f649d-4467-4eb9-ba0b-459debe89cd2
 
 	column 'passed'
 		dataType: boolean
 		summarizeBy: none
 		sourceColumn: passed
-		lineageTag: aab83dca-1d95-45e3-a1af-d20a7baac66d
+		lineageTag: 3e18f451-007d-4427-8cff-33c00b04d13f
 
 	column 'detail'
 		dataType: string
 		summarizeBy: none
 		sourceColumn: detail
-		lineageTag: 53e72ea8-8ea2-4c6d-a539-ef2fd580edd0
+		lineageTag: b006d7b8-4653-4d31-afb1-fccc42e6fc8b
 
 	partition 'dq_checks' = m
 		mode: import

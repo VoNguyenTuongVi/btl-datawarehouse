@@ -13,7 +13,9 @@ export const LEVELS = { total: 'Tổng', region: 'Vùng', company: 'Hãng' };
 export const MODELS = { sarima: 'SARIMA', holt_winters: 'Holt-Winters', seasonal_naive: 'Seasonal naive' };
 
 // Độ chính xác gộp từ tổng thành phần (không trung bình các phần trăm)
-export function poolAccuracy(accuracy) {
+export function poolAccuracy(accuracy, parameters = {}) {
+  const wapeMax = parameters?.wape_threshold ?? WAPE_MAX;
+  const biasMax = parameters?.bias_threshold ?? BIAS_MAX;
   const groups = new Map();
   for (const r of accuracy) {
     const k = `${r.level}|${r.model_name}`;
@@ -25,11 +27,11 @@ export function poolAccuracy(accuracy) {
     g.n += r.n_points;
     g.inside += r.n_in_interval;
     g.series += 1;
-    if (r.actual_total > 0 && r.abs_error_total / r.actual_total <= WAPE_MAX && Math.abs(r.error_total / r.actual_total) <= BIAS_MAX) g.pass += 1;
+    if (r.actual_total > 0 && r.abs_error_total / r.actual_total <= wapeMax && Math.abs(r.error_total / r.actual_total) <= biasMax) g.pass += 1;
   }
   const lv = ['total', 'region', 'company'];
   const md = ['sarima', 'holt_winters', 'seasonal_naive'];
   return [...groups.values()]
-    .map((g) => ({ level: g.level, model: g.model, wape: g.abs / g.actual, bias: g.err / g.actual, coverage: g.inside / g.n, pass: g.pass, series: g.series }))
+    .map((g) => ({ level: g.level, model: g.model, wape: g.actual > 0 ? g.abs / g.actual : null, bias: g.actual > 0 ? g.err / g.actual : null, coverage: g.n > 0 ? g.inside / g.n : null, pass: g.pass, series: g.series, wapeMax, biasMax, mainModel: parameters?.main_model }))
     .sort((a, b) => lv.indexOf(a.level) - lv.indexOf(b.level) || md.indexOf(a.model) - md.indexOf(b.model));
 }

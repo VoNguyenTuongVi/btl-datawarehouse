@@ -1,7 +1,5 @@
 # Hướng dẫn chạy từ đầu đến cuối
 
-Từ file CSV đến dashboard Power BI. Mọi lệnh chạy ở **PowerShell**, tại thư mục gốc `btl-datawarehouse`.
-
 ```
 CSV → schema.sql → etl.py → test_quality.py → forecast.py → build_marts.py → build_pbip.py → Power BI
 ```
@@ -16,7 +14,7 @@ CSV → schema.sql → etl.py → test_quality.py → forecast.py → build_mart
 | Module PowerShell `SqlServer` | Để tự Refresh (không bắt buộc) |
 
 ```powershell
-pip install -r requirements.txt
+py -3 -m pip install -r requirements.txt
 Install-Module SqlServer -Scope CurrentUser      # tùy chọn
 ```
 
@@ -35,18 +33,18 @@ psql -U postgres -h localhost -c "CREATE DATABASE car_sales_dw;"
 ## 3. Cách nhanh: một lệnh chạy tất cả
 
 ```powershell
-python src/run_pipeline.py
+py -3 src/run_pipeline.py
 ```
 
-Lệnh này chạy lần lượt `schema → etl → test → forecast → marts → powerbi`, sau đó mở Power BI Desktop và tự Refresh.
+Lệnh này chạy lần lượt `schema → etl → test → forecast → marts → powerbi`, sau đó mở Power BI Desktop và tự Refresh. Không cần xuất JSON để chạy frontend.
 
 | Mục đích | Lệnh |
 | --- | --- |
-| Chỉ sinh lại mô hình và mở Power BI | `python src/run_pipeline.py --only powerbi` |
-| Dự báo lại rồi cập nhật mart và Power BI | `python src/run_pipeline.py --only forecast marts powerbi` |
-| Bỏ bước kiểm tra | `python src/run_pipeline.py --skip test` |
-| Không mở Power BI | `python src/run_pipeline.py --no-open` |
-| Mở Power BI nhưng không tự Refresh | `python src/run_pipeline.py --no-refresh` |
+| Chỉ sinh lại mô hình và mở Power BI | `py -3 src/run_pipeline.py --only powerbi` |
+| Dự báo lại rồi cập nhật mart và Power BI | `py -3 src/run_pipeline.py --only forecast marts powerbi` |
+| Bỏ bước kiểm tra | `py -3 src/run_pipeline.py --skip test` |
+| Không mở Power BI | `py -3 src/run_pipeline.py --no-open` |
+| Mở Power BI nhưng không tự Refresh | `py -3 src/run_pipeline.py --no-refresh` |
 | Đổi mô hình chính | `--main-model sarima` (hoặc `holt_winters`, `seasonal_naive`) |
 
 ## 4. Cách từng bước (khi cần tìm lỗi)
@@ -54,19 +52,21 @@ Lệnh này chạy lần lượt `schema → etl → test → forecast → marts
 | Bước | Lệnh | Kết quả mong đợi |
 | --- | --- | --- |
 | 1. Tạo bảng, view | `psql -U postgres -h localhost -d car_sales_dw -f src/schema.sql` | 4 bảng chiều, `fact_car_sales`, `fact_demand_forecast`, các view |
-| 2. ETL | `python src/etl.py` | Nạp 23.906 dòng; chạy lại được |
-| 3. Kiểm tra chất lượng | `python src/test_quality.py` | Q1–Q6 đạt |
-| 4. Dự báo | `python src/forecast.py` | 3 mô hình × 3 cấp; backtest 07–12/2023, dự báo 01–06/2024 |
-| 5. Tạo mart KPI | `python src/build_marts.py` | Tạo schema `mart` (18 bảng; 6 bảng DW trong schema `public` được Power BI nạp trực tiếp) |
-| 6. Sinh mô hình Power BI | `python src/powerbi/build_pbip.py` | Sinh TMDL (18 bảng mart, 6 bảng DW, 1 bảng measure, 23 quan hệ, 70 measure) |
+| 2. ETL | `py -3 src/etl.py` | Nạp 23.906 dòng; chạy lại được |
+| 3. Kiểm tra chất lượng | `py -3 src/test_quality.py` | Q1–Q6 đạt |
+| 4. Dự báo | `py -3 src/forecast.py` | 3 mô hình × 3 cấp; backtest 07–12/2023, dự báo 01–06/2024 |
+| 5. Tạo mart KPI | `py -3 src/build_marts.py` | Tạo schema `mart` (20 bảng; 6 bảng DW trong schema `public` được Power BI nạp trực tiếp), gồm cột `dim_month.has_forecast_data` cho DSS |
+| 6. Sinh mô hình Power BI | `py -3 src/powerbi/build_pbip.py` | Sinh TMDL (20 bảng mart, 6 bảng DW, 6 bảng tham số, 1 bảng measure, 26 quan hệ, 131 measure gồm 12 measure testcase và 2 measure ở bảng tham số) |
 | 7. Mở và Refresh | Mở `powerbi/CarSalesDSS.pbip` | Xem mục 5 |
 
 Thứ tự bắt buộc: bước 1 trước bước 2; bước 4 trước bước 5; bước 5 trước bước 6.
 
+Sau khi DB sẵn sàng, chạy frontend bằng hai Terminal: gốc dự án chạy `py -3 src/api.py`; Terminal khác vào `frontend`, chạy `npm ci` rồi `npm run dev`. Mở `http://127.0.0.1:5173`. Nút **Nạp lại dữ liệu** truy vấn lại DB; có tùy chọn tự cập nhật mỗi 30 giây.
+
 Đổi ngưỡng khi tạo mart:
 
 ```powershell
-python src/build_marts.py --target-growth 0.05 --wape-threshold 0.20 --bias-threshold 0.05
+py -3 src/build_marts.py --target-growth 0.05 --wape-threshold 0.20 --bias-threshold 0.05
 ```
 
 Nếu console báo lỗi mã hóa tiếng Việt, đặt trước: `$env:PYTHONUTF8 = "1"`.
@@ -89,7 +89,7 @@ Report trong `CarSalesDSS.Report` do người thiết kế, script không ghi đ
 ## 6. Kiểm tra kết quả
 
 ```powershell
-python -m pytest -q src                              # 3 test đạt
+py -3 -m pytest -q src/test_forecast.py tests        # dự báo + tích hợp DSS; không cần DB
 psql -U postgres -h localhost -d car_sales_dw -c "SELECT * FROM mart.kpi_monthly_overview;"
 ```
 
@@ -101,7 +101,7 @@ psql -U postgres -h localhost -d car_sales_dw -c "SELECT * FROM mart.kpi_monthly
 | --- | --- |
 | `relation "fact_car_sales" does not exist` | Chưa chạy `schema.sql` |
 | Cảnh báo mật khẩu khác nhau | `Remove-Item Env:DATABASE_URL`; dùng giá trị trong `.env` |
-| `pytest -q src` báo `No module named 'src'` | Dùng `python -m pytest -q src` |
+| `pytest -q src` báo `No module named 'src'` | Dùng `py -3 -m pytest -q src` |
 | Power BI báo "Unexpected character… T" khi mở `.pbip` | File `.pbip` có `True` viết hoa; sửa thành `true` |
 | Power BI báo lỗi cột khi Refresh | Thêm cột ở `kpi_marts.sql` mà chưa cập nhật `MART_TABLES` trong `build_pbip.py`; chạy lại bước 5 và 6 |
 | Measure không có số | Chưa Refresh, hoặc chưa kéo vào visual |

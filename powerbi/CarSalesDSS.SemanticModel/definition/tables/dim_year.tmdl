@@ -1,5 +1,5 @@
 table 'dim_year'
-	lineageTag: e4387667-231e-418e-aef4-f3da909634cd
+	lineageTag: 611194e6-3023-4350-9331-f38c6f5ea8e4
 
 	column 'year'
 		dataType: int64
@@ -7,19 +7,19 @@ table 'dim_year'
 		summarizeBy: none
 		isKey
 		sourceColumn: year
-		lineageTag: e5abedaa-6ee6-4837-a846-679b4d9a9eb9
+		lineageTag: e76a9103-4a17-46d9-b9f6-9ee7d68efda0
 
 	column 'year_label'
 		dataType: string
 		summarizeBy: none
 		sourceColumn: year_label
-		lineageTag: bcee5718-0ec5-4487-a511-32945ee7de22
+		lineageTag: 9f6dc222-7c47-4057-aed8-963e5a406aca
 
 	column 'period_type'
 		dataType: string
 		summarizeBy: none
 		sourceColumn: period_type
-		lineageTag: 07ac585e-2aa0-4ef3-aca4-d17ae943f5f4
+		lineageTag: 2b53acdc-685c-4e0b-abb6-f3958fc61c93
 
 	partition 'dim_year' = m
 		mode: import

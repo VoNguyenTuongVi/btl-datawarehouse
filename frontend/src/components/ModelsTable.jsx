@@ -9,11 +9,11 @@ export default function ModelsTable({ pooled }) {
         </thead>
         <tbody>
           {pooled.map((r) => (
-            <tr key={`${r.level}-${r.model}`} className={r.model === 'sarima' ? 'main' : ''}>
+            <tr key={`${r.level}-${r.model}`} className={r.model === r.mainModel ? 'main' : ''}>
               <td>{LEVELS[r.level]} ({r.series} chuỗi)</td>
-              <td>{MODELS[r.model]}</td>
-              <td className={r.wape <= WAPE_MAX ? 'good' : 'bad'}>{pct(r.wape)}</td>
-              <td className={Math.abs(r.bias) <= BIAS_MAX ? 'good' : 'bad'}>{spct(r.bias)}</td>
+              <td>{MODELS[r.model] || r.model}</td>
+              <td className={r.wape == null ? '' : r.wape <= (r.wapeMax ?? WAPE_MAX) ? 'good' : 'bad'}>{pct(r.wape)}</td>
+              <td className={r.bias == null ? '' : Math.abs(r.bias) <= (r.biasMax ?? BIAS_MAX) ? 'good' : 'bad'}>{spct(r.bias)}</td>
               <td>{pct(r.coverage)}</td>
               <td>{r.pass}/{r.series}</td>
             </tr>

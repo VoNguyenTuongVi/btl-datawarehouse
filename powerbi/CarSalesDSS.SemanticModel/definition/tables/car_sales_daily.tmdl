@@ -1,5 +1,5 @@
 table 'car_sales_daily'
-	lineageTag: 53147997-2984-4d7a-80bf-e46a672116b2
+	lineageTag: 8868aa33-e98e-4846-868e-cef94affae75
 
 	column 'car_key'
 		dataType: int64
@@ -7,7 +7,7 @@ table 'car_sales_daily'
 		isHidden
 		summarizeBy: none
 		sourceColumn: car_key
-		lineageTag: 1e2eee4e-cae9-48c0-a9d2-39c5a146f651
+		lineageTag: ac22f96a-ab03-47e8-80cd-a37626a42107
 
 	column 'date'
 		dataType: dateTime
@@ -15,21 +15,21 @@ table 'car_sales_daily'
 		isHidden
 		summarizeBy: none
 		sourceColumn: date
-		lineageTag: 376d8cad-cfb2-4112-8288-7b232220a673
+		lineageTag: 9974eb5d-74e3-4bea-96c2-5cdefd19b079
 
 	column 'cars_sold'
 		dataType: int64
 		formatString: 0
 		summarizeBy: sum
 		sourceColumn: cars_sold
-		lineageTag: d73bd397-b585-4cf9-9aca-ab840a7373da
+		lineageTag: b0348e20-5d86-4bb8-b905-8a0b45c31048
 
 	column 'revenue'
 		dataType: double
 		formatString: $#,0
 		summarizeBy: sum
 		sourceColumn: revenue
-		lineageTag: f5a266e1-7c80-4d4a-ad28-51c8e340a36e
+		lineageTag: 80194db2-1879-41f0-8fd3-ca0c2c14842d
 
 	partition 'car_sales_daily' = m
 		mode: import

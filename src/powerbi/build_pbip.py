@@ -31,6 +31,9 @@ import uuid
 from pathlib import Path
 from urllib.parse import urlparse
 
+from dss_measures import DSS_MEASURES, DSS_SUPPORT_MEASURES
+from dss_testcases import DSS_TESTCASE_MEASURES, testcase_dax_reference
+
 ROOT = Path(__file__).resolve().parents[2]
 
 # ---------------------------------------------------------------------------
@@ -39,7 +42,7 @@ ROOT = Path(__file__).resolve().parents[2]
 MART_TABLES: dict[str, list[str]] = {
     "dim_year": ["year", "year_label", "period_type"],
     "dim_month": ["month_start", "year", "quarter_no", "quarter", "year_quarter", "month_no",
-                  "month_name", "year_month", "year_month_label", "period_type"],
+                  "month_name", "year_month", "year_month_label", "period_type", "has_forecast_data"],
     "dim_calendar": ["date", "date_id", "year", "quarter_no", "year_quarter", "month_no", "month_name",
                      "year_month_label", "day_no", "dow_no", "day_of_week"],
     "dim_member": ["member_key", "dimension_name", "dimension_label", "dimension_value",
@@ -205,7 +208,7 @@ INT_COLS = {
     "dow_no", "day_no", "income_quartile", "income_min", "income_max", "active_dealers", "selling_days",
     "dealers_growing", "dealers_compared", "n_companies", "n_models", "n_dealers", "n_points",
     "n_in_interval", "active_months", "rank_units", "rank_revenue", "rank_in_month",
-    "model_rank",
+    "model_rank", "has_forecast_data",
 }
 # Cột cộng được giữa các dòng (còn lại là tỷ lệ / chỉ số: không tự cộng)
 ADDITIVE = re.compile(
@@ -585,6 +588,43 @@ def measures_tmdl(measures) -> str:
     return "\n".join(parts)
 
 
+def whatif_tmdl(table: str, start: float, end: float, step: float,
+                default: float, fmt: str) -> str:
+    """Tham số S6 độc lập; mỗi bảng chứa measure đọc giá trị đang chọn."""
+    return "\n".join([
+        f"table {q(table)}", f"\tlineageTag: {tag()}", "",
+        measure_block(f"{table} Value",
+                      f"SELECTEDVALUE ( {q(table)}[Value], {default} )",
+                      fmt, "8. DSS S5/S6", "Tham số What-if (S6)"),
+        column_block("Value", "double", "none", source="[Value]", fmt=fmt,
+                     extra=["isNameInferred"]),
+        f"\tpartition {q(table)} = calculated", "\t\tmode: import",
+        f"\t\tsource = GENERATESERIES ( {start}, {end}, {step} )", "",
+    ])
+
+
+def dss_weight_tmdl(name: str) -> str:
+    """Bảng trọng số S5 từ 0 đến 100, bước 5; không có relationship."""
+    return "\n".join([
+        f"table {q(name)}", f"\tlineageTag: {tag()}", "",
+        column_block("Value", "int64", "none", source="[Value]", fmt="0",
+                     extra=["isNameInferred"]),
+        f"\tpartition {q(name)} = calculated", "\t\tmode: import",
+        "\t\tsource = GENERATESERIES ( 0, 100, 5 )", "",
+    ])
+
+
+def dss_dax_reference() -> str:
+    """Bản DAX để đọc/đối chiếu, luôn đồng bộ với công thức được sinh."""
+    parts = [
+        "-- Được sinh từ src/powerbi/dss_measures.py; sửa công thức ở mã nguồn.",
+        "-- Demand Change Value / Safety Factor Value nằm trong hai bảng tham số tương ứng.",
+    ]
+    for name, dax, _fmt, _folder, desc in DSS_SUPPORT_MEASURES + DSS_MEASURES:
+        parts.extend(["", f"-- {desc or name}", f"{name} =", dax])
+    return "\n".join(parts) + "\n"
+
+
 def expressions_tmdl(server: str, database: str, schema: str, dw_schema: str = "public") -> str:
     def param(name, value):
         return (f'expression {name} = "{value}" meta [IsParameterQuery=true, Type="Text", '
@@ -676,9 +716,13 @@ def build(args) -> Path:
     write(sm_dir / "definition.pbism", json.dumps({"version": "4.0", "settings": {}}, indent=2) + "\n")
     write(def_dir / "database.tmdl", f"database {q(args.name)}\n\tcompatibilityLevel: 1567\n")
 
-    measures = build_measures()
+    measures = build_measures() + DSS_SUPPORT_MEASURES + DSS_MEASURES + DSS_TESTCASE_MEASURES
     tables = {t: mart_table_tmdl(t, cols) for t, cols in MART_TABLES.items()}
     tables.update({t: mart_table_tmdl(t, cols, "PgSchemaDw") for t, cols in DW_TABLES.items()})
+    for name in ("Param_Growth", "Param_Share", "Param_Stability", "Param_Accuracy"):
+        tables[name] = dss_weight_tmdl(name)
+    tables["Demand Change"] = whatif_tmdl("Demand Change", -0.3, 0.3, 0.05, 0, "0%")
+    tables["Safety Factor"] = whatif_tmdl("Safety Factor", 0, 2, 0.1, 1, "0.0")
     tables["_Measures"] = measures_tmdl(measures)
 
     for t, text in tables.items():
@@ -686,6 +730,8 @@ def build(args) -> Path:
     write(def_dir / "model.tmdl", model_tmdl())
     write(def_dir / "expressions.tmdl", expressions_tmdl(args.server, args.database, args.schema, args.dw_schema))
     write(def_dir / "relationships.tmdl", relationships_tmdl())
+    write(out_dir / "dss_measures.dax", dss_dax_reference())
+    write(out_dir / "testcase_measures.dax", testcase_dax_reference())
 
     gi = out_dir / ".gitignore"
     if not gi.exists():
@@ -694,7 +740,7 @@ def build(args) -> Path:
     report_dir = out_dir / f"{args.name}.Report"
     pbip = out_dir / f"{args.name}.pbip"
     print(f"-> Đã sinh semantic model: {sm_dir}")
-    print(f"   {len(MART_TABLES)} bảng mart + {len(DW_TABLES)} bảng DW + 1 bảng measure, {len(RELATIONSHIPS)} quan hệ, {len(measures)} measure")
+    print(f"   {len(MART_TABLES)} bảng mart + {len(DW_TABLES)} bảng DW + 6 bảng tham số DSS + 1 bảng measure, {len(RELATIONSHIPS)} quan hệ, {len(measures)} measure trong _Measures + 2 measure tham số")
     if not report_dir.exists():
         write_blank_report(out_dir, args.name)
         print(f"-> Chưa có report, đã tạo report trống: {report_dir}")

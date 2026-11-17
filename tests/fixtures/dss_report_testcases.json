@@ -1,0 +1,259 @@
+{
+  "source_pdf": "Nhóm6_L01_Report.pdf",
+  "source_section": "5.6.2",
+  "numbering": "Dùng mã trong phần mô tả/hình 12-22; Bảng 10 có mã khác, được ánh xạ riêng.",
+  "reference_values": "Số quan sát tại thời điểm lập báo cáo; tiêu chí PASS đối soát measure và dữ liệu hiện tại, không cố định dự báo vào các số này.",
+  "cases": [
+    {
+      "id": "TC-S5-01",
+      "title": "Kiểm tra tỷ lệ tăng trưởng",
+      "pdf_pages": [
+        61,
+        62
+      ],
+      "printed_pages": [
+        60,
+        61
+      ],
+      "table_10_id": "TC-S5-03",
+      "setup": {
+        "month": 202401,
+        "model": "sarima"
+      },
+      "reference": {
+        "company": "Mercedes-B",
+        "forecast": 56.44,
+        "actual_py": 26,
+        "growth_display_pct": 117.1
+      },
+      "status_measure": "TC S5 01 Status"
+    },
+    {
+      "id": "TC-S5-02",
+      "title": "Kiểm tra miền điểm chuẩn hóa",
+      "pdf_pages": [
+        62,
+        63
+      ],
+      "printed_pages": [
+        61,
+        62
+      ],
+      "table_10_id": "TC-S5-09",
+      "setup": {
+        "eligible": 1
+      },
+      "reference": {
+        "company": "Chevrolet",
+        "scores": [
+          0.402,
+          1.0,
+          0.729,
+          0.99
+        ]
+      },
+      "status_measure": "TC S5 02 Status"
+    },
+    {
+      "id": "TC-S5-03",
+      "title": "Chuẩn hóa trọng số khác tổng 100",
+      "pdf_pages": [
+        63,
+        64
+      ],
+      "printed_pages": [
+        62,
+        63
+      ],
+      "table_10_id": "TC-S5-12",
+      "setup": {
+        "weights": [
+          50,
+          25,
+          25,
+          25
+        ]
+      },
+      "reference": {
+        "normalized_weights": [
+          0.4,
+          0.2,
+          0.2,
+          0.2
+        ]
+      },
+      "status_measure": "TC S5 03 Status"
+    },
+    {
+      "id": "TC-S5-04",
+      "title": "Xử lý tổng trọng số bằng 0",
+      "pdf_pages": [
+        64
+      ],
+      "printed_pages": [
+        63
+      ],
+      "table_10_id": "TC-S5-14",
+      "setup": {
+        "weights": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "reference": {
+        "normalized_weights": [
+          0.25,
+          0.25,
+          0.25,
+          0.25
+        ]
+      },
+      "status_measure": "TC S5 04 Status"
+    },
+    {
+      "id": "TC-S6-01",
+      "title": "Điều kiện Baseline",
+      "pdf_pages": [
+        65
+      ],
+      "printed_pages": [
+        64
+      ],
+      "table_10_id": "TC-S6-02",
+      "setup": {
+        "demand_change": 0,
+        "safety_factor": 1
+      },
+      "reference": {
+        "company": "Chevrolet",
+        "order_baseline": 114,
+        "order_scenario": 114,
+        "revenue_baseline": 2007861,
+        "revenue_scenario": 2007861
+      },
+      "status_measure": "TC S6 01 Status"
+    },
+    {
+      "id": "TC-S6-02",
+      "title": "Nhu cầu tăng 20%",
+      "pdf_pages": [
+        65,
+        66
+      ],
+      "printed_pages": [
+        64,
+        65
+      ],
+      "table_10_id": "TC-S6-03",
+      "setup": {
+        "demand_change": 0.2,
+        "safety_factor": 1
+      },
+      "reference": {
+        "company": "Chevrolet",
+        "order_baseline": 114,
+        "order_scenario": 137,
+        "revenue_baseline": 2007861,
+        "revenue_scenario": 2409433
+      },
+      "status_measure": "TC S6 02 Status"
+    },
+    {
+      "id": "TC-S6-03",
+      "title": "Nhu cầu giảm 20%",
+      "pdf_pages": [
+        66,
+        67
+      ],
+      "printed_pages": [
+        65,
+        66
+      ],
+      "table_10_id": "TC-S6-04",
+      "setup": {
+        "demand_change": -0.2,
+        "safety_factor": 1
+      },
+      "reference": {
+        "company": "Plymouth",
+        "order_baseline": 33,
+        "order_scenario": 26,
+        "revenue_baseline": 628384,
+        "revenue_scenario": 502708
+      },
+      "status_measure": "TC S6 03 Status"
+    },
+    {
+      "id": "TC-S6-04",
+      "title": "Tăng mức dự phòng",
+      "pdf_pages": [
+        67,
+        68
+      ],
+      "printed_pages": [
+        66,
+        67
+      ],
+      "table_10_id": "TC-S6-05",
+      "setup": {
+        "demand_change": 0,
+        "safety_factor": 2
+      },
+      "reference": {
+        "company": "Plymouth",
+        "order_baseline": 33,
+        "order_scenario": 44,
+        "revenue_baseline": 628384,
+        "revenue_scenario": 628384
+      },
+      "status_measure": "TC S6 04 Status"
+    },
+    {
+      "id": "TC-S6-05",
+      "title": "Đổi tháng và mô hình dự báo",
+      "pdf_pages": [
+        68,
+        69,
+        70
+      ],
+      "printed_pages": [
+        67,
+        68,
+        69
+      ],
+      "table_10_id": "TC-S6-08",
+      "setup": {
+        "demand_change": 0,
+        "safety_factor": 2
+      },
+      "reference": {
+        "company": "Chevrolet",
+        "forecasts": [
+          {
+            "month": 202401,
+            "model": "sarima",
+            "forecast": 76.64
+          },
+          {
+            "month": 202402,
+            "model": "sarima",
+            "forecast": 70.59
+          },
+          {
+            "month": 202401,
+            "model": "holt_winters",
+            "forecast": 53.6
+          },
+          {
+            "month": 202402,
+            "model": "holt_winters",
+            "forecast": 53.31
+          }
+        ]
+      },
+      "status_measure": "TC S6 05 Status"
+    }
+  ]
+}

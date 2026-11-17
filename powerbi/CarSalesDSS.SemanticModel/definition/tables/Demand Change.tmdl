@@ -1,0 +1,20 @@
+table 'Demand Change'
+	lineageTag: 22e744e8-3f6a-493d-abe1-62dddefc193a
+
+	/// Tham số What-if (S6)
+	measure 'Demand Change Value' = SELECTEDVALUE ( 'Demand Change'[Value], 0 )
+		formatString: 0%
+		displayFolder: 8. DSS S5/S6
+		lineageTag: 4028720e-d8c5-4250-90aa-741d708bb95e
+
+	column 'Value'
+		dataType: double
+		formatString: 0%
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Value]
+		lineageTag: c3f80503-b78f-4deb-a841-83258e69c75e
+
+	partition 'Demand Change' = calculated
+		mode: import
+		source = GENERATESERIES ( -0.3, 0.3, 0.05 )

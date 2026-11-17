@@ -1,5 +1,5 @@
 table 'dim_customer'
-	lineageTag: fc72e1b6-ec33-4968-9611-d486c8caeb0f
+	lineageTag: 558d4d48-a47e-47de-8b9b-1d45622c8cdc
 
 	column 'customer_id'
 		dataType: int64
@@ -7,20 +7,20 @@ table 'dim_customer'
 		summarizeBy: none
 		isKey
 		sourceColumn: customer_id
-		lineageTag: d0dbb95c-5c7b-4333-81d8-30bba8a50389
+		lineageTag: 04866081-d8db-46c5-a95d-abd215e47c95
 
 	column 'gender'
 		dataType: string
 		summarizeBy: none
 		sourceColumn: gender
-		lineageTag: aafc9324-eae6-4840-abd3-727926332d3b
+		lineageTag: 8c8958a1-22f9-462c-8a3d-1befb6abc3da
 
 	column 'annual_income'
 		dataType: int64
 		formatString: 0
 		summarizeBy: none
 		sourceColumn: annual_income
-		lineageTag: 2162e92f-4d03-48c9-9ab4-c3ea7c244d44
+		lineageTag: a0acbc1a-2ae2-4b68-97ee-40a4f4f8e248
 
 	partition 'dim_customer' = m
 		mode: import

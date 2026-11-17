@@ -1,5 +1,5 @@
 table 'dim_member'
-	lineageTag: b17e1821-fb66-4644-9861-7beea7c1698c
+	lineageTag: 8affe5a6-6f7b-430c-bde2-926f15772117
 
 	column 'member_key'
 		dataType: string
@@ -7,32 +7,32 @@ table 'dim_member'
 		summarizeBy: none
 		isKey
 		sourceColumn: member_key
-		lineageTag: ca02f54e-5cab-4f65-9fa8-71b58b049b46
+		lineageTag: c533a605-b9e2-4b4c-9e9c-c0f6b07d515f
 
 	column 'dimension_name'
 		dataType: string
 		summarizeBy: none
 		sourceColumn: dimension_name
-		lineageTag: a2da4eee-5c99-4f9a-a2d5-b663df3546af
+		lineageTag: f468331b-fb4c-4668-8def-3a9eeb584245
 
 	column 'dimension_label'
 		dataType: string
 		summarizeBy: none
 		sortByColumn: 'dimension_order'
 		sourceColumn: dimension_label
-		lineageTag: 2568e89a-8c79-4626-915d-2ca12c270b8d
+		lineageTag: 08f7bb7c-5e9a-4b4e-aabb-e25b889b6e1e
 
 	column 'dimension_value'
 		dataType: string
 		summarizeBy: none
 		sourceColumn: dimension_value
-		lineageTag: 76aaff79-09cc-4ab3-aad6-476db8c7118d
+		lineageTag: 4447ddd4-a2c4-4e67-8a48-236c696c78f7
 
 	column 'parent_value'
 		dataType: string
 		summarizeBy: none
 		sourceColumn: parent_value
-		lineageTag: 0948c43b-3e85-4943-93c1-3155807befb3
+		lineageTag: c4bef6a3-d378-491c-95bd-8658d7213df0
 
 	column 'dimension_order'
 		dataType: int64
@@ -40,18 +40,18 @@ table 'dim_member'
 		isHidden
 		summarizeBy: none
 		sourceColumn: dimension_order
-		lineageTag: e74407b2-2f82-4a28-b54f-54f102cef477
+		lineageTag: 6a18fad1-e15e-4269-b1f7-04a9fb2c7d53
 
 	hierarchy 'Phân tích'
-		lineageTag: f5a1f9da-a526-4952-9060-58232fda59ad
+		lineageTag: f09a582f-53dc-41a1-9b84-e21907be9bd3
 
 		level 'dimension_label'
 			column: 'dimension_label'
-			lineageTag: d90f41b8-71b5-4b98-96b6-23f490d1acb9
+			lineageTag: d7874faf-bfbf-467e-9b15-debde7843d94
 
 		level 'dimension_value'
 			column: 'dimension_value'
-			lineageTag: e042be00-5852-4875-b0ce-13f293398451
+			lineageTag: 28604f3a-45ae-4625-ab51-2f65a801b86f
 
 	partition 'dim_member' = m
 		mode: import

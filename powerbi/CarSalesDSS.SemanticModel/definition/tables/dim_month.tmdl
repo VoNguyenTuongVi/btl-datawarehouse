@@ -1,5 +1,5 @@
 table 'dim_month'
-	lineageTag: 0f3ac5c2-8658-4a6d-adda-9631b6828ee2
+	lineageTag: 25e56525-877a-45a6-8bcd-3be85716cfd1
 
 	column 'month_start'
 		dataType: dateTime
@@ -7,7 +7,7 @@ table 'dim_month'
 		summarizeBy: none
 		isKey
 		sourceColumn: month_start
-		lineageTag: bc757fe2-eb5f-4a8e-912f-d57b1a6ab0ef
+		lineageTag: f5f810e3-9df5-40ea-be1a-f4ad0dfbf8bc
 
 	column 'year'
 		dataType: int64
@@ -15,74 +15,81 @@ table 'dim_month'
 		isHidden
 		summarizeBy: none
 		sourceColumn: year
-		lineageTag: 3717c963-407f-493e-94e6-5e88c9470c89
+		lineageTag: 301e7c94-9242-4128-87af-e5e3445e389c
 
 	column 'quarter_no'
 		dataType: int64
 		formatString: 0
 		summarizeBy: none
 		sourceColumn: quarter_no
-		lineageTag: a1e8d649-d888-4698-ada8-99cbbadeb750
+		lineageTag: 4443685e-4020-49d9-9776-fdec201e7989
 
 	column 'quarter'
 		dataType: string
 		summarizeBy: none
 		sourceColumn: quarter
-		lineageTag: b8397aef-eb20-4996-ba11-83ca34b3970e
+		lineageTag: 0e4e29d6-6f6a-4879-90a8-ed53d8538b23
 
 	column 'year_quarter'
 		dataType: string
 		summarizeBy: none
 		sourceColumn: year_quarter
-		lineageTag: 8b5a0012-00b2-46b0-8610-723338f65465
+		lineageTag: ac107319-80e0-4ffd-956a-b084d4566f0e
 
 	column 'month_no'
 		dataType: int64
 		formatString: 0
 		summarizeBy: none
 		sourceColumn: month_no
-		lineageTag: ab7ba65a-d2a4-4179-88d3-33d108fefbe9
+		lineageTag: eb5becea-bd53-419d-b9f8-8ffeb02efa31
 
 	column 'month_name'
 		dataType: string
 		summarizeBy: none
 		sortByColumn: 'month_no'
 		sourceColumn: month_name
-		lineageTag: cbdf9f24-d82a-4b4e-b70b-74ea46927e01
+		lineageTag: 54712bda-db74-4fe0-a68b-36ab1cec6a4d
 
 	column 'year_month'
 		dataType: int64
 		formatString: 0
 		summarizeBy: none
 		sourceColumn: year_month
-		lineageTag: 5ece8644-51f2-430c-af8c-06ce225f4429
+		lineageTag: 74d94d8c-3a19-4c0c-b7af-6f0ea51360e8
 
 	column 'year_month_label'
 		dataType: string
 		summarizeBy: none
 		sourceColumn: year_month_label
-		lineageTag: 8b40fe31-2cbd-46b2-aa5d-06a983166eab
+		lineageTag: 84cd9316-6ccc-4c83-b0bb-27e0e87ea635
 
 	column 'period_type'
 		dataType: string
 		summarizeBy: none
 		sourceColumn: period_type
-		lineageTag: efcbac7a-170d-45e8-b3ca-82635cbcdd93
+		lineageTag: 467c1f6a-161c-4eb6-a739-c1aa320bc7df
+
+	column 'has_forecast_data'
+		dataType: int64
+		formatString: 0
+		summarizeBy: none
+		sourceColumn: has_forecast_data
+		lineageTag: c7233918-c6b3-46be-bb45-19d5a146df51
 
 	hierarchy 'Thời gian'
-		lineageTag: b381016e-5062-4428-bf02-531b45e42cf7
+		lineageTag: 1561988c-4420-483e-9fbf-e824a32fb7af
 
 		level 'year'
 			column: 'year'
-			lineageTag: 99c377e4-f0a0-4af8-9119-d114e37a4dca
+			lineageTag: cfc78a24-b6df-41ac-8661-212a755c56b8
 
 		level 'year_quarter'
 			column: 'year_quarter'
-			lineageTag: 240d6665-3f15-4593-a7b8-7d12276eeab8
+			lineageTag: 2b374171-5cc7-45ca-b295-04f6489115ae
 
 		level 'year_month_label'
 			column: 'year_month_label'
-			lineageTag: 87f3b256-6cc5-475a-8928-f61ee06e3c7c
+			lineageTag: 06a523f9-00c8-4407-b5bb-d4d0196c70bc
 
 	partition 'dim_month' = m
 		mode: import
@@ -90,7 +97,7 @@ table 'dim_month'
 				let
 				    Source = PostgreSQL.Database(PgServer, PgDatabase),
 				    Data = Source{[Schema = PgSchema, Item = "dim_month"]}[Data],
-				    Selected = Table.SelectColumns(Data, {"month_start", "year", "quarter_no", "quarter", "year_quarter", "month_no", "month_name", "year_month", "year_month_label", "period_type"}),
-				    Typed = Table.TransformColumnTypes(Selected, {{"month_start", type date}, {"year", Int64.Type}, {"quarter_no", Int64.Type}, {"quarter", type text}, {"year_quarter", type text}, {"month_no", Int64.Type}, {"month_name", type text}, {"year_month", Int64.Type}, {"year_month_label", type text}, {"period_type", type text}})
+				    Selected = Table.SelectColumns(Data, {"month_start", "year", "quarter_no", "quarter", "year_quarter", "month_no", "month_name", "year_month", "year_month_label", "period_type", "has_forecast_data"}),
+				    Typed = Table.TransformColumnTypes(Selected, {{"month_start", type date}, {"year", Int64.Type}, {"quarter_no", Int64.Type}, {"quarter", type text}, {"year_quarter", type text}, {"month_no", Int64.Type}, {"month_name", type text}, {"year_month", Int64.Type}, {"year_month_label", type text}, {"period_type", type text}, {"has_forecast_data", Int64.Type}})
 				in
 				    Typed

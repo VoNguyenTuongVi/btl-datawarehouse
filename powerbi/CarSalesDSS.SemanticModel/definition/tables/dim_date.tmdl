@@ -1,5 +1,5 @@
 table 'dim_date'
-	lineageTag: a88e55e3-18c4-46f3-9c89-9c684fa64be0
+	lineageTag: 4ed3e11a-7ecf-4d2f-9517-775ed2b1ac29
 
 	column 'date_id'
 		dataType: int64
@@ -7,48 +7,48 @@ table 'dim_date'
 		summarizeBy: none
 		isKey
 		sourceColumn: date_id
-		lineageTag: 85b7987a-d5ca-49ea-bf64-ed6513c4c3d7
+		lineageTag: b913f3cf-cddc-4a94-a4b2-ed0ce09054b6
 
 	column 'full_date'
 		dataType: dateTime
 		formatString: yyyy-mm-dd
 		summarizeBy: none
 		sourceColumn: full_date
-		lineageTag: 0b774a8f-21c7-4738-96e3-b3ca86e0365f
+		lineageTag: 93cddde8-3912-455c-ba69-6506bf166fdb
 
 	column 'day'
 		dataType: int64
 		formatString: 0
 		summarizeBy: none
 		sourceColumn: day
-		lineageTag: c34140ed-6204-4777-8c7b-f9256bf1a171
+		lineageTag: 60a32212-1805-45dc-8a3b-7364932b0981
 
 	column 'month'
 		dataType: int64
 		formatString: 0
 		summarizeBy: none
 		sourceColumn: month
-		lineageTag: 5d43daeb-7c38-459d-a7e6-1be03ce4a0e3
+		lineageTag: 6ce3e877-57c8-411a-a90e-a8c1613df6ea
 
 	column 'quarter'
 		dataType: int64
 		formatString: 0
 		summarizeBy: none
 		sourceColumn: quarter
-		lineageTag: d8456b6f-2694-4e6c-82d9-fe3cf371a7ee
+		lineageTag: edcc1740-2baa-494a-831d-6e7940e22693
 
 	column 'year'
 		dataType: int64
 		formatString: 0
 		summarizeBy: none
 		sourceColumn: year
-		lineageTag: 71952f0b-adfd-4190-be77-783e84547f34
+		lineageTag: 17551b3e-27ac-4430-97d7-16712c51f08e
 
 	column 'day_of_week'
 		dataType: string
 		summarizeBy: none
 		sourceColumn: day_of_week
-		lineageTag: cf23b3f1-b96f-4c8e-8fe3-91310a0565cc
+		lineageTag: b54e3ca2-4987-4b16-9307-e42b71d2bd53
 
 	column 'month_start'
 		dataType: dateTime
@@ -56,26 +56,26 @@ table 'dim_date'
 		isHidden
 		summarizeBy: none
 		sourceColumn: month_start
-		lineageTag: 2087d48d-1d94-4edd-bdc2-d2009e1db6ad
+		lineageTag: 8b51b5d4-0dfe-43e7-acef-8e3b1b574f05
 
 	hierarchy 'Date'
-		lineageTag: d6877e53-8684-4a41-af82-b2af8f7212ca
+		lineageTag: d9711c97-4f73-491a-966d-0f2e48cc14ec
 
 		level 'year'
 			column: 'year'
-			lineageTag: 48ce59bd-4ac0-4e66-8783-8d00914f58b3
+			lineageTag: 10c2c0c8-a0e0-4cb4-b3e2-c6797b688f6c
 
 		level 'quarter'
 			column: 'quarter'
-			lineageTag: e4f7510d-c9c2-4dc2-b107-7a689bf94d87
+			lineageTag: 9e96d3a8-d5f4-4780-b6c3-4ef97bd67ec0
 
 		level 'month'
 			column: 'month'
-			lineageTag: d46d16ca-4f6f-4eef-ae4c-0668f2d64c3e
+			lineageTag: dab22add-5e7f-4367-ad20-86ce45b06f64
 
 		level 'full_date'
 			column: 'full_date'
-			lineageTag: fdc0b736-cbc9-435a-b09e-3e12ad9604de
+			lineageTag: 89695c18-b2de-4342-a87d-abd4375da617
 
 	partition 'dim_date' = m
 		mode: import

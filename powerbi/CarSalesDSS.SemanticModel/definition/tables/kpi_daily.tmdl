@@ -1,12 +1,12 @@
 table 'kpi_daily'
-	lineageTag: 7be20d7b-98ef-4929-8aa8-b88a4f3981c1
+	lineageTag: 4ab06f73-39d9-4f04-b96f-b1897b4e0a01
 
 	column 'full_date'
 		dataType: dateTime
 		formatString: yyyy-mm-dd
 		summarizeBy: none
 		sourceColumn: full_date
-		lineageTag: b345923c-1563-4a09-9554-cbec010ad621
+		lineageTag: 94db6b93-3462-4d01-a8ca-c75b72dbcc58
 
 	column 'month_start'
 		dataType: dateTime
@@ -14,7 +14,7 @@ table 'kpi_daily'
 		isHidden
 		summarizeBy: none
 		sourceColumn: month_start
-		lineageTag: 587f3770-3610-4e47-a2b3-befa1c4171e0
+		lineageTag: 288a2e74-7629-406f-b51e-42bcd4d8c677
 
 	column 'year'
 		dataType: int64
@@ -22,42 +22,42 @@ table 'kpi_daily'
 		isHidden
 		summarizeBy: none
 		sourceColumn: year
-		lineageTag: 13b89a44-019f-4261-a46a-a2bc1e464a62
+		lineageTag: b5eb564b-11d8-45a6-a31b-f1fd614c58d5
 
 	column 'dow_no'
 		dataType: int64
 		formatString: 0
 		summarizeBy: none
 		sourceColumn: dow_no
-		lineageTag: b0ffa10b-71df-4e94-a2fd-fa650de8301f
+		lineageTag: 9ea25ea9-cace-4f81-9436-785b6e8639ca
 
 	column 'day_of_week'
 		dataType: string
 		summarizeBy: none
 		sortByColumn: 'dow_no'
 		sourceColumn: day_of_week
-		lineageTag: bf11b7d8-75c5-4d40-b1a8-4725c536f1ef
+		lineageTag: 3b374ccc-72a0-4d5c-b57c-a4e5d7c76f09
 
 	column 'units'
 		dataType: double
 		formatString: #,0
 		summarizeBy: sum
 		sourceColumn: units
-		lineageTag: 39f47da6-aaa3-4426-995b-1084c37d2b2e
+		lineageTag: f78d7f61-333d-4616-9721-a739237ed650
 
 	column 'revenue'
 		dataType: double
 		formatString: $#,0
 		summarizeBy: sum
 		sourceColumn: revenue
-		lineageTag: 766825bb-b10f-46cd-9389-143abf7f5340
+		lineageTag: 1a9af891-b263-4b33-aee2-d2a0ef6c24f0
 
 	column 'asp'
 		dataType: double
 		formatString: $#,0
 		summarizeBy: none
 		sourceColumn: asp
-		lineageTag: 2722fa9e-caea-4828-9788-a8e83ea32127
+		lineageTag: 8a84b018-3d9b-4add-8cd1-7c55a6058e7b
 
 	partition 'kpi_daily' = m
 		mode: import

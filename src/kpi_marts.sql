@@ -94,7 +94,13 @@ SELECT gs::date                                         AS month_start,
        to_char(gs, 'Mon')                               AS month_name,
        (EXTRACT(YEAR FROM gs) * 100 + EXTRACT(MONTH FROM gs))::int AS year_month,
        to_char(gs, 'YYYY-MM')                           AS year_month_label,
-       CASE WHEN gs > b.last_actual THEN 'Dự báo' ELSE 'Thực tế' END AS period_type
+       CASE WHEN gs > b.last_actual THEN 'Dự báo' ELSE 'Thực tế' END AS period_type,
+       -- Slicer DSS chỉ hiện các tháng thực sự có forecast cấp hãng.
+       CASE WHEN EXISTS (
+           SELECT 1 FROM fact_demand_forecast f
+           WHERE f.month_start = gs::date
+             AND f.level = 'company' AND f.is_backtest = FALSE
+       ) THEN 1 ELSE 0 END::int AS has_forecast_data
 FROM bounds b,
      generate_series(b.first_month, b.last_month, INTERVAL '1 month') AS gs;
 ALTER TABLE mart.dim_month ADD PRIMARY KEY (month_start);

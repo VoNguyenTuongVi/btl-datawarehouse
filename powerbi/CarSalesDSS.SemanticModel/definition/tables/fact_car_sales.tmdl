@@ -1,11 +1,11 @@
 table 'fact_car_sales'
-	lineageTag: 7fb65e55-04fe-4e57-905f-2005bce90191
+	lineageTag: 057b033b-72ab-4e12-ab53-4e1d1b2d1731
 
 	column 'car_id'
 		dataType: string
 		summarizeBy: none
 		sourceColumn: car_id
-		lineageTag: 42c3616f-a282-4f9d-aa4a-5d4aef1d9eee
+		lineageTag: 094634aa-cd7e-4a83-ab20-25f23232a369
 
 	column 'date_id'
 		dataType: int64
@@ -13,7 +13,7 @@ table 'fact_car_sales'
 		isHidden
 		summarizeBy: none
 		sourceColumn: date_id
-		lineageTag: 9f2ff897-8cfc-4633-850a-ed054c8788cc
+		lineageTag: 63ec8c85-1379-47ea-842b-ec8b369e1ac7
 
 	column 'car_key'
 		dataType: int64
@@ -21,7 +21,7 @@ table 'fact_car_sales'
 		isHidden
 		summarizeBy: none
 		sourceColumn: car_key
-		lineageTag: 039921a3-9c43-4e57-9f62-d6a2bf4a7ebb
+		lineageTag: cd45d59f-9614-415c-be7c-d6526cf47659
 
 	column 'dealer_id'
 		dataType: int64
@@ -29,7 +29,7 @@ table 'fact_car_sales'
 		isHidden
 		summarizeBy: none
 		sourceColumn: dealer_id
-		lineageTag: 698c0875-9338-4a7f-b06d-f1052ff901c4
+		lineageTag: f8e75bc7-66ff-45f2-b7a6-4d0b024851ad
 
 	column 'customer_id'
 		dataType: int64
@@ -37,21 +37,21 @@ table 'fact_car_sales'
 		isHidden
 		summarizeBy: none
 		sourceColumn: customer_id
-		lineageTag: d7ab7bfa-beae-4e95-99cd-4b628dbc1cf1
+		lineageTag: e793cdf3-b0d6-4cb3-9e49-f336e32dc6fa
 
 	column 'price'
 		dataType: int64
 		formatString: 0
 		summarizeBy: sum
 		sourceColumn: price
-		lineageTag: df9b6866-62f0-4ca3-83dd-f4ec761cc262
+		lineageTag: 29b65088-a97e-490a-9ae6-b63a61653eb7
 
 	column 'quantity'
 		dataType: int64
 		formatString: 0
 		summarizeBy: sum
 		sourceColumn: quantity
-		lineageTag: 9869ba82-5033-429c-8960-691d47c15b7e
+		lineageTag: 3cbb7f3a-6719-4a71-b1de-e2826d022c83
 
 	partition 'fact_car_sales' = m
 		mode: import

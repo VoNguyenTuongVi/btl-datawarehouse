@@ -2,11 +2,11 @@ import { CartesianGrid, Legend, Line, LineChart, ResponsiveContainer, Tooltip, X
 import { num } from '../format.js';
 
 export default function TrendChart({ monthly }) {
+  const years = [...new Set(monthly.map((r) => Number(r.month.slice(0, 4))))].sort((a, b) => a - b);
+  const colors = ['#7c3aed', '#0891b2', '#d97706', '#db2777'];
   const data = Array.from({ length: 12 }, (_, i) => {
     const m = String(i + 1).padStart(2, '0');
-    const a = monthly.find((r) => r.month === `2022-${m}`);
-    const b = monthly.find((r) => r.month === `2023-${m}`);
-    return { name: `T${i + 1}`, y2022: a?.units, y2023: b?.units };
+    return { name: `T${i + 1}`, ...Object.fromEntries(years.map((year) => [`y${year}`, monthly.find((r) => r.month === `${year}-${m}`)?.units])) };
   });
   return (
     <ResponsiveContainer width="100%" height={280}>
@@ -16,8 +16,7 @@ export default function TrendChart({ monthly }) {
         <YAxis tickFormatter={num} width={56} />
         <Tooltip formatter={(v, n) => [`${num(v)} xe`, n]} />
         <Legend />
-        <Line type="linear" dataKey="y2022" name="2022" stroke="var(--muted)" strokeWidth={2} dot={false} />
-        <Line type="linear" dataKey="y2023" name="2023" stroke="var(--accent)" strokeWidth={2.5} dot={{ r: 3 }} />
+        {years.map((year, index) => <Line key={year} type="linear" dataKey={`y${year}`} name={String(year)} stroke={index === years.length - 1 ? 'var(--accent)' : colors[index % colors.length]} strokeWidth={2} dot={false} />)}
       </LineChart>
     </ResponsiveContainer>
   );

@@ -1,0 +1,238 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
+  "name": "TC_S6_values",
+  "position": {
+    "x": 25,
+    "y": 175,
+    "z": 1000,
+    "height": 285,
+    "width": 1225,
+    "tabOrder": 1000
+  },
+  "visual": {
+    "visualType": "tableEx",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "fact_demand_forecast"
+                    }
+                  },
+                  "Property": "member"
+                }
+              },
+              "queryRef": "fact_demand_forecast.member",
+              "nativeQueryRef": "member"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_Measures"
+                    }
+                  },
+                  "Property": "DSS S6 Forecast Units"
+                }
+              },
+              "queryRef": "_Measures.DSS S6 Forecast Units",
+              "nativeQueryRef": "DSS S6 Forecast Units"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_Measures"
+                    }
+                  },
+                  "Property": "TC S6 05 Expected Forecast"
+                }
+              },
+              "queryRef": "_Measures.TC S6 05 Expected Forecast",
+              "nativeQueryRef": "TC S6 05 Expected Forecast"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_Measures"
+                    }
+                  },
+                  "Property": "DSS Order Baseline"
+                }
+              },
+              "queryRef": "_Measures.DSS Order Baseline",
+              "nativeQueryRef": "DSS Order Baseline"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_Measures"
+                    }
+                  },
+                  "Property": "DSS Order Scenario"
+                }
+              },
+              "queryRef": "_Measures.DSS Order Scenario",
+              "nativeQueryRef": "DSS Order Scenario"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_Measures"
+                    }
+                  },
+                  "Property": "DSS Order Delta"
+                }
+              },
+              "queryRef": "_Measures.DSS Order Delta",
+              "nativeQueryRef": "DSS Order Delta"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_Measures"
+                    }
+                  },
+                  "Property": "DSS Revenue Baseline"
+                }
+              },
+              "queryRef": "_Measures.DSS Revenue Baseline",
+              "nativeQueryRef": "DSS Revenue Baseline"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_Measures"
+                    }
+                  },
+                  "Property": "DSS Revenue Scenario"
+                }
+              },
+              "queryRef": "_Measures.DSS Revenue Scenario",
+              "nativeQueryRef": "DSS Revenue Scenario"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_Measures"
+                    }
+                  },
+                  "Property": "DSS Revenue Delta"
+                }
+              },
+              "queryRef": "_Measures.DSS Revenue Delta",
+              "nativeQueryRef": "DSS Revenue Delta"
+            }
+          ]
+        }
+      }
+    },
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Baseline / Scenario và forecast đối soát theo tháng, model'"
+                }
+              }
+            },
+            "fontSize": {
+              "expr": {
+                "Literal": {
+                  "Value": "11D"
+                }
+              }
+            },
+            "bold": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  },
+  "filterConfig": {
+    "filters": [
+      {
+        "name": "TC_S6_values_company_only",
+        "type": "Advanced",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "fact_demand_forecast"
+              }
+            },
+            "Property": "level"
+          }
+        },
+        "filter": {
+          "Version": 2,
+          "From": [
+            {
+              "Name": "f",
+              "Entity": "fact_demand_forecast",
+              "Type": 0
+            }
+          ],
+          "Where": [
+            {
+              "Condition": {
+                "Comparison": {
+                  "ComparisonKind": 0,
+                  "Left": {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Source": "f"
+                        }
+                      },
+                      "Property": "level"
+                    }
+                  },
+                  "Right": {
+                    "Literal": {
+                      "Value": "'company'"
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

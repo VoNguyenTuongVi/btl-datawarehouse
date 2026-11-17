@@ -35,7 +35,7 @@ export default function ForecastChart({ forecast, model = 'sarima', from, to, he
         <Legend />
         <Area type="linear" legendType="none" dataKey="band" name="Khoảng 80%" stroke="none" fill="var(--accent)" fillOpacity={0.18} isAnimationActive={false} connectNulls />
         <Line type="linear" dataKey="actual" name="Thực tế" stroke="var(--muted)" strokeWidth={2} dot={false} connectNulls />
-        <Line type="linear" dataKey="fc" name={MODELS[model]} stroke="var(--accent)" strokeWidth={2} strokeDasharray="6 4" dot={{ r: 3, fill: 'var(--accent)', stroke: 'none' }} activeDot={{ r: 5 }} isAnimationActive={false} connectNulls />
+        <Line type="linear" dataKey="fc" name={MODELS[model] || model} stroke="var(--accent)" strokeWidth={2} strokeDasharray="6 4" dot={{ r: 3, fill: 'var(--accent)', stroke: 'none' }} activeDot={{ r: 5 }} isAnimationActive={false} connectNulls />
       </ComposedChart>
     </ResponsiveContainer>
   );
