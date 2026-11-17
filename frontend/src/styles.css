@@ -42,8 +42,14 @@ code { background: var(--hover); padding: 1px 5px; border-radius: 4px; }
 .recharts-text { fill: var(--fg-muted); }
 .recharts-tooltip-wrapper .recharts-default-tooltip { background: var(--panel) !important; border-color: var(--line) !important; color: var(--fg); }
 
-.tabs { display: flex; gap: 4px; border-bottom: 1px solid var(--line); }
+.tabs { display: flex; flex-wrap: wrap; gap: 4px; border-bottom: 1px solid var(--line); }
 .tabs button { background: none; border: 0; border-bottom: 2px solid transparent; padding: 8px 16px; font: inherit; color: var(--fg-muted); cursor: pointer; }
 .tabs button.on { color: var(--accent); border-bottom-color: var(--accent); font-weight: 600; }
 .model-section { display: flex; flex-direction: column; gap: 12px; }
 .section-title { margin: 8px 0 0; font-size: 18px; font-weight: 600; }
+.data-status { display: flex; align-items: center; flex-wrap: wrap; gap: 12px; padding: 12px 16px; background: var(--panel); border: 1px solid var(--line); border-radius: 8px; }
+.data-status > div { margin-right: auto; }
+.data-status label { display: flex; align-items: center; gap: 6px; font-size: 12px; }
+.data-status button { padding: 8px 12px; border: 1px solid var(--line); border-radius: 6px; background: var(--bg); color: var(--fg); cursor: pointer; }
+.data-status button:disabled { opacity: .6; cursor: wait; }
+.refresh-error { margin: 0; padding: 12px; border: 1px solid var(--bad); border-radius: 6px; color: var(--bad); }

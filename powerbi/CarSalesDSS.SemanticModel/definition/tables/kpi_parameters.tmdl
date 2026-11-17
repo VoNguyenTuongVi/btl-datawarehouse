@@ -1,32 +1,32 @@
 table 'kpi_parameters'
-	lineageTag: 9a7ddf78-0606-48d9-ba18-2c839381c3db
+	lineageTag: 973024ff-b6b3-4305-8921-7f83e48badbf
 
 	column 'main_model'
 		dataType: string
 		summarizeBy: none
 		sourceColumn: main_model
-		lineageTag: f1f6170d-75bb-4207-8b84-014b31fdeacd
+		lineageTag: c6d55ced-9e4e-4254-be3e-db8f43eda576
 
 	column 'target_growth'
 		dataType: double
 		formatString: 0.0%
 		summarizeBy: none
 		sourceColumn: target_growth
-		lineageTag: 43493986-90f7-4d20-86bd-b29a0e06a787
+		lineageTag: f8cc79c6-8d7a-4585-8a08-6901a2216933
 
 	column 'wape_threshold'
 		dataType: double
 		formatString: 0.0%
 		summarizeBy: none
 		sourceColumn: wape_threshold
-		lineageTag: b5e3a2c2-b02c-458d-be84-aa95663492da
+		lineageTag: 729769b4-d919-4a5e-a60c-d3379a055de5
 
 	column 'bias_threshold'
 		dataType: double
 		formatString: 0.0%
 		summarizeBy: none
 		sourceColumn: bias_threshold
-		lineageTag: aef57479-7913-4e52-96e8-9ab044e800db
+		lineageTag: fb220f43-6d2e-4d8e-8d29-1937868aa1a5
 
 	partition 'kpi_parameters' = m
 		mode: import

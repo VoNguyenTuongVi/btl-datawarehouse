@@ -28,7 +28,8 @@ SRC = ROOT / "src"
 PBI_DIR = ROOT / "powerbi"
 PBI_NAME = "CarSalesDSS"
 
-STEPS = ["schema", "etl", "test", "forecast", "marts", "powerbi"]
+STEPS = ["schema", "etl", "test", "forecast", "marts", "frontend", "powerbi"]
+DEFAULT_STEPS = [s for s in STEPS if s != "frontend"]
 
 
 sys.path.insert(0, str(SRC))
@@ -118,6 +119,10 @@ def step_powerbi(args) -> None:
          "-LaunchedAfter", str(int(launched_at)), "-TimeoutSec", str(args.refresh_timeout)])
 
 
+def step_frontend() -> None:
+    run([sys.executable, str(SRC / "export_frontend_data.py")])
+
+
 def _close_powerbi_if_open(pbip: Path) -> None:
     """Power BI Desktop không tự nhận file đổi từ bên ngoài, nên phải mở lại."""
     out = subprocess.run(["tasklist", "/FI", "IMAGENAME eq PBIDesktop.exe"],
@@ -146,10 +151,10 @@ def main() -> None:
     ap.add_argument("--refresh-timeout", type=int, default=180)
     args = ap.parse_args()
 
-    steps = [s for s in (args.only or STEPS) if s not in args.skip]
+    steps = [s for s in (args.only or DEFAULT_STEPS) if s not in args.skip]
     actions = {
         "schema": step_schema, "etl": step_etl, "test": step_test,
-        "forecast": step_forecast, "marts": lambda: step_marts(args),
+        "forecast": step_forecast, "marts": lambda: step_marts(args), "frontend": step_frontend,
         "powerbi": lambda: step_powerbi(args),
     }
     t0 = time.time()

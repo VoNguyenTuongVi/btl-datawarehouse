@@ -1,17 +1,17 @@
 table 'dealer_kpi'
-	lineageTag: f6f28369-eedb-4f00-94c5-251014d438c6
+	lineageTag: 3116c6c0-14b0-49c4-9886-265797ddcbf7
 
 	column 'dealer_region'
 		dataType: string
 		summarizeBy: none
 		sourceColumn: dealer_region
-		lineageTag: 09ff5183-a8f9-4586-aeed-7d4475fbe5c5
+		lineageTag: 40a3086a-c150-460a-9e32-ea7fdf8f4704
 
 	column 'dealer_name'
 		dataType: string
 		summarizeBy: none
 		sourceColumn: dealer_name
-		lineageTag: aa3ecf90-2705-4736-be82-762d1d40da07
+		lineageTag: a412c9c0-98fe-4c6d-9c52-b4a774342f3a
 
 	column 'month_start'
 		dataType: dateTime
@@ -19,21 +19,21 @@ table 'dealer_kpi'
 		isHidden
 		summarizeBy: none
 		sourceColumn: month_start
-		lineageTag: d9d0dbfd-0f93-449d-8e86-266cc92d56d3
+		lineageTag: 4ab2bc9b-736e-4ee2-b828-52dfc17c575c
 
 	column 'orders'
 		dataType: int64
 		formatString: 0
 		summarizeBy: sum
 		sourceColumn: orders
-		lineageTag: 7a9df052-cc28-45ba-92a3-fa4afed9fc55
+		lineageTag: cdc71c6b-11a8-4ea2-82eb-34b3f528d4e4
 
 	column 'revenue'
 		dataType: double
 		formatString: $#,0
 		summarizeBy: sum
 		sourceColumn: revenue
-		lineageTag: 27e2a270-6754-41a5-a342-49bbfd02038d
+		lineageTag: 159190f3-8b77-4fd8-9576-8b52a2f010a0
 
 	partition 'dealer_kpi' = m
 		mode: import

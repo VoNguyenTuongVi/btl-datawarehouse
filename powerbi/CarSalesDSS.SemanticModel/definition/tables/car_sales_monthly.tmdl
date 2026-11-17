@@ -1,5 +1,5 @@
 table 'car_sales_monthly'
-	lineageTag: 1df9e4b9-3c16-4740-94af-50b1616d749e
+	lineageTag: 8e26166f-729b-4729-a093-06bdce7d0430
 
 	column 'car_key'
 		dataType: int64
@@ -7,7 +7,7 @@ table 'car_sales_monthly'
 		isHidden
 		summarizeBy: none
 		sourceColumn: car_key
-		lineageTag: d2b083ee-f763-427c-a6bd-37e863ab52db
+		lineageTag: 4760a043-657f-4873-8af5-74dae58052cd
 
 	column 'month_start'
 		dataType: dateTime
@@ -15,14 +15,14 @@ table 'car_sales_monthly'
 		isHidden
 		summarizeBy: none
 		sourceColumn: month_start
-		lineageTag: dee725bf-d074-47ea-9de6-74302930236f
+		lineageTag: 06ce1026-7aed-4842-b105-647c58682c80
 
 	column 'cars_sold'
 		dataType: int64
 		formatString: 0
 		summarizeBy: sum
 		sourceColumn: cars_sold
-		lineageTag: e56153a5-90cc-46b9-903b-7b5cd7dbaf45
+		lineageTag: 5dc36cb7-ab51-4b29-a5ef-41a48ac1b9a8
 
 	partition 'car_sales_monthly' = m
 		mode: import

@@ -1,5 +1,5 @@
 table 'kpi_monthly_overview'
-	lineageTag: 3ca47da7-3c71-4927-b8ac-8fd6e60b2d97
+	lineageTag: 0431e78c-7e29-46bd-81ed-afe8a972c4f9
 
 	column 'month_start'
 		dataType: dateTime
@@ -7,7 +7,7 @@ table 'kpi_monthly_overview'
 		isHidden
 		summarizeBy: none
 		sourceColumn: month_start
-		lineageTag: 9ad5fb7b-383b-4b95-81dc-0602f77f07f9
+		lineageTag: 234c8c6e-28a8-4b13-b50d-81fafce375b4
 
 	column 'year'
 		dataType: int64
@@ -15,243 +15,243 @@ table 'kpi_monthly_overview'
 		isHidden
 		summarizeBy: none
 		sourceColumn: year
-		lineageTag: 3c34fe25-ead5-4ebb-ab0b-8baa3bab2afd
+		lineageTag: d1876211-4f50-40f4-9ea1-3a4fbcf6d5bb
 
 	column 'units'
 		dataType: double
 		formatString: #,0
 		summarizeBy: sum
 		sourceColumn: units
-		lineageTag: fedfbd12-edc5-4d05-ab04-6fdc70831845
+		lineageTag: eb92204f-bee8-4034-9032-169c8de5ddec
 
 	column 'revenue'
 		dataType: double
 		formatString: $#,0
 		summarizeBy: sum
 		sourceColumn: revenue
-		lineageTag: 7b4e47a6-c84d-4cac-8647-4d8ed19af3be
+		lineageTag: 152738c8-865e-483c-a4e1-7d0d93d92d8c
 
 	column 'asp'
 		dataType: double
 		formatString: $#,0
 		summarizeBy: none
 		sourceColumn: asp
-		lineageTag: 4d35bb37-688a-497c-959c-8e2d0fd19db6
+		lineageTag: b292e432-69df-41d3-894d-5b5c357c6dd4
 
 	column 'units_pm'
 		dataType: double
 		formatString: #,0
 		summarizeBy: sum
 		sourceColumn: units_pm
-		lineageTag: d29ad33e-53cd-48dc-a1b3-470381f1e692
+		lineageTag: 710c1de8-baf3-4922-bdee-f04e4ac7c9d5
 
 	column 'revenue_pm'
 		dataType: double
 		formatString: $#,0
 		summarizeBy: sum
 		sourceColumn: revenue_pm
-		lineageTag: d6019acb-03ff-4ea1-8218-863b65b20cf7
+		lineageTag: 6560b60e-d0b4-4256-b6c5-2ef2be818aec
 
 	column 'units_py'
 		dataType: double
 		formatString: #,0
 		summarizeBy: sum
 		sourceColumn: units_py
-		lineageTag: b46c3b7a-5f18-452d-92d7-818d699fdf8d
+		lineageTag: bf91b85c-8930-4b66-a053-d9cd609ae245
 
 	column 'revenue_py'
 		dataType: double
 		formatString: $#,0
 		summarizeBy: sum
 		sourceColumn: revenue_py
-		lineageTag: 0b217bcb-fb8c-4f22-bcf5-414d1af620f0
+		lineageTag: f21cbc6c-0fd4-479c-8e3b-ba53e4c00f9b
 
 	column 'units_mom_pct'
 		dataType: double
 		formatString: 0.0%
 		summarizeBy: none
 		sourceColumn: units_mom_pct
-		lineageTag: 436feab5-68e5-4165-aa77-e1a3c458a159
+		lineageTag: e6731f2f-78f9-4a6d-a6a4-39c1a004e954
 
 	column 'revenue_mom_pct'
 		dataType: double
 		formatString: 0.0%
 		summarizeBy: none
 		sourceColumn: revenue_mom_pct
-		lineageTag: 3e69e07f-3cc9-4e80-a700-29583abbf714
+		lineageTag: 33ac81f5-0fd9-484c-9d61-870825d7d03f
 
 	column 'units_yoy_pct'
 		dataType: double
 		formatString: 0.0%
 		summarizeBy: none
 		sourceColumn: units_yoy_pct
-		lineageTag: 780c35a5-8dfb-47ae-932e-b1260ec674e5
+		lineageTag: fad240a0-4507-4723-98a1-556a18fa690f
 
 	column 'revenue_yoy_pct'
 		dataType: double
 		formatString: 0.0%
 		summarizeBy: none
 		sourceColumn: revenue_yoy_pct
-		lineageTag: ec166577-6798-47ce-ac51-c72ee19babee
+		lineageTag: f4c68892-1875-4aed-8287-de27bfb52036
 
 	column 'units_ytd'
 		dataType: double
 		formatString: #,0
 		summarizeBy: none
 		sourceColumn: units_ytd
-		lineageTag: cafc8cbd-6b13-4a5c-8666-02eb8108b448
+		lineageTag: c47d141b-20d2-4ff2-a722-b5927e602074
 
 	column 'revenue_ytd'
 		dataType: double
 		formatString: $#,0
 		summarizeBy: none
 		sourceColumn: revenue_ytd
-		lineageTag: 6f4e96e2-b3d4-4681-b946-2c1ee0998b9f
+		lineageTag: a90d153a-0441-4a64-b824-8c89266a1b3e
 
 	column 'units_ytd_py'
 		dataType: double
 		formatString: #,0
 		summarizeBy: none
 		sourceColumn: units_ytd_py
-		lineageTag: ff96e97f-0883-4050-99f2-ac267a4001de
+		lineageTag: c97284fe-974a-4a1d-b1c3-fa9b9648fb76
 
 	column 'revenue_ytd_py'
 		dataType: double
 		formatString: $#,0
 		summarizeBy: none
 		sourceColumn: revenue_ytd_py
-		lineageTag: e1a15326-68ae-4f91-b1a9-5cb78a3b525c
+		lineageTag: dfbd0bba-269c-49c4-bb32-bbaf6695ebf8
 
 	column 'units_ytd_yoy_pct'
 		dataType: double
 		formatString: 0.0%
 		summarizeBy: none
 		sourceColumn: units_ytd_yoy_pct
-		lineageTag: 979ab331-db26-45d8-ba2f-9c8024423738
+		lineageTag: 39f607eb-2b3b-414f-bd98-f3a9b0a6fa33
 
 	column 'revenue_ytd_yoy_pct'
 		dataType: double
 		formatString: 0.0%
 		summarizeBy: none
 		sourceColumn: revenue_ytd_yoy_pct
-		lineageTag: a9b47b65-0da2-4bff-8d00-e80dc3b362b9
+		lineageTag: 44a2aacf-96ae-4b7c-88a3-127b7176a5f1
 
 	column 'seasonality_index'
 		dataType: double
 		formatString: 0.000
 		summarizeBy: none
 		sourceColumn: seasonality_index
-		lineageTag: ca512e6a-d8a3-43dc-a3d5-576fc2bf9fab
+		lineageTag: 53f03879-7a14-4131-a76d-e258056474cf
 
 	column 'seasonality_index_2y'
 		dataType: double
 		formatString: 0.000
 		summarizeBy: none
 		sourceColumn: seasonality_index_2y
-		lineageTag: 34e42e93-9fac-4aee-970a-f3bad1814416
+		lineageTag: 768a5451-0128-4487-9ebd-fdc9d0031b03
 
 	column 'target_units'
 		dataType: double
 		formatString: #,0
 		summarizeBy: sum
 		sourceColumn: target_units
-		lineageTag: 904b7a55-8109-457f-be48-bc6334892a7e
+		lineageTag: 4b941064-f3dd-4af2-a0ad-9353347e1b36
 
 	column 'target_revenue'
 		dataType: double
 		formatString: $#,0
 		summarizeBy: sum
 		sourceColumn: target_revenue
-		lineageTag: f1b5ef68-4359-4273-882e-7093068afb70
+		lineageTag: 5ad9bf59-fee5-47d8-a4fa-e768f141b840
 
 	column 'units_vs_target_pct'
 		dataType: double
 		formatString: 0.0%
 		summarizeBy: none
 		sourceColumn: units_vs_target_pct
-		lineageTag: 96309de4-7324-4203-be07-54e5db826697
+		lineageTag: a1df621b-4a37-4071-bc10-db59d923b77d
 
 	column 'revenue_vs_target_pct'
 		dataType: double
 		formatString: 0.0%
 		summarizeBy: none
 		sourceColumn: revenue_vs_target_pct
-		lineageTag: 3daa51b8-57a5-44d5-b070-3b76a69229a0
+		lineageTag: 0cd9beac-8403-4fbb-9573-698ffef12b89
 
 	column 'units_target_status'
 		dataType: string
 		summarizeBy: none
 		sourceColumn: units_target_status
-		lineageTag: 71e7751b-5b28-46d9-a53c-ccd01f51b7b6
+		lineageTag: 3a2070d4-024a-4f21-a0e6-f78299cef4c1
 
 	column 'revenue_target_status'
 		dataType: string
 		summarizeBy: none
 		sourceColumn: revenue_target_status
-		lineageTag: e034e8d7-847e-4d5e-a517-da2c82dbcd13
+		lineageTag: 6959d825-8ae3-445a-8036-6131bcfa51e1
 
 	column 'auto_units'
 		dataType: double
 		formatString: #,0
 		summarizeBy: sum
 		sourceColumn: auto_units
-		lineageTag: d4dab0b0-fadf-4c99-94ea-d0cc1e39ff0e
+		lineageTag: ab17479b-c869-4778-ac37-a3a35b83dccc
 
 	column 'auto_share_pct'
 		dataType: double
 		formatString: 0.0%
 		summarizeBy: none
 		sourceColumn: auto_share_pct
-		lineageTag: 89a6a738-4023-4318-81c9-3564070a3c88
+		lineageTag: 0dbcacd5-fb4b-445d-9b2a-ad88a5c5b7ee
 
 	column 'auto_share_change_pp'
 		dataType: double
 		formatString: +0.0%;-0.0%;0.0%
 		summarizeBy: none
 		sourceColumn: auto_share_change_pp
-		lineageTag: 2a859341-240a-41ed-b059-fe8236344893
+		lineageTag: a8c6b969-4b64-4543-988a-80ae86bd04c5
 
 	column 'active_dealers'
 		dataType: int64
 		formatString: 0
 		summarizeBy: none
 		sourceColumn: active_dealers
-		lineageTag: ccabbe32-6c44-45c9-b8c1-e41fc257207c
+		lineageTag: 495832e3-2e12-40e2-bfba-afa3aa7e077b
 
 	column 'units_per_dealer'
 		dataType: double
 		formatString: #,0.0
 		summarizeBy: none
 		sourceColumn: units_per_dealer
-		lineageTag: ba0286b7-dd93-4fbb-bda7-114a5d0ef774
+		lineageTag: 033092d7-d851-4146-98da-b21e58f742bc
 
 	column 'selling_days'
 		dataType: int64
 		formatString: 0
 		summarizeBy: sum
 		sourceColumn: selling_days
-		lineageTag: f16a9450-ff10-4d55-9846-70cf9cdb5b95
+		lineageTag: 4dfc28c1-a19c-479c-9090-e8e1d3d2e060
 
 	column 'dealers_growing'
 		dataType: int64
 		formatString: 0
 		summarizeBy: sum
 		sourceColumn: dealers_growing
-		lineageTag: 226d5797-4c1c-4473-808d-1a68623e4517
+		lineageTag: 9287503b-112a-4fc9-983f-426ba2b610ed
 
 	column 'dealers_compared'
 		dataType: int64
 		formatString: 0
 		summarizeBy: sum
 		sourceColumn: dealers_compared
-		lineageTag: e48f5f30-6dc8-461a-a41d-6069acbda6ab
+		lineageTag: c136d8d3-4242-448b-8985-86cb5048fbbe
 
 	column 'dealers_growing_pct'
 		dataType: double
 		formatString: 0.0%
 		summarizeBy: none
 		sourceColumn: dealers_growing_pct
-		lineageTag: 91145ccf-00cb-40b1-81fa-d27e41ae5cb8
+		lineageTag: 36a5004d-754b-4101-b02e-34b975264542
 
 	partition 'kpi_monthly_overview' = m
 		mode: import

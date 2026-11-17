@@ -1,5 +1,5 @@
 table 'kpi_quarterly'
-	lineageTag: cc456e59-0639-4336-886e-05be2975f499
+	lineageTag: 6d9e82a9-a9ae-49fd-818f-30df78ded437
 
 	column 'quarter_start'
 		dataType: dateTime
@@ -7,7 +7,7 @@ table 'kpi_quarterly'
 		isHidden
 		summarizeBy: none
 		sourceColumn: quarter_start
-		lineageTag: 285550b7-edf9-40c2-9b4b-ed163aa8f451
+		lineageTag: 70f7c58e-b239-46e7-9f82-5110dcc857b9
 
 	column 'year'
 		dataType: int64
@@ -15,97 +15,97 @@ table 'kpi_quarterly'
 		isHidden
 		summarizeBy: none
 		sourceColumn: year
-		lineageTag: 52404881-b3d6-4788-a7ad-f522aa6a1601
+		lineageTag: 8e8ea086-82fc-42fc-9dd7-ae9d7f177d1f
 
 	column 'quarter_no'
 		dataType: int64
 		formatString: 0
 		summarizeBy: none
 		sourceColumn: quarter_no
-		lineageTag: 7590a64c-c7e1-4406-ba97-a2e282708072
+		lineageTag: 65ac6f80-f741-4b4a-b9c5-d1e9f120a0a4
 
 	column 'year_quarter'
 		dataType: string
 		summarizeBy: none
 		sourceColumn: year_quarter
-		lineageTag: bf0c831b-136d-45e1-8428-b4f4d7f02f8d
+		lineageTag: eac909de-6630-47bf-ae34-70fa9e159a60
 
 	column 'units'
 		dataType: double
 		formatString: #,0
 		summarizeBy: sum
 		sourceColumn: units
-		lineageTag: b286d56c-2bb0-4b46-83ab-4d5195756249
+		lineageTag: 5a9a84c4-f566-474c-b937-249b385965e0
 
 	column 'revenue'
 		dataType: double
 		formatString: $#,0
 		summarizeBy: sum
 		sourceColumn: revenue
-		lineageTag: 55534d5c-d92d-4470-8091-f07af15571c9
+		lineageTag: 38d07a0b-6c62-45b2-8e39-5db3ca5733f0
 
 	column 'asp'
 		dataType: double
 		formatString: $#,0
 		summarizeBy: none
 		sourceColumn: asp
-		lineageTag: 47da0411-ce7e-49b0-a892-e0d3d3a296e0
+		lineageTag: 1ab39f0b-d61e-45cc-bcf2-dde836e61d31
 
 	column 'units_pq'
 		dataType: double
 		formatString: #,0
 		summarizeBy: sum
 		sourceColumn: units_pq
-		lineageTag: 609462ad-feab-484a-b674-e8cfb137aa93
+		lineageTag: 66bef51f-91ec-4f6d-b9b2-c598fde6d149
 
 	column 'revenue_pq'
 		dataType: double
 		formatString: $#,0
 		summarizeBy: sum
 		sourceColumn: revenue_pq
-		lineageTag: 9c45a882-9c4f-4cb0-92b1-8733730930f9
+		lineageTag: fa7ba07f-3d0c-423f-841d-f7b614257f5f
 
 	column 'units_py'
 		dataType: double
 		formatString: #,0
 		summarizeBy: sum
 		sourceColumn: units_py
-		lineageTag: 7822a452-0ba4-4abc-92ab-5c778ad785c4
+		lineageTag: 18a53240-982c-4c97-a620-77519372cf53
 
 	column 'revenue_py'
 		dataType: double
 		formatString: $#,0
 		summarizeBy: sum
 		sourceColumn: revenue_py
-		lineageTag: 9fd1d7fd-a94f-4f28-8ea3-b2f2aa766e08
+		lineageTag: 2d8ad8bc-4e4c-456b-92f8-02befb240e30
 
 	column 'units_qoq_pct'
 		dataType: double
 		formatString: 0.0%
 		summarizeBy: none
 		sourceColumn: units_qoq_pct
-		lineageTag: 967a4d62-0d39-4ab5-a60c-059bbd85b7e3
+		lineageTag: b73ad512-8a12-4d44-98c2-c589bb8a4b71
 
 	column 'revenue_qoq_pct'
 		dataType: double
 		formatString: 0.0%
 		summarizeBy: none
 		sourceColumn: revenue_qoq_pct
-		lineageTag: 923c48f4-c092-42b6-81aa-3737d1f59a6a
+		lineageTag: e5c7be4c-759b-48fe-b1be-5e0234508d46
 
 	column 'units_yoy_pct'
 		dataType: double
 		formatString: 0.0%
 		summarizeBy: none
 		sourceColumn: units_yoy_pct
-		lineageTag: 5b21d399-0e2a-43ad-9c8b-66fd0968536a
+		lineageTag: 3f832ec7-f4b3-41ba-8b78-922c16982ea2
 
 	column 'revenue_yoy_pct'
 		dataType: double
 		formatString: 0.0%
 		summarizeBy: none
 		sourceColumn: revenue_yoy_pct
-		lineageTag: 4b03d7bf-0a0e-490b-b134-a46ef562f95b
+		lineageTag: 170f65d0-da00-46bc-adb2-5cebb9995a6f
 
 	partition 'kpi_quarterly' = m
 		mode: import

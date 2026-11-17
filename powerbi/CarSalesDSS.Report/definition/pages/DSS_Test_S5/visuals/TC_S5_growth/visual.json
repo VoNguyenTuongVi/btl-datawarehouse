@@ -1,0 +1,144 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
+  "name": "TC_S5_growth",
+  "position": {
+    "x": 25,
+    "y": 315,
+    "z": 1000,
+    "height": 380,
+    "width": 600,
+    "tabOrder": 1000
+  },
+  "visual": {
+    "visualType": "tableEx",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "dim_car"
+                    }
+                  },
+                  "Property": "company"
+                }
+              },
+              "queryRef": "dim_car.company",
+              "nativeQueryRef": "company"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_Measures"
+                    }
+                  },
+                  "Property": "DSS Forecast Units Company"
+                }
+              },
+              "queryRef": "_Measures.DSS Forecast Units Company",
+              "nativeQueryRef": "DSS Forecast Units Company"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_Measures"
+                    }
+                  },
+                  "Property": "Priority Growth Raw"
+                }
+              },
+              "queryRef": "_Measures.Priority Growth Raw",
+              "nativeQueryRef": "Priority Growth Raw"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_Measures"
+                    }
+                  },
+                  "Property": "TC S5 01 PY Units"
+                }
+              },
+              "queryRef": "_Measures.TC S5 01 PY Units",
+              "nativeQueryRef": "TC S5 01 PY Units"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_Measures"
+                    }
+                  },
+                  "Property": "TC S5 01 Expected Growth"
+                }
+              },
+              "queryRef": "_Measures.TC S5 01 Expected Growth",
+              "nativeQueryRef": "TC S5 01 Expected Growth"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_Measures"
+                    }
+                  },
+                  "Property": "TC S5 01 Status"
+                }
+              },
+              "queryRef": "_Measures.TC S5 01 Status",
+              "nativeQueryRef": "TC S5 01 Status"
+            }
+          ]
+        }
+      }
+    },
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'TC-S5-01 | Growth so với cùng tháng năm trước'"
+                }
+              }
+            },
+            "fontSize": {
+              "expr": {
+                "Literal": {
+                  "Value": "11D"
+                }
+              }
+            },
+            "bold": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  }
+}

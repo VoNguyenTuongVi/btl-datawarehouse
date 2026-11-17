@@ -1,5 +1,5 @@
 table 'dim_car'
-	lineageTag: eda74829-b00b-48fc-bf69-9da3474627d1
+	lineageTag: 69d84d61-0d7c-4636-b7d3-58d1bb084a30
 
 	column 'car_key'
 		dataType: int64
@@ -7,61 +7,61 @@ table 'dim_car'
 		summarizeBy: none
 		isKey
 		sourceColumn: car_key
-		lineageTag: 1cd2e7b6-7c08-4442-baf6-082baf85fde3
+		lineageTag: 4156de75-1f3d-4d90-b8a9-f080ca0eb49b
 
 	column 'company'
 		dataType: string
 		summarizeBy: none
 		sourceColumn: company
-		lineageTag: 622e40f2-5b43-4c97-9049-c561c73829ca
+		lineageTag: 3975c17a-1093-4070-a696-8f29231e65b9
 
 	column 'model'
 		dataType: string
 		summarizeBy: none
 		sourceColumn: model
-		lineageTag: e59fc7e6-ee9b-4b6e-ac2b-46cb3a957d63
+		lineageTag: fa897467-2ec4-4dd8-80ee-bc4159859d67
 
 	column 'engine'
 		dataType: string
 		summarizeBy: none
 		sourceColumn: engine
-		lineageTag: 3670b6ea-64e7-4a34-a7a4-c7db70d0096c
+		lineageTag: 4f23aeda-4461-4684-b93d-7e55845946cf
 
 	column 'transmission'
 		dataType: string
 		summarizeBy: none
 		sourceColumn: transmission
-		lineageTag: c05513f5-844b-460f-b132-3afd7e350986
+		lineageTag: 9172a791-a523-4534-8f0f-375414a5311c
 
 	column 'color'
 		dataType: string
 		summarizeBy: none
 		sourceColumn: color
-		lineageTag: 230f7faa-ef26-4609-9be9-941e026e89da
+		lineageTag: b9c1afb4-ff7d-4d0d-8e66-613bcb838f67
 
 	column 'body_style'
 		dataType: string
 		summarizeBy: none
 		sourceColumn: body_style
-		lineageTag: 9508b243-f9c9-4757-a283-8291678c15e2
+		lineageTag: b337aca8-4af6-467e-aa92-478f22377701
 
 	column 'cars_sold'
 		dataType: int64
 		formatString: 0
 		summarizeBy: none
 		sourceColumn: cars_sold
-		lineageTag: ac62a08d-975f-4951-87c5-252c2c175fc9
+		lineageTag: 3efea5cd-d52b-41c9-923c-2853e39b91f9
 
 	hierarchy 'Product'
-		lineageTag: 04b1e1f4-8aae-47c4-bf2e-aedcb725c2cc
+		lineageTag: c0b9f9ac-2b02-4f3b-a691-e86dd61a5ce6
 
 		level 'company'
 			column: 'company'
-			lineageTag: c9c6588c-4611-4807-aee7-7a4d82021c7f
+			lineageTag: 103a56ee-e9ae-4fdd-8b60-4cd594b7ad49
 
 		level 'model'
 			column: 'model'
-			lineageTag: 5fe27103-d94c-4526-aa67-e2cdd360abd6
+			lineageTag: db907ae2-c921-4201-8212-7150aec17f34
 
 	partition 'dim_car' = m
 		mode: import

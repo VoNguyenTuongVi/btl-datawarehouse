@@ -1,7 +1,7 @@
 import { num } from '../format.js';
 
-export default function PlanTable({ forecast }) {
-  const rows = forecast.filter((r) => r.model_name === 'sarima' && r.series_type === 'Dự báo');
+export default function PlanTable({ forecast, model }) {
+  const rows = forecast.filter((r) => r.model_name === model && r.series_type === 'Dự báo');
   return (
     <div className="scroll">
       <table>

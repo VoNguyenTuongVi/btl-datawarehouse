@@ -1,11 +1,11 @@
 table 'kpi_annual_summary'
-	lineageTag: 027d3377-7299-4826-8b42-820dda226f09
+	lineageTag: 038c9107-416c-4e14-ab26-615782648ea7
 
 	column 'period'
 		dataType: string
 		summarizeBy: none
 		sourceColumn: period
-		lineageTag: 93cdde57-4e11-4a0e-aad9-327c48834079
+		lineageTag: d35e15d8-c2ae-476a-9f18-2d3d48adaa8a
 
 	column 'year'
 		dataType: int64
@@ -13,179 +13,179 @@ table 'kpi_annual_summary'
 		isHidden
 		summarizeBy: none
 		sourceColumn: year
-		lineageTag: 3af096e2-7a7a-43f3-a459-1d722280de67
+		lineageTag: f1ac6095-4f6e-4de9-87a3-e2acb05da033
 
 	column 'units'
 		dataType: double
 		formatString: #,0
 		summarizeBy: sum
 		sourceColumn: units
-		lineageTag: e12c8094-1b4f-428d-a2e3-8d3a52fe0453
+		lineageTag: be5e888e-a10c-43f4-baab-06f18556f8f1
 
 	column 'revenue'
 		dataType: double
 		formatString: $#,0
 		summarizeBy: sum
 		sourceColumn: revenue
-		lineageTag: dd325039-5fa7-49b8-92aa-75859317cf44
+		lineageTag: a9b4bb9f-cf60-4f4b-a0bb-3a2e417b2289
 
 	column 'asp'
 		dataType: double
 		formatString: $#,0
 		summarizeBy: none
 		sourceColumn: asp
-		lineageTag: 040fdfcf-b166-49ea-b98c-ccfa5ce0eb37
+		lineageTag: 5a12a787-edee-4bb6-9023-9dcce4a82ca6
 
 	column 'units_py'
 		dataType: double
 		formatString: #,0
 		summarizeBy: sum
 		sourceColumn: units_py
-		lineageTag: 3883742c-f5d7-4628-8db8-4a949b15aea7
+		lineageTag: 3dd85b56-bf3a-4edf-8839-d9a375db349a
 
 	column 'revenue_py'
 		dataType: double
 		formatString: $#,0
 		summarizeBy: sum
 		sourceColumn: revenue_py
-		lineageTag: 04ab0962-e8a4-4d25-862b-880512150572
+		lineageTag: 2a83dc76-645a-484f-a4b3-bf55f78de9e6
 
 	column 'units_yoy_pct'
 		dataType: double
 		formatString: 0.0%
 		summarizeBy: none
 		sourceColumn: units_yoy_pct
-		lineageTag: f73eaf17-bcf0-40ed-8844-288d9e3d798d
+		lineageTag: a598098b-b810-4c99-a9e2-7b9d89518ad3
 
 	column 'revenue_yoy_pct'
 		dataType: double
 		formatString: 0.0%
 		summarizeBy: none
 		sourceColumn: revenue_yoy_pct
-		lineageTag: 46752c17-d439-4e9c-b416-2bc7273e6e67
+		lineageTag: ecf2c2cf-1516-4172-b724-8f971e1bdb19
 
 	column 'target_units'
 		dataType: double
 		formatString: #,0
 		summarizeBy: sum
 		sourceColumn: target_units
-		lineageTag: 50c09d75-4899-4a3c-a1e8-83ef3e07f910
+		lineageTag: d68a9248-b2aa-4216-a89e-237a51b8c2b5
 
 	column 'target_revenue'
 		dataType: double
 		formatString: $#,0
 		summarizeBy: sum
 		sourceColumn: target_revenue
-		lineageTag: a98381dd-f22d-4b40-898b-404fe9a7ca0a
+		lineageTag: e0b8317b-83e9-4d95-8bdb-5e8003dc7de1
 
 	column 'units_target_status'
 		dataType: string
 		summarizeBy: none
 		sourceColumn: units_target_status
-		lineageTag: b79794e1-c0a6-49fb-bc51-c55e00d2292c
+		lineageTag: b90e41f0-8bff-4bfe-a29d-3f3ee6dff62d
 
 	column 'auto_share_pct'
 		dataType: double
 		formatString: 0.0%
 		summarizeBy: none
 		sourceColumn: auto_share_pct
-		lineageTag: fa970553-52eb-4153-97e1-79638b502623
+		lineageTag: 938d48bf-40e0-462d-bb74-6d1f2aa2ff6f
 
 	column 'auto_share_change_pp'
 		dataType: double
 		formatString: +0.0%;-0.0%;0.0%
 		summarizeBy: none
 		sourceColumn: auto_share_change_pp
-		lineageTag: f06c5850-02d9-4602-820e-062743d98d5c
+		lineageTag: e8d2f47a-a3f8-4a16-a50c-ba6aa98c9653
 
 	column 'top10_model_share_pct'
 		dataType: double
 		formatString: 0.0%
 		summarizeBy: none
 		sourceColumn: top10_model_share_pct
-		lineageTag: 938522f1-aab1-4995-b97a-33a84bff94ed
+		lineageTag: 6415f0c0-85fe-4418-a4f6-8796592b588f
 
 	column 'hhi_company'
 		dataType: double
 		formatString: 0.000
 		summarizeBy: none
 		sourceColumn: hhi_company
-		lineageTag: 189d0363-046d-49ce-a74c-5d0238cd79b9
+		lineageTag: c33166a4-f431-4de2-a1e0-48dc4b2f713f
 
 	column 'n_companies'
 		dataType: int64
 		formatString: 0
 		summarizeBy: none
 		sourceColumn: n_companies
-		lineageTag: efe07021-74c5-4722-821e-c85b4f68d387
+		lineageTag: ce41e985-5d4f-42c7-b1ee-87a47b5670f3
 
 	column 'n_models'
 		dataType: int64
 		formatString: 0
 		summarizeBy: none
 		sourceColumn: n_models
-		lineageTag: 10cfc927-8b91-4d81-87d6-41151436ca78
+		lineageTag: e4db4597-e1ca-46e1-acec-476026211cf5
 
 	column 'n_dealers'
 		dataType: int64
 		formatString: 0
 		summarizeBy: none
 		sourceColumn: n_dealers
-		lineageTag: d29458de-2b03-456a-bb1f-ab1f7cef5ef4
+		lineageTag: 6cffabf5-9df9-4d1b-8eb8-775366d5774f
 
 	column 'selling_days'
 		dataType: int64
 		formatString: 0
 		summarizeBy: sum
 		sourceColumn: selling_days
-		lineageTag: e0a150fc-22ef-4359-a939-2659d627fb29
+		lineageTag: 75df7987-dada-494a-991c-dc449e3f7525
 
 	column 'units_per_dealer_month'
 		dataType: double
 		formatString: #,0.0
 		summarizeBy: none
 		sourceColumn: units_per_dealer_month
-		lineageTag: b6ec0d54-8c19-4bf6-9ed4-16a03b6e6aa1
+		lineageTag: f9725514-a901-4909-a8f3-953123c9de57
 
 	column 'dealers_growing_pct'
 		dataType: double
 		formatString: 0.0%
 		summarizeBy: none
 		sourceColumn: dealers_growing_pct
-		lineageTag: c67ff9b4-3199-464c-a89d-2c5fb0e1e4da
+		lineageTag: ff29be9c-a769-46e6-9aac-9ba98646ea3d
 
 	column 'demand_cv'
 		dataType: double
 		formatString: 0.000
 		summarizeBy: none
 		sourceColumn: demand_cv
-		lineageTag: 1c7e8ce9-f404-43fa-b319-cd5a313eeab7
+		lineageTag: 7393a379-de9d-4d87-ac52-be924639feee
 
 	column 'peak_month'
 		dataType: string
 		summarizeBy: none
 		sourceColumn: peak_month
-		lineageTag: 7b721597-423b-4006-8293-a1435d86a453
+		lineageTag: e9a63d42-36c0-4c8d-9bea-c622bcd9e484
 
 	column 'peak_month_units'
 		dataType: double
 		formatString: #,0
 		summarizeBy: none
 		sourceColumn: peak_month_units
-		lineageTag: cb5d20a9-3e4b-4f0b-a375-c0d6a85d83d1
+		lineageTag: acdda851-5c4d-46ec-ad22-048348f510cf
 
 	column 'low_month'
 		dataType: string
 		summarizeBy: none
 		sourceColumn: low_month
-		lineageTag: 88aacfab-f4f7-44db-a8be-8e794fefbb56
+		lineageTag: d6559c00-c812-421a-906a-2bcf680970d4
 
 	column 'low_month_units'
 		dataType: double
 		formatString: #,0
 		summarizeBy: none
 		sourceColumn: low_month_units
-		lineageTag: 4fea1570-1674-44cd-bb98-31fa8da7d035
+		lineageTag: 580a97ba-c675-4089-a3be-01f18fbbcdae
 
 	partition 'kpi_annual_summary' = m
 		mode: import

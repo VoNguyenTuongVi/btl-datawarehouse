@@ -1,0 +1,20 @@
+table 'Safety Factor'
+	lineageTag: 2f5e2823-9e1e-45dd-9e14-12491d121bfd
+
+	/// Tham số What-if (S6)
+	measure 'Safety Factor Value' = SELECTEDVALUE ( 'Safety Factor'[Value], 1 )
+		formatString: 0.0
+		displayFolder: 8. DSS S5/S6
+		lineageTag: 26481c0d-bb57-4860-983e-e90c8550aefa
+
+	column 'Value'
+		dataType: double
+		formatString: 0.0
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Value]
+		lineageTag: e7f0520a-d6aa-45d5-a8bf-b5786b4926c7
+
+	partition 'Safety Factor' = calculated
+		mode: import
+		source = GENERATESERIES ( 0, 2, 0.1 )

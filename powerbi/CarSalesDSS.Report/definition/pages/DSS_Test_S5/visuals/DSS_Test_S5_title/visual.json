@@ -1,0 +1,37 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
+  "name": "DSS_Test_S5_title",
+  "position": {
+    "x": 25,
+    "y": 0,
+    "z": 11000,
+    "height": 55,
+    "width": 1225,
+    "tabOrder": 11000
+  },
+  "visual": {
+    "visualType": "textbox",
+    "objects": {
+      "general": [
+        {
+          "properties": {
+            "paragraphs": [
+              {
+                "textRuns": [
+                  {
+                    "value": "TESTCASE S5 - BÁO CÁO | MỤC 5.6.2 BÁO CÁO",
+                    "textStyle": {
+                      "fontSize": "25pt",
+                      "fontFamily": "Segoe UI"
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  }
+}

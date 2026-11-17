@@ -1,11 +1,11 @@
 table 'kpi_weekday'
-	lineageTag: a90db8d9-1fbd-4a1e-b038-e244cc066b82
+	lineageTag: 936af50e-c46c-4b54-b34f-58cfc05054ca
 
 	column 'period'
 		dataType: string
 		summarizeBy: none
 		sourceColumn: period
-		lineageTag: 8208912e-98fe-4075-a894-33596fc69b72
+		lineageTag: 01499088-d5ac-4509-81f6-7889dd0186c9
 
 	column 'year'
 		dataType: int64
@@ -13,56 +13,56 @@ table 'kpi_weekday'
 		isHidden
 		summarizeBy: none
 		sourceColumn: year
-		lineageTag: 02a46f01-8014-417d-ae4d-6dd7da328e90
+		lineageTag: d0ee4b08-22e6-40e2-9ec3-e10f7cfee172
 
 	column 'dow_no'
 		dataType: int64
 		formatString: 0
 		summarizeBy: none
 		sourceColumn: dow_no
-		lineageTag: 2763b522-aa1e-49df-9a19-359687acf604
+		lineageTag: 34fa936a-336e-4b64-b098-a113b7104a7d
 
 	column 'day_of_week'
 		dataType: string
 		summarizeBy: none
 		sortByColumn: 'dow_no'
 		sourceColumn: day_of_week
-		lineageTag: 595ab37c-6b0d-4e2e-a8db-8b26adab0d03
+		lineageTag: c08618b1-a8bf-424e-bc87-f760a3fd3d7b
 
 	column 'selling_days'
 		dataType: int64
 		formatString: 0
 		summarizeBy: sum
 		sourceColumn: selling_days
-		lineageTag: 17b803bb-ae97-4c5e-a550-8c8003f1cbe3
+		lineageTag: b8365df4-6f15-4ba3-82d2-216a9f850155
 
 	column 'units'
 		dataType: double
 		formatString: #,0
 		summarizeBy: sum
 		sourceColumn: units
-		lineageTag: 73196c41-7576-4d23-ac6d-5d9e60451dda
+		lineageTag: 32fd62c8-a287-4fa6-be3b-56e843ec3f24
 
 	column 'revenue'
 		dataType: double
 		formatString: $#,0
 		summarizeBy: sum
 		sourceColumn: revenue
-		lineageTag: 4885d17d-bd0f-48ec-ba67-a40d8a86531a
+		lineageTag: bd320a53-20da-425e-b0ae-9370815a17b3
 
 	column 'avg_units_per_day'
 		dataType: double
 		formatString: #,0.0
 		summarizeBy: none
 		sourceColumn: avg_units_per_day
-		lineageTag: 28b37289-2a36-48ae-b38f-51087a0c1bd3
+		lineageTag: b13ffd65-f868-47e3-8efd-89e0f5cef1df
 
 	column 'weekday_index'
 		dataType: double
 		formatString: 0.000
 		summarizeBy: none
 		sourceColumn: weekday_index
-		lineageTag: 98bd8589-398a-43e5-bd14-cda83efe6242
+		lineageTag: 28da9b98-0159-41a0-92bf-d5cef004d823
 
 	partition 'kpi_weekday' = m
 		mode: import

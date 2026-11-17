@@ -11,7 +11,7 @@ export default function BarsChart({ rows, labelWidth = 92, valueKey = 'units', y
         <YAxis type="category" dataKey="member" width={labelWidth} tickLine={false} />
         <Tooltip
           cursor={{ fill: 'var(--hover)' }}
-          formatter={(v) => [`${num(v)} ${tip}`, valueKey === 'revenue' ? 'Doanh thu 2023' : 'Sản lượng 2023']}
+          formatter={(v) => [`${num(v)} ${tip}`, valueKey === 'revenue' ? 'Doanh thu' : 'Sản lượng']}
           labelFormatter={(l, p) => {
             const r = p?.[0]?.payload;
             return r ? `${l} · thị phần ${pct(r[shareKey])} · ${spct(r[yoyKey])} so với 2022` : l;

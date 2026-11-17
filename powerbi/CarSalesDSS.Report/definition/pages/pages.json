@@ -1,7 +1,11 @@
 {
-  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/pagesMetadata/1.0.0/schema.json",
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/pagesMetadata/1.1.0/schema.json",
   "pageOrder": [
-    "ReportSection"
+    "ReportSection",
+    "DSS_Priority",
+    "DSS_WhatIf",
+    "DSS_Test_S5",
+    "DSS_Test_S6"
   ],
-  "activePageName": "ReportSection"
+  "activePageName": "DSS_Test_S5"
 }
