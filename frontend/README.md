@@ -1,4 +1,4 @@
-# Frontend main + DSS đọc PostgreSQL
+# Frontend 
 
 Frontend gọi `GET /api/dashboard` khi mở trang, bấm **Nạp lại dữ liệu**, và mỗi 30 giây khi bật tự cập nhật, trang đang hiển thị. Mỗi yêu cầu truy vấn lại PostgreSQL; giao diện không đọc file JSON mẫu. Khi tải lại thất bại, trang báo lỗi và ghi rõ thời điểm của dữ liệu còn đang hiển thị.
 
